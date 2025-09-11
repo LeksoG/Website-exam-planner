@@ -2094,6 +2094,887 @@
     color: var(--text-muted);
     font-style: italic;
 }
+
+/* Tab Menu Styles */
+.tab-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+}
+
+.tab:hover .tab-menu {
+    opacity: 1;
+}
+
+.tab-menu-dots {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.tab-menu-dots:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.tab-dropdown {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 2px solid var(--glass-border);
+    border-radius: 12px;
+    min-width: 160px;
+    box-shadow: var(--shadow-xl);
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+}
+
+.tab-dropdown.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.tab-dropdown-item:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.tab-dropdown-item:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.tab-dropdown-item:last-child {
+    border-radius: 0 0 10px 10px;
+}
+
+/* Duplicate Confirmation Modal */
+.duplicate-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.duplicate-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.duplicate-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 480px;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duplicate-modal-overlay.show .duplicate-modal {
+    transform: scale(1) translateY(0);
+}
+
+.duplicate-modal h3 {
+    color: var(--accent-blue);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.duplicate-modal p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.duplicate-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.duplicate-modal-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.duplicate-modal-button.replace {
+    background: var(--accent-red);
+    color: white;
+}
+
+.duplicate-modal-button.add-new {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.duplicate-modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Tab Dropdown Overlay */
+.tab-dropdown-overlay {
+    position: fixed;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.tab-dropdown-overlay.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    min-width: 180px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(30px);
+    overflow: hidden;
+}
+
+.tab-dropdown-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.tab-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent-red);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-dropdown-item:hover {
+    color: white;
+    transform: translateX(4px);
+}
+
+.tab-dropdown-item:hover::before {
+    width: 100%;
+}
+
+/* Enhanced Floating Sidebar */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 20px;
+    bottom: 20px;
+    width: 280px;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-radius: 32px;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 20px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 80px rgba(59, 130, 246, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-header {
+    padding: 32px 28px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.1) 0%, 
+        rgba(59, 130, 246, 0.05) 50%, 
+        transparent 100%);
+    border-radius: 30px 30px 0 0;
+}
+
+/* Enhanced Sidebar Overlay with Gradient */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dark theme sidebar enhancements */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(96, 165, 250, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="black"] .sidebar-overlay.show {
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+        rgba(0, 0, 0, 0.6);
+}
+
+/* Enhanced Sidebar - Attached with Right Curves */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-left: none;
+    border-radius: 0 32px 32px 0;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 0;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-header {
+    padding: 32px 28px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.1) 0%, 
+        rgba(59, 130, 246, 0.05) 50%, 
+        transparent 100%);
+}
+
+/* Simple Dim Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dark theme sidebar */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="black"] .sidebar-overlay.show {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Fixed Tab Dropdown with Better Readability */
+.tab-dropdown-overlay {
+    position: fixed;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.tab-dropdown-overlay.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    min-width: 180px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(30px);
+    overflow: hidden;
+}
+
+.tab-dropdown-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    position: relative;
+    background: var(--bg-secondary);
+}
+
+.tab-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent-red);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.tab-dropdown-item:hover {
+    color: white;
+    transform: translateX(4px);
+}
+
+.tab-dropdown-item:hover::before {
+    width: 100%;
+}
+
+/* Better contrast for delete button */
+.tab-dropdown-item:hover svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Enhanced Floating Sidebar with Top/Bottom Spacing */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 20px;
+    bottom: 20px;
+    width: 280px;
+    height: calc(100vh - 40px);
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-radius: 0 32px 32px 0;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 0;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.2),
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 -8px 32px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Dark theme floating sidebar */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.4),
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 -8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Sidebar Full Screen */
+@media (max-width: 768px) {
+    .sidebar {
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+        border-radius: 0 20px 20px 0;
+        width: 100%;
+        left: -100%;
+    }
+    
+    .sidebar.open {
+        left: 0;
+        box-shadow: none;
+    }
+}
+
+/* Mobile Header Layout */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Show hamburger on mobile */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .sidebar-trigger {
+        display: none;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Enhanced Mobile Optimization */
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+        border-radius: 20px;
+        margin: 10px;
+        margin-left: 10px !important; /* Override sidebar-open margin */
+    }
+    
+    .container.sidebar-open {
+        margin-left: 10px; /* Keep consistent margin on mobile */
+    }
+    
+    .header {
+        margin-bottom: 20px;
+        padding: 10px 0;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    /* Mobile tab carousel */
+    .tab-carousel {
+        padding: 15px 40px;
+    }
+    
+    .tab {
+        min-width: 240px;
+        padding: 16px 24px;
+        font-size: 0.9rem;
+    }
+    
+    .carousel-nav {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .carousel-nav.prev {
+        left: 8px;
+    }
+    
+    .carousel-nav.next {
+        right: 8px;
+    }
+    
+    /* Mobile schedule grid */
+    .schedule-grid {
+        grid-template-columns: 100px repeat(3, 1fr);
+        gap: 1px;
+        font-size: 0.8rem;
+    }
+    
+    .schedule-cell {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .revision-card-mini {
+        min-height: 35px;
+        padding: 4px 6px;
+        font-size: 0.65rem;
+    }
+    
+    /* Mobile dropdown positioning */
+    .tab-dropdown-overlay {
+        position: fixed !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) scale(0.9) !important;
+    }
+    
+    .tab-dropdown-overlay.show {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+}
+
+/* Tablet optimizations */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .sidebar {
+        top: 15px;
+        bottom: 15px;
+        height: calc(100vh - 30px);
+    }
+    
+    .container {
+        padding: 16px;
+        border-radius: 25px;
+    }
+    
+    .tab {
+        min-width: 220px;
+        padding: 16px 26px;
+    }
+}
+
+/* Smaller Home Form Container */
+#home .card {
+    max-width: 800px;
+    margin: 0 auto 24px auto;
+}
+
+@media (max-width: 768px) {
+    #home .card {
+        max-width: 100%;
+    }
+}
+
+/* Fixed Hamburger Menu - No Scrolling */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1001;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open-mobile {
+    overflow: hidden;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .header-left h1 {
+        margin-left: 60px;
+    }
+}
+
+/* Mobile Vertical Calendar Layout */
+@media (max-width: 768px) {
+    .schedule-grid-container {
+        border-radius: 20px;
+    }
+    
+    .schedule-grid {
+        display: block;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 0;
+    }
+    
+    .grid-header:first-child {
+        display: none;
+    }
+    
+    .subject-label {
+        display: none;
+    }
+    
+    .mobile-day-section {
+        margin-bottom: 24px;
+        background: var(--glass-bg);
+        border-radius: 16px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-day-header {
+        background: var(--calendar-header);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        text-align: center;
+        font-weight: 800;
+        color: var(--accent-blue);
+        font-size: 1.1rem;
+    }
+    
+    .mobile-day-header.today {
+        background: var(--accent-blue);
+        color: white;
+    }
+    
+    .mobile-subject-group {
+        margin-bottom: 16px;
+    }
+    
+    .mobile-subject-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        background: var(--calendar-day);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-tasks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Swipeable Task Styles */
+.swipeable-task {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.task-content {
+    position: relative;
+    z-index: 2;
+    background: var(--bg-secondary);
+    transition: transform 0.3s ease;
+}
+
+.task-action-complete,
+.task-action-delete {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.task-action-complete {
+    right: 0;
+    background: var(--accent-green);
+    transform: translateX(100%);
+}
+
+.task-action-delete {
+    left: 0;
+    background: var(--accent-red);
+    transform: translateX(-100%);
+}
+
+.task-action-complete svg,
+.task-action-delete svg {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 4px;
+}
+
+/* Swipe states */
+.swipeable-task.swiping-right .task-content {
+    transform: translateX(80px);
+}
+
+.swipeable-task.swiping-right .task-action-complete {
+    transform: translateX(0);
+}
+
+.swipeable-task.swiping-left .task-content {
+    transform: translateX(-80px);
+}
+
+.swipeable-task.swiping-left .task-action-delete {
+    transform: translateX(0);
+}
+
+/* Ensure desktop layout stays original */
+.desktop-layout .schedule-grid {
+    display: grid;
+    grid-template-columns: 200px repeat(7, 1fr);
+    grid-template-rows: auto repeat(var(--subject-count, 6), 1fr);
+    min-height: 600px;
+    gap: 2px;
+    background: var(--border-color);
+    padding: 2px;
+}
+
+.mobile-layout {
+    display: block !important;
+}
+
+/* Prevent mobile styles from affecting desktop */
+@media (min-width: 769px) {
+    .mobile-day-section,
+    .mobile-day-header,
+    .mobile-subject-group,
+    .mobile-subject-title,
+    .mobile-tasks-container {
+        display: none !important;
+    }
+    
+    .schedule-grid {
+        display: grid !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -2104,7 +2985,8 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar" onmouseleave="handleSidebarLeave()">
+    <!-- Sidebar -->
+<div class="sidebar" id="sidebar" onmouseleave="handleSidebarLeave(event)">
         <div class="sidebar-header">
             <h2>
                 <svg class="icon icon-lg" viewBox="0 0 24 24">
@@ -2147,16 +3029,22 @@
         </nav>
     </div>
 
-    <div class="container" id="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>GCSE Revision Planner</h1>
-        </header>
+    <!-- Header -->
+<header class="header">
+    <div class="header-left">
+        <button class="hamburger-menu" id="hamburgerMenu" onclick="toggleSidebarMobile()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <h1>GCSE Revision Planner</h1>
+    </div>
+</header>
 
-        <!-- Home Page -->
+       <!-- Home Page -->
 <div id="home" class="page active">
     <div class="card">
-        <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Create Your Revision Schedule</h2>
+        <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Create Your Personalized Revision Schedule</h2>
         <form onsubmit="generateSchedule(event)">
             <div class="input-group">
                 <label for="subjects">Enter your GCSE subjects (comma-separated):</label>
@@ -2167,11 +3055,90 @@
                     required 
                 />
             </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="input-group">
+                    <label for="currentGrade">Current Grade Level:</label>
+                    <select id="currentGrade" class="settings-select" style="width: 100%;" required>
+                        <option value="">Select your current grade</option>
+                        <option value="grade-9">Grade 9 (Excellent)</option>
+                        <option value="grade-8">Grade 8 (Very Good)</option>
+                        <option value="grade-7">Grade 7 (Good)</option>
+                        <option value="grade-6">Grade 6 (Above Average)</option>
+                        <option value="grade-5">Grade 5 (Average)</option>
+                        <option value="grade-4">Grade 4 (Below Average)</option>
+                        <option value="grade-3">Grade 3 (Needs Improvement)</option>
+                        <option value="struggling">Struggling with GCSEs</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="examBoard">Exam Board:</label>
+                    <select id="examBoard" class="settings-select" style="width: 100%;" required>
+                        <option value="">Select your exam board</option>
+                        <option value="aqa">AQA</option>
+                        <option value="edexcel">Edexcel/Pearson</option>
+                        <option value="ocr">OCR</option>
+                        <option value="wjec">WJEC</option>
+                        <option value="ccea">CCEA</option>
+                        <option value="mixed">Mixed Boards</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <div class="input-group">
+                    <label for="examType">Exam Type:</label>
+                    <select id="examType" class="settings-select" style="width: 100%;" required>
+                        <option value="">Select exam type</option>
+                        <option value="gcse">GCSE Final Exams</option>
+                        <option value="mock">Mock Exams</option>
+                        <option value="practice">Practice/Assessment</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="daysUntilExam">Days until exam:</label>
+                    <select id="daysUntilExam" class="settings-select" style="width: 100%;" required>
+                        <option value="">Select timeframe</option>
+                        <option value="7">1 week (Intensive Review)</option>
+                        <option value="14">2 weeks (Quick Prep)</option>
+                        <option value="30">1 month (Standard)</option>
+                        <option value="60">2 months (Comprehensive)</option>
+                        <option value="90">3 months (Thorough)</option>
+                        <option value="120">4+ months (Long-term)</option>
+                        <option value="custom">Custom timeframe</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group" id="customDaysGroup" style="display: none;">
+                <label for="customDays">Enter custom number of days:</label>
+                <input 
+                    type="number" 
+                    id="customDays" 
+                    placeholder="Enter number of days until exam" 
+                    min="1" 
+                    max="365"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="studyIntensity">Study Intensity Level:</label>
+                <select id="studyIntensity" class="settings-select" style="width: 100%;" required>
+                    <option value="">Select intensity</option>
+                    <option value="light">Light (1-2 hours/day)</option>
+                    <option value="moderate">Moderate (2-4 hours/day)</option>
+                    <option value="intensive">Intensive (4-6 hours/day)</option>
+                    <option value="exam-mode">Exam Mode (6+ hours/day)</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn-primary" id="generateBtn">
                 <svg class="icon" viewBox="0 0 24 24">
                     <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
                 </svg>
-                Create Schedule
+                Create Personalized Schedule
             </button>
         </form>
     </div>
@@ -2363,7 +3330,7 @@
     <div id="dropdownOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; display: none;" onclick="closeAllDropdowns()"></div>
 
     <script>
-        // Enhanced Global Application State
+        // Global variables with proper initialization
 let appState = {
     schedules: {},
     activeSchedule: null,
@@ -2374,247 +3341,343 @@ let appState = {
     isInitialized: false
 };
 
-// Comprehensive Past Papers Data with Multiple URLs and Alternative Names
-let pastPapersData = {
-    // Mathematics variants
-    mathematics: [
-        'https://cdn.sanity.io/files/p28bar15/green/81f858bbcacde1898015f88a8b3fdfec08453a75.pdf',
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample1.pdf'
-    ],
-    maths: [
-        'https://cdn.sanity.io/files/p28bar15/green/81f858bbcacde1898015f88a8b3fdfec08453a75.pdf',
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample1.pdf'
-    ],
-    
-    // English variants
-    english: [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample1.pdf'
-    ],
-    'english literature': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'english language': [
-        'https://cdn.sanity.io/files/p28bar15/green/28842ff0d169e821a8ef19ba98a123c2454f2ff6.pdf',
-        'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-87002-QP-JUN23.PDF'
-    ],
-    
-    // Science subjects
-    biology: [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample2.pdf'
-    ],
-    bio: [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    chemistry: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample3.pdf'
-    ],
-    chem: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    physics: [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample1.pdf'
-    ],
-    
-    // Humanities
-    history: [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample2.pdf'
-    ],
-    
-    geography: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        'https://filesamples.com/samples/document/pdf/sample3.pdf'
-    ],
-    geo: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    // Technology and Arts
-    'computer science': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'computing': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'ict': [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    art: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'art and design': [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    // Languages
-    french: [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    spanish: [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    german: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    // Other subjects
-    'religious studies': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'rs': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    'business studies': [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'business': [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    psychology: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    sociology: [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    drama: [
-        'https://filesamples.com/samples/document/pdf/sample3.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    music: [
-        'https://filesamples.com/samples/document/pdf/sample1.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    
-    'physical education': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ],
-    'pe': [
-        'https://filesamples.com/samples/document/pdf/sample2.pdf',
-        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-    ]
-};
+let activeDropdown = null;
+let sidebarTimeout = null;
+let navigationTimeout = null;
+let isNavigating = false;
+let isSidebarOpen = false; // Add this global variable
 
-// Missing variable declarations - ADD THESE
-    let activeDropdown = null;
-    let sidebarTimeout = null;
-    let navigationTimeout = null;
-    let isNavigating = false; // ADD THIS LINE
-
-// Enhanced initialization with proper centering
-document.addEventListener('DOMContentLoaded', function() {
-    loadAppState();
-    
-    // Multi-stage initialization for proper centering
-    setTimeout(() => {
-        updateDashboard();
-        updateProgress();
-    }, 100);
-    
-    setTimeout(() => {
-        if (Object.keys(appState.schedules).length > 0) {
-            updateCenteredCarousel();
-        }
-        appState.isInitialized = true;
-    }, 300);
-    
-    // Final centering check after all styles load
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            if (Object.keys(appState.schedules).length > 0) {
-                updateCenteredCarousel();
+        // Enhanced Past Papers Data with Exam Board Support
+        let examBoardPastPapers = {
+            aqa: {
+                mathematics: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-83001H-QP-JUN23.PDF',
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/november/AQA-83002H-QP-NOV23.PDF'
+                ],
+                'english literature': [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-87001-QP-JUN23.PDF',
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/november/AQA-87002-QP-NOV23.PDF'
+                ],
+                biology: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84641H-QP-JUN23.PDF'
+                ],
+                chemistry: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84651H-QP-JUN23.PDF'
+                ],
+                physics: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84631H-QP-JUN23.PDF'
+                ],
+                history: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84031-QP-JUN23.PDF'
+                ],
+                geography: [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84031-QP-JUN23.PDF'
+                ],
+                'computer science': [
+                    'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-84521-QP-JUN23.PDF'
+                ]
+            },
+            edexcel: {
+                mathematics: [
+                    'https://cdn.sanity.io/files/p28bar15/green/81f858bbcacde1898015f88a8b3fdfec08453a75.pdf',
+                    'https://filesamples.com/samples/document/pdf/sample3.pdf'
+                ],
+                'english literature': [
+                    'https://filesamples.com/samples/document/pdf/sample2.pdf'
+                ],
+                biology: [
+                    'https://filesamples.com/samples/document/pdf/sample3.pdf'
+                ],
+                chemistry: [
+                    'https://filesamples.com/samples/document/pdf/sample1.pdf'
+                ],
+                physics: [
+                    'https://filesamples.com/samples/document/pdf/sample2.pdf'
+                ]
+            },
+            ocr: {
+                mathematics: [
+                    'https://filesamples.com/samples/document/pdf/sample1.pdf'
+                ],
+                'computer science': [
+                    'https://filesamples.com/samples/document/pdf/sample2.pdf'
+                ],
+                biology: [
+                    'https://filesamples.com/samples/document/pdf/sample3.pdf'
+                ]
+            },
+            wjec: {
+                mathematics: [
+                    'https://filesamples.com/samples/document/pdf/sample1.pdf'
+                ],
+                'english literature': [
+                    'https://filesamples.com/samples/document/pdf/sample2.pdf'
+                ]
+            },
+            ccea: {
+                mathematics: [
+                    'https://filesamples.com/samples/document/pdf/sample3.pdf'
+                ]
             }
-        }, 500);
-    });
-});
+        };
 
+        // Comprehensive Past Papers Data with Multiple URLs and Alternative Names
+        let pastPapersData = {
+            // Mathematics variants
+            mathematics: [
+                'https://cdn.sanity.io/files/p28bar15/green/81f858bbcacde1898015f88a8b3fdfec08453a75.pdf',
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample1.pdf'
+            ],
+            maths: [
+                'https://cdn.sanity.io/files/p28bar15/green/81f858bbcacde1898015f88a8b3fdfec08453a75.pdf',
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample1.pdf'
+            ],
+            
+            // English variants
+            english: [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample1.pdf'
+            ],
+            'english literature': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'english language': [
+                'https://cdn.sanity.io/files/p28bar15/green/28842ff0d169e821a8ef19ba98a123c2454f2ff6.pdf',
+                'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2023/june/AQA-87002-QP-JUN23.PDF'
+            ],
+            
+            // Science subjects
+            biology: [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample2.pdf'
+            ],
+            bio: [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            chemistry: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample3.pdf'
+            ],
+            chem: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            physics: [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample1.pdf'
+            ],
+            
+            // Humanities
+            history: [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample2.pdf'
+            ],
+            
+            geography: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'https://filesamples.com/samples/document/pdf/sample3.pdf'
+            ],
+            geo: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            // Technology and Arts
+            'computer science': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'computing': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'ict': [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            art: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'art and design': [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            // Languages
+            french: [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            spanish: [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            german: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            // Other subjects
+            'religious studies': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'rs': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            'business studies': [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'business': [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            psychology: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            sociology: [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            drama: [
+                'https://filesamples.com/samples/document/pdf/sample3.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            music: [
+                'https://filesamples.com/samples/document/pdf/sample1.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            
+            'physical education': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ],
+            'pe': [
+                'https://filesamples.com/samples/document/pdf/sample2.pdf',
+                'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+            ]
+        };
 
-        // Enhanced Sidebar Management
+        // Settings
+        let userSettings = {
+            sessionLength: 45,
+            breakLength: 10,
+            studyNotifications: false,
+            breakNotifications: false,
+            theme: 'white'
+        };
+
         function openSidebar() {
-            clearTimeout(sidebarTimeout);
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('container').classList.add('sidebar-open');
-            document.getElementById('sidebarOverlay').classList.add('show');
-        }
+    clearTimeout(sidebarTimeout);
+    
+    const sidebar = document.getElementById('sidebar');
+    const container = document.getElementById('container');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar) sidebar.classList.add('open');
+    if (container) container.classList.add('sidebar-open');
+    if (overlay) overlay.classList.add('show');
+}
 
-        function handleSidebarLeave() {
-            sidebarTimeout = setTimeout(() => {
-                // Only close if mouse is not over the trigger area
-                const trigger = document.querySelector('.sidebar-trigger');
+        function handleSidebarLeave(event) {
+    // Only auto-close on desktop
+    if (window.innerWidth > 768) {
+        sidebarTimeout = setTimeout(() => {
+            const trigger = document.querySelector('.sidebar-trigger');
+            if (trigger && event && event.clientX !== undefined) {
                 const rect = trigger.getBoundingClientRect();
                 const mouseX = event.clientX;
                 if (mouseX > rect.right) {
                     closeSidebar();
                 }
-            }, 300);
-        }
+            } else {
+                // Fallback - just close the sidebar
+                closeSidebar();
+            }
+        }, 300);
+    }
+}
 
         function closeSidebar() {
-            clearTimeout(sidebarTimeout);
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('container').classList.remove('sidebar-open');
-            document.getElementById('sidebarOverlay').classList.remove('show');
-        }
-
-        // Enhanced page navigation with smooth transitions
-function showPage(pageId) {
+    clearTimeout(sidebarTimeout);
+    
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerMenu');
+    const overlay = document.getElementById('sidebarOverlay');
+    const container = document.getElementById('container');
+    const body = document.body;
+    
+    if (sidebar) sidebar.classList.remove('open');
+    if (hamburger) hamburger.classList.remove('active');
+    if (overlay) overlay.classList.remove('show');
+    if (container) container.classList.remove('sidebar-open');
+    if (body) body.classList.remove('sidebar-open-mobile');
+    
+    if (typeof isSidebarOpen !== 'undefined') {
+        isSidebarOpen = false;
+    }
+}
+        function showPage(pageId) {
     const currentPage = document.querySelector('.page.active');
     const targetPage = document.getElementById(pageId);
     
     if (!targetPage || currentPage === targetPage) return;
     
-    // Add transitioning out class to current page
+    // Close mobile sidebar properly with null checks
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburgerMenu');
+        const overlay = document.getElementById('sidebarOverlay');
+        const container = document.getElementById('container');
+        const body = document.body;
+        
+        if (sidebar) sidebar.classList.remove('open');
+        if (hamburger) hamburger.classList.remove('active');
+        if (overlay) overlay.classList.remove('show');
+        if (container) container.classList.remove('sidebar-open');
+        if (body) body.classList.remove('sidebar-open-mobile');
+        
+        if (typeof isSidebarOpen !== 'undefined') {
+            isSidebarOpen = false;
+        }
+    } else {
+        // Desktop auto-close behavior
+        closeSidebar();
+    }
+    
     if (currentPage) {
         currentPage.classList.add('transitioning-out');
     }
     
     setTimeout(() => {
-        // Hide current page
         if (currentPage) {
             currentPage.classList.remove('active', 'transitioning-out');
         }
         
-        // Show target page with transition
         targetPage.classList.add('transitioning-in');
         targetPage.classList.add('active');
         
@@ -2623,106 +3686,206 @@ function showPage(pageId) {
         }, 50);
     }, 200);
     
-    // Update sidebar active state
+    // Update sidebar item states
     document.querySelectorAll('.sidebar-item').forEach(item => {
         item.classList.remove('active');
     });
     
     const sidebarItem = document.querySelector(`[onclick="showPage('${pageId}')"]`);
     if (sidebarItem) {
-        sidebarItem.closest('.sidebar-item').classList.add('active');
-    }
-    
-    // Close sidebar on mobile
-    if (window.innerWidth <= 768) {
-        closeSidebar();
+        const closestItem = sidebarItem.closest('.sidebar-item');
+        if (closestItem) closestItem.classList.add('active');
     }
     
     appState.currentPage = pageId;
     saveAppState();
 }
 
-// Enhanced view schedule from progress with smooth transition
-function viewScheduleFromProgress(scheduleId) {
-    // Add button press animation
-    event.target.style.transform = 'translateY(-8px) scale(0.95)';
-    
-    setTimeout(() => {
-        // Switch to that schedule
-        appState.activeSchedule = scheduleId;
-        appState.currentTabIndex = 0;
-        saveAppState();
-        
-        // Navigate to dashboard with smooth transition
-        showPage('dashboard');
-        
-        // Update dashboard after page transition
-        setTimeout(() => {
-            updateDashboard();
-        }, 300);
-        
-        // Reset button animation
-        event.target.style.transform = '';
-    }, 150);
-}
+        function viewScheduleFromProgress(scheduleId) {
+            event.target.style.transform = 'translateY(-8px) scale(0.95)';
+            
+            setTimeout(() => {
+                appState.activeSchedule = scheduleId;
+                appState.currentTabIndex = 0;
+                saveAppState();
+                
+                showPage('dashboard');
+                
+                setTimeout(() => {
+                    updateDashboard();
+                }, 300);
+                
+                event.target.style.transform = '';
+            }, 150);
+        }
 
-        // Fixed schedule generation with proper element checking
-async function generateSchedule(event) {
-    event.preventDefault();
-    
-    const subjectsInput = document.getElementById('subjects');
-    const studyDetails = document.getElementById('studyDetails');
-    
-    // Check if elements exist before accessing their values
-    if (!subjectsInput) {
-        showAlert('Form elements not found. Please refresh the page.', 'error');
-        return;
-    }
-    
-    const subjectsValue = subjectsInput.value.trim();
-    const studyDetailsValue = studyDetails ? studyDetails.value.trim() : '';
-    
-    if (!subjectsValue) {
-        showAlert('Please enter your subjects', 'error');
-        return;
-    }
-    
-    const subjects = subjectsValue.split(',').map(s => s.trim()).filter(s => s);
-    const scheduleId = `schedule_${Date.now()}`;
-    
-    // Switch to dashboard and show loading
-    showDashboardWithLoading();
-    
-    // Create enhanced schedule
-    createEnhancedSchedule(scheduleId, subjects);
-    showAlert('Schedule created successfully!', 'success');
-    
-    setTimeout(() => {
-        hideLoading();
-        switchToSchedule(scheduleId);
-    }, 1500);
-    
-    // Clear inputs safely
-    subjectsInput.value = '';
-    if (studyDetails) {
-        studyDetails.value = '';
-    }
-}
+        // Schedule Generation with Duplicate Detection
+        async function generateSchedule(event) {
+            event.preventDefault();
+            
+            const subjectsInput = document.getElementById('subjects');
+            const currentGrade = document.getElementById('currentGrade');
+            const examBoard = document.getElementById('examBoard');
+            const examType = document.getElementById('examType');
+            const daysUntilExam = document.getElementById('daysUntilExam');
+            const customDays = document.getElementById('customDays');
+            const studyIntensity = document.getElementById('studyIntensity');
+            
+            if (!subjectsInput?.value.trim()) {
+                showAlert('Please enter your subjects', 'error');
+                return;
+            }
+            
+            if (!currentGrade?.value || !examBoard?.value || !examType?.value || !daysUntilExam?.value || !studyIntensity?.value) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            let totalDays;
+            if (daysUntilExam.value === 'custom') {
+                totalDays = parseInt(customDays.value);
+                if (!totalDays || totalDays < 1) {
+                    showAlert('Please enter a valid number of days', 'error');
+                    return;
+                }
+            } else {
+                totalDays = parseInt(daysUntilExam.value);
+            }
+            
+            const subjects = subjectsInput.value.split(',').map(s => s.trim()).filter(s => s);
+            const scheduleName = subjects.join(', ');
+            
+            const existingSchedule = findSimilarSchedule(scheduleName, subjects);
+            if (existingSchedule) {
+                showDuplicateModal(scheduleName, subjects, {
+                    currentGrade: currentGrade.value,
+                    examBoard: examBoard.value,
+                    examType: examType.value,
+                    daysUntilExam: totalDays,
+                    studyIntensity: studyIntensity.value,
+                    examDate: new Date(Date.now() + totalDays * 24 * 60 * 60 * 1000)
+                }, existingSchedule);
+                return;
+            }
+            
+            createNewSchedule(subjects, {
+                currentGrade: currentGrade.value,
+                examBoard: examBoard.value,
+                examType: examType.value,
+                daysUntilExam: totalDays,
+                studyIntensity: studyIntensity.value,
+                examDate: new Date(Date.now() + totalDays * 24 * 60 * 60 * 1000)
+            });
+            
+            document.querySelector('form').reset();
+        }
+
+        // Helper functions for duplicate detection
+        function findSimilarSchedule(scheduleName, subjects) {
+            for (const [scheduleId, schedule] of Object.entries(appState.schedules)) {
+                if (schedule.name === scheduleName) {
+                    return { id: scheduleId, schedule: schedule, type: 'exact' };
+                }
+                
+                const similarity = calculateSubjectSimilarity(subjects, schedule.subjects);
+                if (similarity > 0.8) {
+                    return { id: scheduleId, schedule: schedule, type: 'similar' };
+                }
+            }
+            return null;
+        }
+
+        function calculateSubjectSimilarity(subjects1, subjects2) {
+            const set1 = new Set(subjects1.map(s => s.toLowerCase().trim()));
+            const set2 = new Set(subjects2.map(s => s.toLowerCase().trim()));
+            
+            const intersection = new Set([...set1].filter(x => set2.has(x)));
+            const union = new Set([...set1, ...set2]);
+            
+            return intersection.size / union.size;
+        }
+
+        function showDuplicateModal(scheduleName, subjects, scheduleData, existingSchedule) {
+            const modal = document.createElement('div');
+            modal.className = 'duplicate-modal-overlay';
+            modal.innerHTML = `
+                <div class="duplicate-modal">
+                    <h3>Schedule Already Exists</h3>
+                    <p>A schedule with ${existingSchedule.type === 'exact' ? 'the same name' : 'similar subjects'} already exists: "<strong>${existingSchedule.schedule.name}</strong>"</p>
+                    <p>Would you like to replace the existing schedule or add this as a new schedule?</p>
+                    <div class="duplicate-modal-buttons">
+                        <button class="duplicate-modal-button replace" onclick="replaceExistingSchedule('${existingSchedule.id}', '${JSON.stringify(subjects).replace(/"/g, '&quot;')}', '${JSON.stringify(scheduleData).replace(/"/g, '&quot;')}')">
+                            Replace Current
+                        </button>
+                        <button class="duplicate-modal-button add-new" onclick="addAsNewSchedule('${JSON.stringify(subjects).replace(/"/g, '&quot;')}', '${JSON.stringify(scheduleData).replace(/"/g, '&quot;')}')">
+                            Add as New
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 100);
+        }
+
+        function replaceExistingSchedule(existingId, subjectsJson, scheduleDataJson) {
+            const subjects = JSON.parse(subjectsJson.replace(/&quot;/g, '"'));
+            const scheduleData = JSON.parse(scheduleDataJson.replace(/&quot;/g, '"'));
+            
+            delete appState.schedules[existingId];
+            
+            createNewSchedule(subjects, scheduleData, existingId);
+            
+            closeDuplicateModal();
+            showAlert('Schedule replaced successfully!', 'success');
+        }
+
+        function addAsNewSchedule(subjectsJson, scheduleDataJson) {
+            const subjects = JSON.parse(subjectsJson.replace(/&quot;/g, '"'));
+            const scheduleData = JSON.parse(scheduleDataJson.replace(/&quot;/g, '"'));
+            
+            createNewSchedule(subjects, scheduleData);
+            
+            closeDuplicateModal();
+            showAlert('New schedule created successfully!', 'success');
+        }
+
+        function closeDuplicateModal() {
+            const modal = document.querySelector('.duplicate-modal-overlay');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.remove();
+                }, 400);
+            }
+        }
+
+        function createNewSchedule(subjects, scheduleData, existingId = null) {
+            const scheduleId = existingId || `schedule_${Date.now()}`;
+            
+            showDashboardWithLoading();
+            
+            createPersonalizedSchedule(scheduleId, { subjects, ...scheduleData });
+            
+            setTimeout(() => {
+                hideLoading();
+                switchToSchedule(scheduleId);
+            }, 1500);
+        }
 
         function showDashboardWithLoading() {
-            // Switch to dashboard page
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById('dashboard').classList.add('active');
             
-            // Update sidebar
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
             document.querySelector('[onclick="showPage(\'dashboard\')"]').closest('.sidebar-item').classList.add('active');
             
-            // Show loading
             document.getElementById('loadingContainer').classList.add('show');
             document.getElementById('scheduleContent').innerHTML = '';
             
-            // Generate loading cards
             const loadingGrid = document.getElementById('loadingGrid');
             loadingGrid.innerHTML = '';
             for (let i = 0; i < 6; i++) {
@@ -2736,603 +3899,503 @@ async function generateSchedule(event) {
             document.getElementById('loadingContainer').classList.remove('show');
         }
 
-        // Enhanced demo schedule creation with realistic variation
-        function createEnhancedSchedule(scheduleId, subjects) {
+        // Personalized Schedule Creation
+        function createPersonalizedSchedule(scheduleId, scheduleData) {
+            const { subjects, currentGrade, examBoard, examType, daysUntilExam, studyIntensity } = scheduleData;
+            
+            const intensityMultipliers = {
+                'light': 0.6,
+                'moderate': 1.0,
+                'intensive': 1.5,
+                'exam-mode': 2.0
+            };
+            
+            const gradeAdjustments = {
+                'grade-9': { advanced: 0.6, medium: 0.3, easy: 0.1 },
+                'grade-8': { advanced: 0.5, medium: 0.4, easy: 0.1 },
+                'grade-7': { advanced: 0.4, medium: 0.4, easy: 0.2 },
+                'grade-6': { advanced: 0.3, medium: 0.5, easy: 0.2 },
+                'grade-5': { advanced: 0.2, medium: 0.5, easy: 0.3 },
+                'grade-4': { advanced: 0.1, medium: 0.4, easy: 0.5 },
+                'grade-3': { advanced: 0.05, medium: 0.3, easy: 0.65 },
+                'struggling': { advanced: 0.0, medium: 0.2, easy: 0.8 }
+            };
+            
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const times = ['09:00-10:00', '10:15-11:15', '11:30-12:30', '14:00-15:00', '15:15-16:15', '16:30-17:30', '19:00-20:00'];
-            const difficulties = ['Easy', 'Medium', 'Hard'];
-            
-            const detailedTopics = {
-                'Mathematics': [
-                    'Quadratic Equations', 'Linear Equations', 'Algebraic Manipulation', 
-                    'Trigonometry SOHCAHTOA', 'Pythagoras Theorem', 'Circle Theorems',
-                    'Statistics', 'Sequences & Series', 'Simultaneous Equations',
-                    'Indices & Surds', 'Factorisation', 'Graph Transformations'
-                ],
-                'English Literature': [
-                    'Macbeth Analysis', 'Romeo & Juliet', 'Inspector Calls',
-                    'Poetry Comparison', 'Language Techniques', 'Structure & Form',
-                    'Historical Context', 'Quote Analysis', 'Essay Planning',
-                    'Dramatic Irony', 'Symbolism', 'Writer\'s Methods'
-                ],
-                'Biology': [
-                    'Cell Division', 'DNA Structure', 'Enzyme Activity',
-                    'Photosynthesis', 'Respiratory System', 'Circulatory System',
-                    'Inheritance', 'Evolution', 'Ecology Food Chains',
-                    'Plant Transport', 'Nervous System', 'Hormones'
-                ],
-                'Chemistry': [
-                    'Atomic Structure', 'Periodic Table', 'Chemical Bonding',
-                    'Chemical Reactions', 'Acids & Bases', 'Metals',
-                    'Organic Chemistry', 'Reaction Rates', 'Electrolysis',
-                    'Gas Tests', 'Calculations', 'Environment'
-                ],
-                'Physics': [
-                    'Forces & Motion', 'Energy Transfers', 'Wave Properties',
-                    'Electricity', 'Magnetism', 'Radioactivity',
-                    'Space', 'Pressure', 'Heat Transfer',
-                    'Light & EM Spectrum', 'Motion Graphs', 'Power'
-                ],
-                'History': [
-                    'WWI Causes', 'Russian Revolution', 'Nazi Germany',
-                    'Cold War', 'Medieval Life', 'Industrial Revolution',
-                    'American West', 'Medicine Progress', 'Weimar Republic',
-                    'Hitler\'s Rise', 'Treaty of Versailles', 'Nazi Life'
-                ],
-                'Geography': [
-                    'Plate Tectonics', 'Climate Change', 'River Landscapes',
-                    'Coastal Management', 'Urban Issues', 'Development',
-                    'Resource Management', 'Weather Hazards', 'Ecosystems',
-                    'Economic Development', 'Population Change', 'Globalisation'
-                ],
-                'English Language': [
-                    'Creative Writing', 'Text Analysis', 'Persuasive Writing',
-                    'Grammar', 'Comprehension', 'Descriptive Writing',
-                    'Argument', 'Language Devices', 'Text Structure',
-                    'Audience & Purpose', 'Vocabulary', 'Proofreading'
-                ],
-                'Computer Science': [
-                    'Algorithm Design', 'Programming Loops', 'Data Structures',
-                    'Boolean Logic', 'Computer Systems', 'Networks',
-                    'Database Design', 'Cybersecurity', 'Software Development',
-                    'Binary Numbers', 'Computational Thinking', 'Debugging'
-                ],
-                'Art': [
-                    'Observational Drawing', 'Colour Theory', 'Artist Study',
-                    'Painting Techniques', 'Sculpture', 'Photography',
-                    'Design Development', 'Cultural Context', 'Portfolio',
-                    'Mixed Media', 'Critical Analysis', 'Exhibition'
-                ]
-            };
-            
-            // Get topics for subjects, with fallbacks for uncommon subjects
-            const getTopicsForSubject = (subject) => {
-                const normalizedSubject = Object.keys(detailedTopics).find(key => 
-                    key.toLowerCase().includes(subject.toLowerCase()) || 
-                    subject.toLowerCase().includes(key.toLowerCase())
-                );
-                return detailedTopics[normalizedSubject] || [
-                    `${subject} Concepts`,
-                    `${subject} Practice`,
-                    `${subject} Techniques`,
-                    `${subject} Analysis`,
-                    `${subject} Theory`,
-                    `${subject} Past Papers`
-                ];
-            };
-            
             const weeklySchedule = {};
-            let usedTopics = {};
-            subjects.forEach(subj => usedTopics[subj] = []);
+            
+            let sessionsPerDay;
+            if (daysUntilExam <= 7) {
+                sessionsPerDay = Math.min(6, Math.max(3, Math.floor(subjects.length * 1.2 * intensityMultipliers[studyIntensity])));
+            } else if (daysUntilExam <= 30) {
+                sessionsPerDay = Math.min(4, Math.max(2, Math.floor(subjects.length * 0.8 * intensityMultipliers[studyIntensity])));
+            } else {
+                sessionsPerDay = Math.min(3, Math.max(1, Math.floor(subjects.length * 0.6 * intensityMultipliers[studyIntensity])));
+            }
             
             days.forEach((day, dayIndex) => {
-                weeklySchedule[day] = [];
-                
-                // Vary sessions per day (weekend lighter, weekdays heavier)
-                let sessionsPerDay;
-                if (day === 'Saturday' || day === 'Sunday') {
-                    sessionsPerDay = Math.min(2, Math.max(1, Math.floor(subjects.length * 0.5)));
-                } else {
-                    sessionsPerDay = Math.min(3, Math.max(1, Math.floor(subjects.length * 0.8)));
-                }
-                
-                // Create balanced subject rotation
-                const daySubjects = [];
-                for (let i = 0; i < sessionsPerDay; i++) {
-                    daySubjects.push(subjects[(dayIndex * sessionsPerDay + i) % subjects.length]);
-                }
-                
-                daySubjects.forEach((subject, sessionIndex) => {
-                    const availableTopics = getTopicsForSubject(subject);
-                    
-                    // Avoid repeating topics too soon
-                    const availableUnusedTopics = availableTopics.filter(topic => 
-                        !usedTopics[subject].includes(topic)
-                    );
-                    
-                    const topicsToChooseFrom = availableUnusedTopics.length > 0 ? 
-                        availableUnusedTopics : availableTopics;
-                    
-                    const selectedTopic = topicsToChooseFrom[
-                        Math.floor(Math.random() * topicsToChooseFrom.length)
-                    ];
-                    
-                    // Track used topics
-                    usedTopics[subject].push(selectedTopic);
-                    if (usedTopics[subject].length > availableTopics.length * 0.7) {
-                        usedTopics[subject] = []; // Reset when most topics used
-                    }
-                    
-                    // Smart difficulty progression
-                    let difficulty;
-                    if (day === 'Saturday' || day === 'Sunday') {
-                        difficulty = Math.random() < 0.6 ? 'Easy' : 'Medium';
-                    } else {
-                        difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-                    }
-                    
-                    weeklySchedule[day].push({
-                        subject: subject,
-                        topic: selectedTopic,
-                        time: times[sessionIndex] || `${17 + sessionIndex}:00-${18 + sessionIndex}:00`,
-                        difficulty: difficulty
-                    });
-                });
+                weeklySchedule[day] = createDaySchedule(day, subjects, sessionsPerDay, currentGrade, daysUntilExam, gradeAdjustments);
             });
             
-            createRevisionScheduleFromData(scheduleId, subjects, weeklySchedule);
+            createRevisionScheduleFromData(scheduleId, subjects, weeklySchedule, scheduleData);
         }
 
-        // Create Revision Schedule from Data
-        function createRevisionScheduleFromData(scheduleId, subjects, scheduleData) {
+        function createDaySchedule(day, subjects, sessionsPerDay, currentGrade, daysUntilExam, gradeAdjustments) {
+            const isWeekend = day === 'Saturday' || day === 'Sunday';
+            const adjustedSessions = isWeekend ? Math.max(1, Math.floor(sessionsPerDay * 0.7)) : sessionsPerDay;
+            
+            const schedule = [];
+            const gradeProfile = gradeAdjustments[currentGrade] || gradeAdjustments['grade-5'];
+            
+            const topicsByUrgency = getTopicsByUrgency(subjects, daysUntilExam);
+            
+            for (let i = 0; i < adjustedSessions; i++) {
+                const subject = subjects[i % subjects.length];
+                const topics = topicsByUrgency[subject] || [`${subject} Review`];
+                const topic = topics[Math.floor(Math.random() * topics.length)];
+                
+                let difficulty;
+                const random = Math.random();
+                if (random < gradeProfile.easy) {
+                    difficulty = 'Easy';
+                } else if (random < gradeProfile.easy + gradeProfile.medium) {
+                    difficulty = 'Medium';
+                } else {
+                    difficulty = 'Hard';
+                }
+                
+                const baseHour = isWeekend ? 10 : 16;
+                const startHour = baseHour + i;
+                const time = `${startHour.toString().padStart(2, '0')}:00-${(startHour + 1).toString().padStart(2, '0')}:00`;
+                
+                schedule.push({
+                    subject: subject,
+                    topic: topic,
+                    time: time,
+                    difficulty: difficulty,
+                    urgency: daysUntilExam <= 14 ? 'High' : daysUntilExam <= 30 ? 'Medium' : 'Low'
+                });
+            }
+            
+            return schedule;
+        }
+
+        function getTopicsByUrgency(subjects, daysUntilExam) {
+            const urgentTopics = {
+                'Mathematics': ['Past Paper Practice', 'Exam Technique', 'Formula Review', 'Common Mistakes'],
+                'English Literature': ['Quote Memorization', 'Essay Structure', 'Key Themes', 'Character Analysis'],
+                'Biology': ['Key Diagrams', 'Practical Skills', 'Exam Questions', 'Core Concepts'],
+                'Chemistry': ['Equations Practice', 'Practical Methods', 'Calculations', 'Key Reactions'],
+                'Physics': ['Formula Application', 'Graph Analysis', 'Practical Skills', 'Problem Solving'],
+                'History': ['Timeline Review', 'Key Dates', 'Source Analysis', 'Essay Practice'],
+                'Geography': ['Case Studies', 'Map Skills', 'Key Terms', 'Diagram Practice'],
+                'Computer Science': ['Algorithm Practice', 'Code Debugging', 'Theory Review', 'Past Papers'],
+                'Art': ['Portfolio Review', 'Technique Practice', 'Artist Analysis', 'Final Pieces']
+            };
+            
+            const standardTopics = {
+                'Mathematics': ['Algebra', 'Geometry', 'Statistics', 'Trigonometry', 'Number'],
+                'English Literature': ['Context', 'Language Analysis', 'Structure', 'Writer\'s Methods'],
+                'Biology': ['Cell Biology', 'Genetics', 'Ecology', 'Human Biology'],
+                'Chemistry': ['Atomic Structure', 'Bonding', 'Rates', 'Organic Chemistry'],
+                'Physics': ['Forces', 'Energy', 'Waves', 'Electricity', 'Magnetism'],
+                'History': ['Medieval', 'Modern', 'Social History', 'Political Changes'],
+                'Geography': ['Physical Geography', 'Human Geography', 'Environmental Issues', 'Development'],
+                'Computer Science': ['Programming', 'Data Structures', 'Computer Systems', 'Algorithms'],
+                'Art': ['Drawing', 'Painting', 'Sculpture', 'Digital Art']
+            };
+            
+            const topics = {};
+            subjects.forEach(subject => {
+                if (daysUntilExam <= 14) {
+                    topics[subject] = urgentTopics[subject] || [`${subject} Exam Practice`];
+                } else {
+                    topics[subject] = standardTopics[subject] || [`${subject} Study`];
+                }
+            });
+            
+            return topics;
+        }
+
+        function createRevisionScheduleFromData(scheduleId, subjects, scheduleData, additionalInfo = {}) {
             const schedule = {
                 id: scheduleId,
                 name: subjects.join(', '),
                 subjects: subjects,
                 weeklySchedule: scheduleData,
                 created: new Date().toISOString(),
-                completedTasks: {}
+                completedTasks: {},
+                scheduleInfo: additionalInfo
             };
             
             appState.schedules[scheduleId] = schedule;
             appState.activeSchedule = scheduleId;
-            appState.currentTabIndex = 0; // Reset to first tab
+            appState.currentTabIndex = 0;
             saveAppState();
             updateDashboard();
         }
 
-        // Fixed Dashboard Management with proper initialization
-function updateDashboard() {
-    updateScheduleTabs();
-    updateScheduleContent();
-    
-    // Ensure proper centering after DOM is fully rendered
-    setTimeout(() => {
-        updateCenteredCarousel();
-    }, 100);
-    
-    // Double-check centering after styles are applied
-    setTimeout(() => {
-        updateCenteredCarousel();
-    }, 300);
-}
-
-// Enhanced initialization for proper first load
-document.addEventListener('DOMContentLoaded', function() {
-    loadAppState();
-    
-    // Initialize with proper timing
-    setTimeout(() => {
-        updateDashboard();
-        updateProgress();
-    }, 150);
-    
-    // Ensure centering after everything loads
-    window.addEventListener('load', function() {
-        setTimeout(updateCenteredCarousel, 200);
-    });
-});
+        // Dashboard Management
+        function updateDashboard() {
+            updateScheduleTabs();
+            updateScheduleContent();
+            
+            setTimeout(() => {
+                updateCenteredCarousel();
+            }, 100);
+            
+            setTimeout(() => {
+                updateCenteredCarousel();
+            }, 300);
+        }
 
         function updateScheduleTabs() {
-    const carousel = document.getElementById('scheduleTabsCarousel');
+            const carousel = document.getElementById('scheduleTabsCarousel');
+            
+            if (Object.keys(appState.schedules).length === 0) {
+                carousel.innerHTML = '';
+                return;
+            }
+            
+            const allTabs = [];
+            const scheduleEntries = Object.entries(appState.schedules);
+            
+            scheduleEntries.forEach(([scheduleId, schedule], scheduleIndex) => {
+                const colorIndex = (scheduleIndex % 4) + 1;
+                
+                allTabs.push({
+                    type: 'schedule',
+                    name: schedule.name.length > 25 ? schedule.name.substring(0, 25) + '...' : schedule.name,
+                    fullName: schedule.name,
+                    scheduleId: scheduleId,
+                    index: scheduleIndex,
+                    colorClass: `color-${colorIndex}`,
+                    isActive: scheduleId === appState.activeSchedule
+                });
+            });
+            
+            let html = `
+                <button class="carousel-nav prev" onclick="previousScheduleSmooth()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <polyline points="15,18 9,12 15,6"/>
+                    </svg>
+                </button>
+                <div class="tab-viewport">
+                    <div class="tab-container" id="tabContainer">
+            `;
+            
+            allTabs.forEach((tab, index) => {
+                const isActive = tab.isActive;
+                
+                html += `
+                    <div class="tab ${tab.colorClass} ${isActive ? 'active' : ''}" 
+                         onclick="selectScheduleDirectly('${tab.scheduleId}', ${index})" 
+                         data-tab-type="${tab.type}" 
+                         data-tab-name="${tab.fullName}"
+                         data-schedule-id="${tab.scheduleId}"
+                         data-tab-index="${index}"
+                         title="${tab.fullName}"
+                         onmouseenter="showTabMenu('${tab.scheduleId}')"
+                         onmouseleave="hideTabMenu('${tab.scheduleId}')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        ${tab.name}
+                        <div class="tab-menu" id="tabMenu_${tab.scheduleId}" onclick="event.stopPropagation();">
+                            <div class="tab-menu-dots" onclick="toggleTabDropdown('${tab.scheduleId}', event)">
+                                <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </div>
+                            <div class="tab-dropdown" id="tabDropdown_${tab.scheduleId}">
+                                <div class="tab-dropdown-item" onclick="deleteScheduleWithConfirmation('${tab.scheduleId}')">
+                                    <svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                                        <polyline points="3,6 5,6 21,6"/>
+                                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                                    </svg>
+                                    Delete Schedule
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                <button class="carousel-nav next" onclick="nextScheduleSmooth()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <polyline points="9,18 15,12 9,6"/>
+                    </svg>
+                </button>
+            `;
+            
+            carousel.innerHTML = html;
+            updateCenteredCarousel();
+            
+            setTimeout(initializeScrollWheelNavigation, 100);
+        }
+
+        // Tab Menu Management
+        function showTabMenu(scheduleId) {
+            const menu = document.getElementById(`tabMenu_${scheduleId}`);
+            if (menu) {
+                menu.style.opacity = '1';
+            }
+        }
+
+        function hideTabMenu(scheduleId) {
+            const menu = document.getElementById(`tabMenu_${scheduleId}`);
+            const dropdown = document.getElementById(`tabDropdown_${scheduleId}`);
+            if (menu && !dropdown?.classList.contains('show')) {
+                menu.style.opacity = '0';
+            }
+        }
+
+        // Fixed tab dropdown with better positioning
+function toggleTabDropdown(scheduleId, event) {
+    event.stopPropagation();
     
-    if (Object.keys(appState.schedules).length === 0) {
-        carousel.innerHTML = '';
-        return;
-    }
-    
-    // Create tabs for ALL schedules
-    const allTabs = [];
-    const scheduleEntries = Object.entries(appState.schedules);
-    
-    scheduleEntries.forEach(([scheduleId, schedule], scheduleIndex) => {
-        // Ensure color assignment cycles through 1-4
-        const colorIndex = (scheduleIndex % 4) + 1;
-        
-        allTabs.push({
-            type: 'schedule',
-            name: schedule.name.length > 25 ? schedule.name.substring(0, 25) + '...' : schedule.name,
-            fullName: schedule.name,
-            scheduleId: scheduleId,
-            index: scheduleIndex,
-            colorClass: `color-${colorIndex}`, // Ensure this always gets a value 1-4
-            isActive: scheduleId === appState.activeSchedule
-        });
+    // Close all other dropdowns
+    document.querySelectorAll('.tab-dropdown-overlay').forEach(overlay => {
+        overlay.remove();
     });
     
-    // Create centered carousel structure
-    let html = `
-        <button class="carousel-nav prev" onclick="previousScheduleSmooth()">
-            <svg class="icon" viewBox="0 0 24 24">
-                <polyline points="15,18 9,12 15,6"/>
-            </svg>
-        </button>
-        <div class="tab-viewport">
-            <div class="tab-container" id="tabContainer">
-    `;
-    
-    allTabs.forEach((tab, index) => {
-        const isActive = tab.isActive;
-        
-        html += `
-            <div class="tab ${tab.colorClass} ${isActive ? 'active' : ''}" 
-                 onclick="selectScheduleDirectly('${tab.scheduleId}', ${index})" 
-                 data-tab-type="${tab.type}" 
-                 data-tab-name="${tab.fullName}"
-                 data-schedule-id="${tab.scheduleId}"
-                 data-tab-index="${index}"
-                 title="${tab.fullName}">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    // Create and position dropdown overlay
+    const dropdownOverlay = document.createElement('div');
+    dropdownOverlay.className = 'tab-dropdown-overlay';
+    dropdownOverlay.innerHTML = `
+        <div class="tab-dropdown-content">
+            <div class="tab-dropdown-item" onclick="deleteScheduleWithConfirmation('${scheduleId}')">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
                 </svg>
-                ${tab.name}
-            </div>
-        `;
-    });
-    
-    html += `
+                Delete Schedule
             </div>
         </div>
-        <button class="carousel-nav next" onclick="nextScheduleSmooth()">
-            <svg class="icon" viewBox="0 0 24 24">
-                <polyline points="9,18 15,12 9,6"/>
-            </svg>
-        </button>
     `;
     
-    carousel.innerHTML = html;
-    updateCenteredCarousel();
+    // Get the tab element and its position
+    const tabElement = event.target.closest('.tab');
+    const rect = tabElement.getBoundingClientRect();
     
-    // Initialize scroll wheel after tabs are created
-    setTimeout(initializeScrollWheelNavigation, 100);
-}
-
-// Schedule selection with animation
-function selectScheduleWithAnimation(scheduleId, index) {
-    if (scheduleId === appState.activeSchedule) return;
+    // Position dropdown below and slightly to the left of the tab
+    dropdownOverlay.style.position = 'fixed';
+    dropdownOverlay.style.left = `${rect.left + 50}px`;
+    dropdownOverlay.style.top = `${rect.bottom + 8}px`;
+    dropdownOverlay.style.zIndex = '10000';
     
-    // Add transition class to content
-    const contentContainer = document.querySelector('.schedule-grid-container');
-    if (contentContainer) {
-        contentContainer.classList.add('transitioning');
+    // Adjust position if it would go off screen
+    const dropdownWidth = 180;
+    const viewportWidth = window.innerWidth;
+    
+    if (rect.left + 50 + dropdownWidth > viewportWidth) {
+        dropdownOverlay.style.left = `${rect.right - dropdownWidth}px`;
     }
     
-    // Update active states
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    const newActiveTab = document.querySelector(`[data-schedule-id="${scheduleId}"]`);
-    if (newActiveTab) {
-        newActiveTab.classList.add('active');
-    }
+    document.body.appendChild(dropdownOverlay);
     
-    // Update state and content
+    // Show with animation
     setTimeout(() => {
-        appState.activeSchedule = scheduleId;
-        appState.currentTabIndex = index;
-        saveAppState();
-        updateScheduleContent();
-        updateTabCarousel();
-        
-        // Remove transition class
-        if (contentContainer) {
-            contentContainer.classList.remove('transitioning');
-        }
-    }, 150);
-}
-
-// Scroll wheel navigation support
-function initializeScrollWheelNavigation() {
-    const carousel = document.getElementById('scheduleTabsCarousel');
-    if (!carousel) return;
+        dropdownOverlay.classList.add('show');
+    }, 10);
     
-    let isScrolling = false;
-    
-    carousel.addEventListener('wheel', function(e) {
-        e.preventDefault();
-        
-        // Throttle scroll events
-        if (isScrolling) return;
-        isScrolling = true;
-        
-        const delta = e.deltaY;
-        
-        // Scroll down = next, scroll up = previous
-        if (delta > 0) {
-            nextScheduleSmooth();
-        } else {
-            previousScheduleSmooth();
-        }
-        
-        // Reset throttle after animation
-        setTimeout(() => {
-            isScrolling = false;
-        }, 800);
-    }, { passive: false });
-}
-
-// Fixed smooth navigation without glitches
-function previousScheduleSmooth() {
-    if (isNavigating) return;
-    isNavigating = true;
-    
-    const schedules = Object.keys(appState.schedules);
-    if (schedules.length <= 1) {
-        isNavigating = false;
-        return;
-    }
-    
-    const currentIndex = schedules.indexOf(appState.activeSchedule);
-    const newIndex = currentIndex === 0 ? schedules.length - 1 : currentIndex - 1;
-    const newScheduleId = schedules[newIndex];
-    
-    selectScheduleDirectly(newScheduleId, newIndex);
-}
-
-function nextScheduleSmooth() {
-    if (isNavigating) return;
-    isNavigating = true;
-    
-    const schedules = Object.keys(appState.schedules);
-    if (schedules.length <= 1) {
-        isNavigating = false;
-        return;
-    }
-    
-    const currentIndex = schedules.indexOf(appState.activeSchedule);
-    const newIndex = currentIndex === schedules.length - 1 ? 0 : currentIndex + 1;
-    const newScheduleId = schedules[newIndex];
-    
-    selectScheduleDirectly(newScheduleId, newIndex);
-}
-
-function selectScheduleDirectly(scheduleId, index) {
-    if (scheduleId === appState.activeSchedule) {
-        isNavigating = false;
-        return;
-    }
-    
-    // Start content transition
-    const contentContainer = document.querySelector('.schedule-grid-container');
-    if (contentContainer) {
-        contentContainer.classList.add('transitioning');
-    }
-    
-    // Update state
-    appState.activeSchedule = scheduleId;
-    appState.currentTabIndex = index;
-    saveAppState();
-    
-    // Update visual states immediately
-    updateTabStates();
-    updateCenteredCarousel();
-    
-    // Update content after carousel animation
-    setTimeout(() => {
-        updateScheduleContent();
-        
-        setTimeout(() => {
-            if (contentContainer) {
-                contentContainer.classList.remove('transitioning');
-            }
-            isNavigating = false;
-        }, 100);
-    }, 400);
-}
-
-// Infinite smooth transition
-function selectScheduleWithInfiniteTransition(scheduleId, index, direction = 'next') {
-    if (scheduleId === appState.activeSchedule) {
-        isNavigating = false;
-        return;
-    }
-    
-    // Start content transition
-    const contentContainer = document.querySelector('.schedule-grid-container');
-    if (contentContainer) {
-        contentContainer.classList.add('transitioning');
-    }
-    
-    // Update state
-    appState.activeSchedule = scheduleId;
-    appState.currentTabIndex = index;
-    saveAppState();
-    
-    // Handle infinite rotation visual effect
-    const container = document.getElementById('tabContainer');
-    const tabs = container.querySelectorAll('.tab');
-    
-    // Update visual states immediately
-    updateTabStates();
-    
-    // Apply centering with seamless infinite rotation
-    const schedules = Object.keys(appState.schedules);
-    const tabWidth = 320;
-    const currentOffset = index * tabWidth;
-    
-    // For infinite rotation, handle wrapping
-    let targetOffset = currentOffset;
-    
-    if (direction === 'next' && index === 0) {
-        // Going from last to first - animate forward then snap back
-        const tempOffset = schedules.length * tabWidth;
-        container.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        container.style.transform = `translateX(-${tempOffset - (tabWidth * 0.5)}px)`;
-        
-        setTimeout(() => {
-            container.style.transition = 'none';
-            container.style.transform = `translateX(-${targetOffset - (tabWidth * 0.5)}px)`;
+    // Close on outside click
+    const closeHandler = (e) => {
+        if (!dropdownOverlay.contains(e.target)) {
+            dropdownOverlay.classList.remove('show');
             setTimeout(() => {
-                container.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            }, 50);
-        }, 600);
-        
-    } else if (direction === 'prev' && index === schedules.length - 1) {
-        // Going from first to last - animate backward then snap forward
-        const tempOffset = -tabWidth;
-        container.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        container.style.transform = `translateX(-${tempOffset - (tabWidth * 0.5)}px)`;
-        
-        setTimeout(() => {
-            container.style.transition = 'none';
-            container.style.transform = `translateX(-${targetOffset - (tabWidth * 0.5)}px)`;
-            setTimeout(() => {
-                container.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            }, 50);
-        }, 600);
-        
-    } else {
-        // Normal transition
-        updateCenteredCarousel();
-    }
+                if (dropdownOverlay.parentNode) {
+                    dropdownOverlay.remove();
+                }
+            }, 300);
+            document.removeEventListener('click', closeHandler);
+        }
+    };
     
-    // Update content after carousel animation
     setTimeout(() => {
-        updateScheduleContent();
-        
-        setTimeout(() => {
-            if (contentContainer) {
-                contentContainer.classList.remove('transitioning');
-            }
-            isNavigating = false;
-        }, 100);
-    }, 300);
+        document.addEventListener('click', closeHandler);
+    }, 100);
 }
 
-// Update tab visual states
-function updateTabStates() {
-    const tabs = document.querySelectorAll('.tab');
-    const schedules = Object.keys(appState.schedules);
-    const currentIndex = schedules.indexOf(appState.activeSchedule);
-    
-    tabs.forEach((tab, index) => {
-        // Remove all state classes
-        tab.classList.remove('active', 'prev-tab', 'next-tab');
-        
-        // Add appropriate class based on position
-        if (index === currentIndex) {
-            tab.classList.add('active');
-        } else if (index === currentIndex - 1 || (currentIndex === 0 && index === tabs.length - 1)) {
-            tab.classList.add('prev-tab');
-        } else if (index === currentIndex + 1 || (currentIndex === tabs.length - 1 && index === 0)) {
-            tab.classList.add('next-tab');
-        }
+        // Fixed delete function with proper confirmation
+function deleteScheduleWithConfirmation(scheduleId) {
+    // Close dropdown first
+    document.querySelectorAll('.tab-dropdown-overlay').forEach(overlay => {
+        overlay.remove();
     });
+    
+    const schedule = appState.schedules[scheduleId];
+    if (!schedule) return;
+    
+    const confirmMessage = `Are you sure you want to delete "${schedule.name}"? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+        deleteScheduleWithAnimation(scheduleId);
+    }
 }
 
-// Simplified centered carousel positioning
-function updateCenteredCarousel() {
-    const container = document.getElementById('tabContainer');
-    const viewport = container?.parentElement;
-    if (!container || !viewport) return;
+// Enhanced delete function
+function deleteScheduleWithAnimation(scheduleId) {
+    const tabElement = document.querySelector(`[data-schedule-id="${scheduleId}"]`);
     
-    const tabs = container.querySelectorAll('.tab');
-    const schedules = Object.keys(appState.schedules);
-    const currentIndex = schedules.indexOf(appState.activeSchedule);
+    if (tabElement) {
+        tabElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        tabElement.style.transform = 'scale(0.8) translateY(-20px)';
+        tabElement.style.opacity = '0';
+    }
     
-    if (tabs.length === 0 || currentIndex === -1) return;
-    
-    // Simple centering calculation
-    const tabWidth = 320; // tab width + gap
-    const viewportCenter = viewport.offsetWidth / 2;
-    const activeTabPosition = (currentIndex * tabWidth) + (280 / 2); // 280 = actual tab width
-    const offset = activeTabPosition - viewportCenter;
-    
-    container.style.transform = `translateX(-${Math.max(0, offset)}px)`;
-}
-
-// Replace the old updateTabCarousel function with this
-function updateTabCarousel() {
-    updateCenteredCarousel();
-}
-
-// Add smooth entrance animation for new tabs - PUT IT HERE
-function animateTabEntrance(tabElement) {
-    tabElement.classList.add('entering');
     setTimeout(() => {
-        tabElement.classList.remove('entering');
+        delete appState.schedules[scheduleId];
+        
+        const remainingSchedules = Object.keys(appState.schedules);
+        if (appState.activeSchedule === scheduleId) {
+            appState.activeSchedule = remainingSchedules.length > 0 ? remainingSchedules[0] : null;
+            appState.currentTabIndex = 0;
+        }
+        
+        saveAppState();
+        updateDashboard();
+        updateProgress();
+        
+        showAlert('Schedule deleted successfully', 'success');
     }, 500);
 }
-
-// Legacy function compatibility
-function selectTab(index) {
-    selectTabWithAnimation(index);
-}
-
-        // Smooth tab selection with animation
-function selectTabWithAnimation(index) {
-    if (index === appState.currentTabIndex) return;
-    
-    // Add transition class to content
-    const contentContainer = document.querySelector('.schedule-grid-container');
-    if (contentContainer) {
-        contentContainer.classList.add('transitioning');
-    }
-    
-    // Update active states with animation
-    const currentActiveTab = document.querySelector('.tab.active');
-    const newActiveTab = document.querySelector(`[data-tab-index="${index}"]`);
-    
-    if (currentActiveTab) {
-        currentActiveTab.classList.remove('active');
-    }
-    
-    if (newActiveTab) {
-        newActiveTab.classList.add('active');
-    }
-    
-    // Update state and content after a brief delay for smooth transition
-    setTimeout(() => {
-        appState.currentTabIndex = index;
-        saveAppState();
-        updateScheduleContent();
-        updateTabCarousel();
-        
-        // Remove transition class
-        if (contentContainer) {
-            contentContainer.classList.remove('transitioning');
+        // Schedule Navigation
+        function initializeScrollWheelNavigation() {
+            const carousel = document.getElementById('scheduleTabsCarousel');
+            if (!carousel) return;
+            
+            let isScrolling = false;
+            
+            carousel.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                
+                if (isScrolling) return;
+                isScrolling = true;
+                
+                const delta = e.deltaY;
+                
+                if (delta > 0) {
+                    nextScheduleSmooth();
+                } else {
+                    previousScheduleSmooth();
+                }
+                
+                setTimeout(() => {
+                    isScrolling = false;
+                }, 800);
+            }, { passive: false });
         }
-    }, 150);
-}
 
-// Enhanced previous tab with smooth animation
-function previousTab() {
-    if (appState.currentTabIndex > 0) {
-        selectTabWithAnimation(appState.currentTabIndex - 1);
-    }
-}
+        function previousScheduleSmooth() {
+            if (isNavigating) return;
+            isNavigating = true;
+            
+            const schedules = Object.keys(appState.schedules);
+            if (schedules.length <= 1) {
+                isNavigating = false;
+                return;
+            }
+            
+            const currentIndex = schedules.indexOf(appState.activeSchedule);
+            const newIndex = currentIndex === 0 ? schedules.length - 1 : currentIndex - 1;
+            const newScheduleId = schedules[newIndex];
+            
+            selectScheduleDirectly(newScheduleId, newIndex);
+        }
 
-// Enhanced next tab with smooth animation
-function nextTab() {
-    const container = document.getElementById('tabContainer');
-    const tabs = container.querySelectorAll('.tab');
-    const maxIndex = tabs.length - 1;
-    
-    if (appState.currentTabIndex < maxIndex) {
-        selectTabWithAnimation(appState.currentTabIndex + 1);
-    }
-}
+        function nextScheduleSmooth() {
+            if (isNavigating) return;
+            isNavigating = true;
+            
+            const schedules = Object.keys(appState.schedules);
+            if (schedules.length <= 1) {
+                isNavigating = false;
+                return;
+            }
+            
+            const currentIndex = schedules.indexOf(appState.activeSchedule);
+            const newIndex = currentIndex === schedules.length - 1 ? 0 : currentIndex + 1;
+            const newScheduleId = schedules[newIndex];
+            
+            selectScheduleDirectly(newScheduleId, newIndex);
+        }
 
-        function updateScheduleContent() {
+        function selectScheduleDirectly(scheduleId, index) {
+            if (scheduleId === appState.activeSchedule) {
+                isNavigating = false;
+                return;
+            }
+            
+            const contentContainer = document.querySelector('.schedule-grid-container');
+            if (contentContainer) {
+                contentContainer.classList.add('transitioning');
+            }
+            
+            appState.activeSchedule = scheduleId;
+            appState.currentTabIndex = index;
+            saveAppState();
+            
+            updateTabStates();
+            updateCenteredCarousel();
+            
+            setTimeout(() => {
+                updateScheduleContent();
+                
+                setTimeout(() => {
+                    if (contentContainer) {
+                        contentContainer.classList.remove('transitioning');
+                    }
+                    isNavigating = false;
+                }, 100);
+            }, 400);
+        }
+
+        function updateTabStates() {
+            const tabs = document.querySelectorAll('.tab');
+            const schedules = Object.keys(appState.schedules);
+            const currentIndex = schedules.indexOf(appState.activeSchedule);
+            
+            tabs.forEach((tab, index) => {
+                tab.classList.remove('active', 'prev-tab', 'next-tab');
+                
+                if (index === currentIndex) {
+                    tab.classList.add('active');
+                } else if (index === currentIndex - 1 || (currentIndex === 0 && index === tabs.length - 1)) {
+                    tab.classList.add('prev-tab');
+                } else if (index === currentIndex + 1 || (currentIndex === tabs.length - 1 && index === 0)) {
+                    tab.classList.add('next-tab');
+                }
+            });
+        }
+
+        function updateCenteredCarousel() {
+            const container = document.getElementById('tabContainer');
+            const viewport = container?.parentElement;
+            if (!container || !viewport) return;
+            
+            const tabs = container.querySelectorAll('.tab');
+            const schedules = Object.keys(appState.schedules);
+            const currentIndex = schedules.indexOf(appState.activeSchedule);
+            
+            if (tabs.length === 0 || currentIndex === -1) return;
+            
+            const tabWidth = 320;
+            const viewportCenter = viewport.offsetWidth / 2;
+            const activeTabPosition = (currentIndex * tabWidth) + (280 / 2);
+            const offset = activeTabPosition - viewportCenter;
+            
+            container.style.transform = `translateX(-${Math.max(0, offset)}px)`;
+        }
+
+        // Enhanced updateScheduleContent with proper desktop/mobile detection
+function updateScheduleContent() {
     const content = document.getElementById('scheduleContent');
     
     if (!appState.activeSchedule || !appState.schedules[appState.activeSchedule]) {
@@ -3351,15 +4414,12 @@ function nextTab() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
-    // Check if there are completed tasks
     const hasCompletedTasks = Object.values(schedule.completedTasks).some(completed => completed);
     
-    // Set CSS variable for dynamic grid sizing
     document.documentElement.style.setProperty('--subject-count', schedule.subjects.length);
     
     let html = '';
     
-    // Add completed tab if there are completed tasks
     if (hasCompletedTasks) {
         html += `
             <div class="completed-tab-container">
@@ -3374,64 +4434,84 @@ function nextTab() {
         `;
     }
     
-    // Create grid layout
-    html += `
-        <div class="schedule-grid-container" id="scheduleGrid">
-            <div class="schedule-grid">
-                <!-- Empty corner cell -->
-                <div class="grid-header"></div>
-    `;
+    // Properly detect mobile with window width check
+    const isMobile = window.innerWidth <= 768;
     
-    // Add day headers
-    dayOrder.forEach(day => {
-        const isToday = days[currentDay] === day;
-        html += `<div class="grid-header ${isToday ? 'today' : ''}">${day}</div>`;
-    });
-    
-    // Add subject rows
-    schedule.subjects.forEach(subject => {
-        // Subject label
-        html += `<div class="subject-label">${subject}</div>`;
+    if (isMobile) {
+        // Mobile vertical layout
+        html += `<div class="schedule-grid-container mobile-layout" id="scheduleGrid">`;
         
-        // Add cells for each day
         dayOrder.forEach(day => {
             const isToday = days[currentDay] === day;
             const dayTasks = schedule.weeklySchedule[day] || [];
             
-            // Filter tasks for this subject
-            let filteredTasks = dayTasks.filter(task => task.subject === subject);
+            if (dayTasks.length === 0) return;
             
-            html += `<div class="schedule-cell ${isToday ? 'today' : ''}" data-subject="${subject}" data-day="${day}">`;
+            html += `
+                <div class="mobile-day-section">
+                    <div class="mobile-day-header ${isToday ? 'today' : ''}">${day}</div>
+            `;
             
-            filteredTasks.forEach((task, taskIndex) => {
-                // Find the original task index for proper ID generation
-                const originalIndex = dayTasks.findIndex(t => 
-                    t.subject === task.subject && 
-                    t.topic === task.topic && 
-                    t.time === task.time
-                );
-                const taskId = `${schedule.id}_${day}_${originalIndex}`;
+            // Group tasks by subject
+            const tasksBySubject = {};
+            dayTasks.forEach((task, taskIndex) => {
+                if (!tasksBySubject[task.subject]) {
+                    tasksBySubject[task.subject] = [];
+                }
+                const taskId = `${schedule.id}_${day}_${taskIndex}`;
                 const isCompleted = schedule.completedTasks[taskId] || false;
                 
+                tasksBySubject[task.subject].push({
+                    ...task,
+                    taskId,
+                    isCompleted,
+                    originalIndex: taskIndex
+                });
+            });
+            
+            Object.entries(tasksBySubject).forEach(([subject, tasks]) => {
                 html += `
-                    <div class="revision-card-mini ${isCompleted ? 'completed' : ''}" 
-                         data-task-id="${taskId}" 
-                         data-completed="${isCompleted}"
-                         onclick="event.stopPropagation();">
-                        <div class="revision-card-mini-content">
-                            <div class="revision-card-mini-title">${task.subject}</div>
-                            <div class="revision-card-mini-topic">${task.topic}</div>
-                            <div class="revision-card-mini-meta">
-                                <span>${task.time}</span>
-                                <span>${task.difficulty}</span>
+                    <div class="mobile-subject-group">
+                        <div class="mobile-subject-title">${subject}</div>
+                        <div class="mobile-tasks-container">
+                `;
+                
+                tasks.forEach(task => {
+                    html += `
+                        <div class="revision-card-mini swipeable-task ${task.isCompleted ? 'completed' : ''}" 
+                             data-task-id="${task.taskId}" 
+                             data-completed="${task.isCompleted}"
+                             ontouchstart="handleTaskTouchStart(event)"
+                             ontouchmove="handleTaskTouchMove(event)"
+                             ontouchend="handleTaskTouchEnd(event)">
+                            <div class="task-content">
+                                <div class="revision-card-mini-content">
+                                    <div class="revision-card-mini-title">${task.subject}</div>
+                                    <div class="revision-card-mini-topic">${task.topic}</div>
+                                    <div class="revision-card-mini-meta">
+                                        <span>${task.time}</span>
+                                        <span>${task.difficulty}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-action-complete">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                                Complete
+                            </div>
+                            <div class="task-action-delete">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6"/>
+                                </svg>
+                                Delete
                             </div>
                         </div>
-                        <div class="revision-card-mini-menu" onclick="event.stopPropagation(); toggleDropdown(event, '${taskId}', ${isCompleted})">
-                            <svg class="icon" viewBox="0 0 24 24" style="width: 10px; height: 10px;">
-                                <circle cx="12" cy="12" r="1"/>
-                                <circle cx="12" cy="5" r="1"/>
-                                <circle cx="12" cy="19" r="1"/>
-                            </svg>
+                    `;
+                });
+                
+                html += `
                         </div>
                     </div>
                 `;
@@ -3439,14 +4519,76 @@ function nextTab() {
             
             html += `</div>`;
         });
-    });
-    
-    html += `
+        
+        html += `</div>`;
+    } else {
+        // Desktop grid layout (ORIGINAL DESIGN)
+        html += `
+            <div class="schedule-grid-container desktop-layout" id="scheduleGrid">
+                <div class="schedule-grid">
+                    <div class="grid-header"></div>
+        `;
+        
+        dayOrder.forEach(day => {
+            const isToday = days[currentDay] === day;
+            html += `<div class="grid-header ${isToday ? 'today' : ''}">${day}</div>`;
+        });
+        
+        schedule.subjects.forEach(subject => {
+            html += `<div class="subject-label">${subject}</div>`;
+            
+            dayOrder.forEach(day => {
+                const isToday = days[currentDay] === day;
+                const dayTasks = schedule.weeklySchedule[day] || [];
+                
+                let filteredTasks = dayTasks.filter(task => task.subject === subject);
+                
+                html += `<div class="schedule-cell ${isToday ? 'today' : ''}" data-subject="${subject}" data-day="${day}">`;
+                
+                filteredTasks.forEach((task, taskIndex) => {
+                    const originalIndex = dayTasks.findIndex(t => 
+                        t.subject === task.subject && 
+                        t.topic === task.topic && 
+                        t.time === task.time
+                    );
+                    const taskId = `${schedule.id}_${day}_${originalIndex}`;
+                    const isCompleted = schedule.completedTasks[taskId] || false;
+                    
+                    html += `
+                        <div class="revision-card-mini ${isCompleted ? 'completed' : ''}" 
+                             data-task-id="${taskId}" 
+                             data-completed="${isCompleted}"
+                             onclick="event.stopPropagation();">
+                            <div class="revision-card-mini-content">
+                                <div class="revision-card-mini-title">${task.subject}</div>
+                                <div class="revision-card-mini-topic">${task.topic}</div>
+                                <div class="revision-card-mini-meta">
+                                    <span>${task.time}</span>
+                                    <span>${task.difficulty}</span>
+                                </div>
+                            </div>
+                            <div class="revision-card-mini-menu" onclick="event.stopPropagation(); toggleDropdown(event, '${taskId}', ${isCompleted})">
+                                <svg class="icon" viewBox="0 0 24 24" style="width: 10px; height: 10px;">
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+        });
+        
+        html += `
+                </div>
             </div>
-        </div>
-    `;
-
-    // Add past papers section if relevant papers exist
+        `;
+    }
+    
+    // Add past papers section (existing code)
     const relevantPapers = getRelevantPastPapers();
     if (Object.keys(relevantPapers).length > 0) {
         html += `
@@ -3489,172 +4631,118 @@ function nextTab() {
     
     content.innerHTML = html;
     
-    // Apply filtering if showing completed only
     if (appState.showingCompleted) {
         filterCompletedTasks(false);
     }
 }
 
-// Function to handle opening past papers
-function openPastPaper(paperPath) {
-    // Try to open the file
-    try {
-        // For local files, create a link element
-        if (paperPath.startsWith('http://') || paperPath.startsWith('https://')) {
-            window.open(paperPath, '_blank');
-        } else {
-            // For local file paths, attempt to open
-            const link = document.createElement('a');
-            link.href = paperPath;
-            link.target = '_blank';
-            link.click();
-        }
-        showAlert('Opening past paper...', 'success');
-    } catch (error) {
-        showAlert('Could not open past paper. Please check the file path.', 'error');
-        console.error('Error opening past paper:', error);
-    }
-}
-
-// Toggle completed view function
-function toggleCompletedView() {
-    appState.showingCompleted = !appState.showingCompleted;
-    saveAppState();
-    
-    const completedTab = document.getElementById('completedTab');
-    if (completedTab) {
-        completedTab.innerHTML = `
-            <svg class="icon" viewBox="0 0 24 24">
-                <polyline points="20,6 9,17 4,12"/>
-            </svg>
-            ${appState.showingCompleted ? 'Show All Tasks' : 'Show Completed Only'}
-        `;
-        
-        completedTab.classList.toggle('active', appState.showingCompleted);
-    }
-    
-    filterCompletedTasks(true);
-}
-
-// Smooth filtering function
-function filterCompletedTasks(animate = true) {
-    const cards = document.querySelectorAll('.revision-card-mini');
-    
-    cards.forEach((card, index) => {
-        const isCompleted = card.dataset.completed === 'true';
-        const shouldShow = appState.showingCompleted ? isCompleted : true;
-        
-        if (animate) {
-            // Add staggered animation delay
-            setTimeout(() => {
-                if (shouldShow) {
-                    card.classList.remove('filtering-out');
-                    card.classList.add('filtering-in');
-                    card.style.display = 'flex';
+        function openPastPaper(paperPath) {
+            try {
+                if (paperPath.startsWith('http://') || paperPath.startsWith('https://')) {
+                    window.open(paperPath, '_blank');
                 } else {
-                    card.classList.remove('filtering-in');
-                    card.classList.add('filtering-out');
-                    setTimeout(() => {
-                        card.style.display = 'none';
-                    }, 400);
+                    const link = document.createElement('a');
+                    link.href = paperPath;
+                    link.target = '_blank';
+                    link.click();
                 }
-            }, index * 50);
-        } else {
-            // Instant filtering
-            if (shouldShow) {
-                card.style.display = 'flex';
-                card.classList.add('filtering-in');
-            } else {
-                card.style.display = 'none';
+                showAlert('Opening past paper...', 'success');
+            } catch (error) {
+                showAlert('Could not open past paper. Please check the file path.', 'error');
+                console.error('Error opening past paper:', error);
             }
         }
-    });
-}
 
-// Enhanced task completion with completed tab management
-function toggleTaskComplete(taskId) {
-    const schedule = appState.schedules[appState.activeSchedule];
-    if (!schedule) return;
-    
-    const wasCompleted = schedule.completedTasks[taskId];
-    schedule.completedTasks[taskId] = !wasCompleted;
-    
-    // Check if this is the first completed task
-    const hasCompletedTasks = Object.values(schedule.completedTasks).some(completed => completed);
-    const hadCompletedTasks = document.getElementById('completedTab') !== null;
-    
-    saveAppState();
-    
-    // If this is the first completed task, regenerate content to show completed tab
-    if (hasCompletedTasks && !hadCompletedTasks) {
-        updateScheduleContent();
-    } else if (!hasCompletedTasks && hadCompletedTasks) {
-        // If no more completed tasks, remove completed view
-        appState.showingCompleted = false;
-        updateScheduleContent();
-    } else {
-        // Just update the specific card
-        const card = document.querySelector(`[data-task-id="${taskId}"]`);
-        if (card) {
-            card.classList.toggle('completed', !wasCompleted);
-            card.dataset.completed = !wasCompleted;
-            
-            // If in completed view, apply filtering
-            if (appState.showingCompleted) {
-                filterCompletedTasks(true);
-            }
-        }
-    }
-    
-    closeAllDropdowns();
-    updateProgress();
-}
-
-        // Schedule Management Functions
-        function switchToSchedule(scheduleId) {
-            appState.activeSchedule = scheduleId;
-            appState.currentTabIndex = 0; // Reset to first tab
+        function toggleCompletedView() {
+            appState.showingCompleted = !appState.showingCompleted;
             saveAppState();
-            updateDashboard();
-            updateProgress();
-        }
-
-        function deleteSchedule(scheduleId) {
-            if (confirm('Are you sure you want to delete this schedule?')) {
-                delete appState.schedules[scheduleId];
+            
+            const completedTab = document.getElementById('completedTab');
+            if (completedTab) {
+                completedTab.innerHTML = `
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    ${appState.showingCompleted ? 'Show All Tasks' : 'Show Completed Only'}
+                `;
                 
-                // If we deleted the active schedule, switch to another one or none
-                if (appState.activeSchedule === scheduleId) {
-                    const remainingSchedules = Object.keys(appState.schedules);
-                    appState.activeSchedule = remainingSchedules.length > 0 ? remainingSchedules[0] : null;
-                    appState.currentTabIndex = 0;
-                }
-                
-                saveAppState();
-                updateDashboard();
-                updateProgress();
+                completedTab.classList.toggle('active', appState.showingCompleted);
             }
+            
+            filterCompletedTasks(true);
         }
 
+        function filterCompletedTasks(animate = true) {
+            const cards = document.querySelectorAll('.revision-card-mini');
+            
+            cards.forEach((card, index) => {
+                const isCompleted = card.dataset.completed === 'true';
+                const shouldShow = appState.showingCompleted ? isCompleted : true;
+                
+                if (animate) {
+                    setTimeout(() => {
+                        if (shouldShow) {
+                            card.classList.remove('filtering-out');
+                            card.classList.add('filtering-in');
+                            card.style.display = 'flex';
+                        } else {
+                            card.classList.remove('filtering-in');
+                            card.classList.add('filtering-out');
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 400);
+                        }
+                    }, index * 50);
+                } else {
+                    if (shouldShow) {
+                        card.style.display = 'flex';
+                        card.classList.add('filtering-in');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Task Management
         function toggleTaskComplete(taskId) {
             const schedule = appState.schedules[appState.activeSchedule];
             if (!schedule) return;
             
-            schedule.completedTasks[taskId] = !schedule.completedTasks[taskId];
+            const wasCompleted = schedule.completedTasks[taskId];
+            schedule.completedTasks[taskId] = !wasCompleted;
+            
+            const hasCompletedTasks = Object.values(schedule.completedTasks).some(completed => completed);
+            const hadCompletedTasks = document.getElementById('completedTab') !== null;
+            
             saveAppState();
-            updateDashboard();
-            updateProgress();
+            
+            if (hasCompletedTasks && !hadCompletedTasks) {
+                updateScheduleContent();
+            } else if (!hasCompletedTasks && hadCompletedTasks) {
+                appState.showingCompleted = false;
+                updateScheduleContent();
+            } else {
+                const card = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (card) {
+                    card.classList.toggle('completed', !wasCompleted);
+                    card.dataset.completed = !wasCompleted;
+                    
+                    if (appState.showingCompleted) {
+                        filterCompletedTasks(true);
+                    }
+                }
+            }
+            
             closeAllDropdowns();
+            updateProgress();
         }
 
-        // Dropdown Management
         function toggleDropdown(event, taskId, isCompleted) {
             event.stopPropagation();
             
-            // Close existing dropdown
             closeAllDropdowns();
             
-            // Create new dropdown
             const dropdown = document.createElement('div');
             dropdown.className = 'dropdown show';
             dropdown.innerHTML = `
@@ -3669,16 +4757,13 @@ function toggleTaskComplete(taskId) {
                 </div>
             `;
             
-            // Position dropdown
             const rect = event.target.getBoundingClientRect();
             dropdown.style.left = `${rect.left - 150}px`;
             dropdown.style.top = `${rect.bottom + 8}px`;
             
-            // Add to document
             document.body.appendChild(dropdown);
             activeDropdown = dropdown;
             
-            // Show overlay
             document.getElementById('dropdownOverlay').style.display = 'block';
         }
 
@@ -3690,600 +4775,408 @@ function toggleTaskComplete(taskId) {
             document.getElementById('dropdownOverlay').style.display = 'none';
         }
 
-        // Enhanced Progress Tracking with View Schedule Button
-function updateProgress() {
-    const content = document.getElementById('progressContent');
-    
-    if (Object.keys(appState.schedules).length === 0) {
-        content.innerHTML = `
-            <div class="empty-state">
-                <h3>No progress data yet</h3>
-                <p>Complete some revision tasks to see your progress here</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = '';
-    
-    Object.values(appState.schedules).forEach(schedule => {
-        let totalTasks = 0;
-        let completedTasks = 0;
-        
-        Object.values(schedule.weeklySchedule).forEach(dayTasks => {
-            totalTasks += dayTasks.length;
-        });
-        
-        completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
-        
-        const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-        
-        html += `
-            <div class="progress-card">
-                <button class="progress-view-button" onclick="viewScheduleFromProgress('${schedule.id}')">
-                    <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    View Schedule
-                </button>
-                <h4 style="color: var(--accent-blue); margin-bottom: 16px; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.2rem; padding-right: 140px;">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                    </svg>
-                    ${schedule.name}
-                </h4>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progressPercentage}%;"></div>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600;">
-                    ${completedTasks}/${totalTasks} tasks completed (${progressPercentage}%)
-                </p>
-            </div>
-        `;
-    });
-    
-    content.innerHTML = html;
-}
+        // Schedule Management Functions
+        function switchToSchedule(scheduleId) {
+            appState.activeSchedule = scheduleId;
+            appState.currentTabIndex = 0;
+            saveAppState();
+            updateDashboard();
+            updateProgress();
+        }
 
-// Function to view schedule from progress page
-function viewScheduleFromProgress(scheduleId) {
-    // Switch to that schedule
-    appState.activeSchedule = scheduleId;
-    appState.currentTabIndex = 0;
-    saveAppState();
-    
-    // Navigate to dashboard
-    showPage('dashboard');
-    updateDashboard();
-}
+        // Progress Management
+        function updateProgress() {
+            const content = document.getElementById('progressContent');
+            
+            if (Object.keys(appState.schedules).length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No progress data yet</h3>
+                        <p>Complete some revision tasks to see your progress here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            Object.values(appState.schedules).forEach(schedule => {
+                let totalTasks = 0;
+                let completedTasks = 0;
+                
+                Object.values(schedule.weeklySchedule).forEach(dayTasks => {
+                    totalTasks += dayTasks.length;
+                });
+                
+                completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
+                
+                const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                html += `
+                    <div class="progress-card">
+                        <button class="progress-view-button" onclick="viewScheduleFromProgress('${schedule.id}')">
+                            <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            View Schedule
+                        </button>
+                        <h4 style="color: var(--accent-blue); margin-bottom: 16px; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.2rem; padding-right: 140px;">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            ${schedule.name}
+                        </h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercentage}%;"></div>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600;">
+                            ${completedTasks}/${totalTasks} tasks completed (${progressPercentage}%)
+                        </p>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+        }
 
         // Settings Functions
-        function exportData() {
-            showAlert('Export feature coming soon!', 'success');
+        function loadSettings() {
+            const saved = localStorage.getItem('gcseRevisionSettings');
+            if (saved) {
+                userSettings = { ...userSettings, ...JSON.parse(saved) };
+                applySettings();
+            }
         }
 
-        function syncData() {
-            showAlert('Sync feature coming soon!', 'success');
+        function saveSettings() {
+            localStorage.setItem('gcseRevisionSettings', JSON.stringify(userSettings));
         }
 
-        function toggleTheme() {
-            showAlert('Theme customization coming soon!', 'success');
+        function applySettings() {
+            const sessionSelect = document.getElementById('sessionLength');
+            const breakSelect = document.getElementById('breakLength');
+            if (sessionSelect) sessionSelect.value = userSettings.sessionLength;
+            if (breakSelect) breakSelect.value = userSettings.breakLength;
+            
+            const studyToggle = document.getElementById('studyNotifications');
+            const breakToggle = document.getElementById('breakNotifications');
+            if (studyToggle) studyToggle.classList.toggle('active', userSettings.studyNotifications);
+            if (breakToggle) breakToggle.classList.toggle('active', userSettings.breakNotifications);
+            
+            document.documentElement.setAttribute('data-theme', userSettings.theme);
+            
+            setTimeout(() => {
+                const selectedOption = document.querySelector(`.theme-${userSettings.theme}`);
+                if (selectedOption) {
+                    document.querySelectorAll('.theme-option').forEach(option => {
+                        option.classList.remove('active');
+                    });
+                    selectedOption.classList.add('active');
+                }
+            }, 100);
         }
 
-        // Updated settings with white as default
-let userSettings = {
-    sessionLength: 45,
-    breakLength: 10,
-    studyNotifications: false,
-    breakNotifications: false,
-    theme: 'white' // Changed default to white
-};
-
-// Load settings from localStorage
-function loadSettings() {
-    const saved = localStorage.getItem('gcseRevisionSettings');
-    if (saved) {
-        userSettings = { ...userSettings, ...JSON.parse(saved) };
-        applySettings();
-    }
-}
-
-// Save settings to localStorage
-function saveSettings() {
-    localStorage.setItem('gcseRevisionSettings', JSON.stringify(userSettings));
-}
-
-// Apply settings to UI
-function applySettings() {
-    // Update selects
-    const sessionSelect = document.getElementById('sessionLength');
-    const breakSelect = document.getElementById('breakLength');
-    if (sessionSelect) sessionSelect.value = userSettings.sessionLength;
-    if (breakSelect) breakSelect.value = userSettings.breakLength;
-    
-    // Update toggles
-    const studyToggle = document.getElementById('studyNotifications');
-    const breakToggle = document.getElementById('breakNotifications');
-    if (studyToggle) studyToggle.classList.toggle('active', userSettings.studyNotifications);
-    if (breakToggle) breakToggle.classList.toggle('active', userSettings.breakNotifications);
-    
-    // Apply theme
-    changeTheme(userSettings.theme, false);
-}
-
-// Update session length
-function updateSessionLength(value) {
-    userSettings.sessionLength = parseInt(value);
-    saveSettings();
-    showAlert(`Study session length updated to ${value} minutes`, 'success');
-}
-
-// Update break length
-function updateBreakLength(value) {
-    userSettings.breakLength = parseInt(value);
-    saveSettings();
-    showAlert(`Break length updated to ${value} minutes`, 'success');
-}
-
-// Toggle notifications
-function toggleNotifications(type) {
-    if (type === 'study') {
-        userSettings.studyNotifications = !userSettings.studyNotifications;
-        document.getElementById('studyNotifications').classList.toggle('active', userSettings.studyNotifications);
-        
-        if (userSettings.studyNotifications) {
-            requestNotificationPermission();
-            showAlert('Study reminders enabled', 'success');
-        } else {
-            showAlert('Study reminders disabled', 'success');
+        function updateSessionLength(value) {
+            userSettings.sessionLength = parseInt(value);
+            saveSettings();
+            showAlert(`Study session length updated to ${value} minutes`, 'success');
         }
-    } else if (type === 'break') {
-        userSettings.breakNotifications = !userSettings.breakNotifications;
-        document.getElementById('breakNotifications').classList.toggle('active', userSettings.breakNotifications);
-        
-        if (userSettings.breakNotifications) {
-            requestNotificationPermission();
-            showAlert('Break reminders enabled', 'success');
-        } else {
-            showAlert('Break reminders disabled', 'success');
-        }
-    }
-    saveSettings();
-}
 
-// Request notification permission
-function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification('GCSE Revision Planner', {
-                    body: 'Notifications enabled successfully!',
-                    icon: '/favicon.ico'
+        function updateBreakLength(value) {
+            userSettings.breakLength = parseInt(value);
+            saveSettings();
+            showAlert(`Break length updated to ${value} minutes`, 'success');
+        }
+
+        function toggleNotifications(type) {
+            if (type === 'study') {
+                userSettings.studyNotifications = !userSettings.studyNotifications;
+                document.getElementById('studyNotifications').classList.toggle('active', userSettings.studyNotifications);
+                
+                if (userSettings.studyNotifications) {
+                    requestNotificationPermission();
+                    showAlert('Study reminders enabled', 'success');
+                } else {
+                    showAlert('Study reminders disabled', 'success');
+                }
+            } else if (type === 'break') {
+                userSettings.breakNotifications = !userSettings.breakNotifications;
+                document.getElementById('breakNotifications').classList.toggle('active', userSettings.breakNotifications);
+                
+                if (userSettings.breakNotifications) {
+                    requestNotificationPermission();
+                    showAlert('Break reminders enabled', 'success');
+                } else {
+                    showAlert('Break reminders disabled', 'success');
+                }
+            }
+            saveSettings();
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('GCSE Revision Planner', {
+                            body: 'Notifications enabled successfully!',
+                            icon: '/favicon.ico'
+                        });
+                    }
                 });
             }
-        });
-    }
-}
+        }
 
-// Export data functionality
-function exportData(format) {
-    const data = {
-        schedules: appState.schedules,
-        settings: userSettings,
-        exportDate: new Date().toISOString()
-    };
-    
-    let content, filename, mimeType;
-    
-    if (format === 'csv') {
-        content = convertToCSV(data);
-        filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.csv`;
-        mimeType = 'text/csv';
-    } else {
-        content = JSON.stringify(data, null, 2);
-        filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.json`;
-        mimeType = 'application/json';
-    }
-    
-    downloadFile(content, filename, mimeType);
-    showAlert(`Data exported as ${format.toUpperCase()}`, 'success');
-}
+        function exportData(format) {
+            const data = {
+                schedules: appState.schedules,
+                settings: userSettings,
+                exportDate: new Date().toISOString()
+            };
+            
+            let content, filename, mimeType;
+            
+            if (format === 'csv') {
+                content = convertToCSV(data);
+                filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.csv`;
+                mimeType = 'text/csv';
+            } else {
+                content = JSON.stringify(data, null, 2);
+                filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.json`;
+                mimeType = 'application/json';
+            }
+            
+            downloadFile(content, filename, mimeType);
+            showAlert(`Data exported as ${format.toUpperCase()}`, 'success');
+        }
 
-// Convert data to CSV
-function convertToCSV(data) {
-    let csv = 'Schedule,Subject,Day,Topic,Time,Difficulty,Completed\n';
-    
-    Object.values(data.schedules).forEach(schedule => {
-        Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
-            tasks.forEach((task, index) => {
-                const taskId = `${schedule.id}_${day}_${index}`;
-                const completed = schedule.completedTasks[taskId] || false;
-                csv += `"${schedule.name}","${task.subject}","${day}","${task.topic}","${task.time}","${task.difficulty}","${completed}"\n`;
+        function convertToCSV(data) {
+            let csv = 'Schedule,Subject,Day,Topic,Time,Difficulty,Completed\n';
+            
+            Object.values(data.schedules).forEach(schedule => {
+                Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
+                    tasks.forEach((task, index) => {
+                        const taskId = `${schedule.id}_${day}_${index}`;
+                        const completed = schedule.completedTasks[taskId] || false;
+                        csv += `"${schedule.name}","${task.subject}","${day}","${task.topic}","${task.time}","${task.difficulty}","${completed}"\n`;
+                    });
+                });
             });
-        });
-    });
-    
-    return csv;
-}
-
-// Download file
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
-
-// Enhanced theme system with smooth animations
-function changeTheme(theme, save = true) {
-    // Create transition overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'theme-transition-overlay';
-    document.body.appendChild(overlay);
-    
-    // Show overlay
-    setTimeout(() => {
-        overlay.classList.add('active');
-    }, 50);
-    
-    // Change theme after overlay appears
-    setTimeout(() => {
-        userSettings.theme = theme;
-        
-        // Update active theme selector
-        document.querySelectorAll('.theme-option').forEach(option => {
-            option.classList.remove('active');
-        });
-        
-        const selectedOption = document.querySelector(`.theme-${theme}`);
-        if (selectedOption) {
-            selectedOption.classList.add('active');
+            
+            return csv;
         }
-        
-        // Apply theme to document
-        document.documentElement.setAttribute('data-theme', theme);
-        
-        if (save) {
-            saveSettings();
-            showAlert(`Theme changed to ${theme.charAt(0).toUpperCase() + theme.slice(1)}`, 'success');
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
-        
-        // Remove overlay
-        setTimeout(() => {
-            overlay.classList.remove('active');
+
+        function changeTheme(theme, save = true) {
+            const overlay = document.createElement('div');
+            overlay.className = 'theme-transition-overlay';
+            document.body.appendChild(overlay);
+            
             setTimeout(() => {
-                if (overlay.parentNode) {
-                    overlay.parentNode.removeChild(overlay);
+                overlay.classList.add('active');
+            }, 50);
+            
+            setTimeout(() => {
+                userSettings.theme = theme;
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                
+                const selectedOption = document.querySelector(`.theme-${theme}`);
+                if (selectedOption) {
+                    selectedOption.classList.add('active');
                 }
-            }, 600);
-        }, 300);
-        
-    }, 300);
-}
-
-// Apply theme on page load
-function applySettings() {
-    // Update selects
-    const sessionSelect = document.getElementById('sessionLength');
-    const breakSelect = document.getElementById('breakLength');
-    if (sessionSelect) sessionSelect.value = userSettings.sessionLength;
-    if (breakSelect) breakSelect.value = userSettings.breakLength;
-    
-    // Update toggles
-    const studyToggle = document.getElementById('studyNotifications');
-    const breakToggle = document.getElementById('breakNotifications');
-    if (studyToggle) studyToggle.classList.toggle('active', userSettings.studyNotifications);
-    if (breakToggle) breakToggle.classList.toggle('active', userSettings.breakNotifications);
-    
-    // Apply theme without animation on load
-    document.documentElement.setAttribute('data-theme', userSettings.theme);
-    
-    // Update theme selector
-    setTimeout(() => {
-        const selectedOption = document.querySelector(`.theme-${userSettings.theme}`);
-        if (selectedOption) {
-            document.querySelectorAll('.theme-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            selectedOption.classList.add('active');
-        }
-    }, 100);
-}
-// Create backup
-function createBackup() {
-    exportData('json');
-    showAlert('Backup created and downloaded', 'success');
-}
-
-// Restore backup
-function restoreBackup() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.schedules) {
-                        appState.schedules = data.schedules;
-                        if (data.settings) {
-                            userSettings = { ...userSettings, ...data.settings };
-                            applySettings();
+                
+                document.documentElement.setAttribute('data-theme', theme);
+                
+                if (save) {
+                    saveSettings();
+                    showAlert(`Theme changed to ${theme.charAt(0).toUpperCase() + theme.slice(1)}`, 'success');
+                }
+                
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    setTimeout(() => {
+                        if (overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
                         }
-                        saveAppState();
-                        saveSettings();
-                        updateDashboard();
-                        updateProgress();
-                        showAlert('Backup restored successfully', 'success');
-                    } else {
-                        showAlert('Invalid backup file', 'error');
-                    }
-                } catch (error) {
-                    showAlert('Error reading backup file', 'error');
+                    }, 600);
+                }, 300);
+                
+            }, 300);
+        }
+
+        function createBackup() {
+            exportData('json');
+            showAlert('Backup created and downloaded', 'success');
+        }
+
+        function restoreBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            if (data.schedules) {
+                                appState.schedules = data.schedules;
+                                if (data.settings) {
+                                    userSettings = { ...userSettings, ...data.settings };
+                                    applySettings();
+                                }
+                                saveAppState();
+                                saveSettings();
+                                updateDashboard();
+                                updateProgress();
+                                showAlert('Backup restored successfully', 'success');
+                            } else {
+                                showAlert('Invalid backup file', 'error');
+                            }
+                        } catch (error) {
+                            showAlert('Error reading backup file', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
                 }
             };
-            reader.readAsText(file);
+            input.click();
         }
-    };
-    input.click();
-}
 
-// Enhanced initialization with past papers
-document.addEventListener('DOMContentLoaded', function() {
-    loadAppState();
-    loadSettings();
-    
-    setTimeout(() => {
-        updateDashboard();
-        updateProgress();
-    }, 100);
-    
-    setTimeout(() => {
-        if (Object.keys(appState.schedules).length > 0) {
-            updateCenteredCarousel();
-        }
-        appState.isInitialized = true;
-    }, 300);
-    
-    // Final centering check after all styles load
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            if (Object.keys(appState.schedules).length > 0) {
-                updateCenteredCarousel();
+        // Past Papers Functions
+        function getPastPapersForSubject(subjectName) {
+            const subjectKey = subjectName.toLowerCase().trim();
+            
+            if (pastPapersData[subjectKey]) {
+                return pastPapersData[subjectKey].filter(paper => paper && paper.trim());
             }
-        }, 500);
-    });
-});
+            
+            const alternativeNames = {
+                'mathematics': ['maths', 'math'],
+                'maths': ['mathematics', 'math'],
+                'math': ['mathematics', 'maths'],
+                'biology': ['bio'],
+                'bio': ['biology'],
+                'chemistry': ['chem'],
+                'chem': ['chemistry'],
+                'geography': ['geo'],
+                'geo': ['geography'],
+                'computer science': ['computing', 'ict', 'comp sci'],
+                'computing': ['computer science', 'ict'],
+                'ict': ['computer science', 'computing'],
+                'religious studies': ['rs', 'religion'],
+                'rs': ['religious studies', 'religion'],
+                'business studies': ['business'],
+                'business': ['business studies'],
+                'physical education': ['pe', 'sport'],
+                'pe': ['physical education', 'sport'],
+                'art and design': ['art'],
+                'art': ['art and design'],
+                'english literature': ['english lit', 'eng lit'],
+                'english language': ['english lang', 'eng lang']
+            };
+            
+            if (alternativeNames[subjectKey]) {
+                for (const altName of alternativeNames[subjectKey]) {
+                    if (pastPapersData[altName]) {
+                        return pastPapersData[altName].filter(paper => paper && paper.trim());
+                    }
+                }
+            }
+            
+            const matchingKey = Object.keys(pastPapersData).find(key => 
+                key.includes(subjectKey) || subjectKey.includes(key) ||
+                key.replace(/\s+/g, '').includes(subjectKey.replace(/\s+/g, '')) ||
+                subjectKey.replace(/\s+/g, '').includes(key.replace(/\s+/g, ''))
+            );
+            
+            if (matchingKey) {
+                return pastPapersData[matchingKey].filter(paper => paper && paper.trim());
+            }
+            
+            return [];
+        }
 
-// Past Papers Management Functions
-function initializePastPapers() {
-    const savedPapers = localStorage.getItem('gcsePastPapers');
-    if (savedPapers) {
-        pastPapersData = { ...pastPapersData, ...JSON.parse(savedPapers) };
-    }
-    renderPastPapersGrid();
-}
+        function getRelevantPastPapers() {
+            if (!appState.activeSchedule || !appState.schedules[appState.activeSchedule]) {
+                return {};
+            }
+            
+            const schedule = appState.schedules[appState.activeSchedule];
+            const scheduleInfo = schedule.scheduleInfo || {};
+            const examBoard = scheduleInfo.examBoard || 'aqa';
+            const relevantPapers = {};
+            
+            schedule.subjects.forEach(subject => {
+                const subjectKey = subject.toLowerCase().trim();
+                
+                if (examBoardPastPapers[examBoard] && examBoardPastPapers[examBoard][subjectKey]) {
+                    relevantPapers[subject] = examBoardPastPapers[examBoard][subjectKey];
+                } else {
+                    const papers = getPastPapersForSubject(subject);
+                    if (papers.length > 0) {
+                        relevantPapers[subject] = papers;
+                    }
+                }
+            });
+            
+            return relevantPapers;
+        }
 
-function savePastPapers() {
-    localStorage.setItem('gcsePastPapers', JSON.stringify(pastPapersData));
-}
-
-function renderPastPapersGrid() {
-    const grid = document.getElementById('pastPapersGrid');
-    if (!grid) return;
-    
-    const subjects = ['Mathematics', 'English', 'Biology', 'Chemistry', 'Physics', 'History'];
-    const maxSlots = 6;
-    
-    let html = '';
-    
-    for (let i = 0; i < maxSlots; i++) {
-        const subject = subjects[i];
-        const subjectKey = subject.toLowerCase();
-        const papers = pastPapersData[subjectKey] || [];
-        const isOccupied = papers.length > 0;
-        
-        if (isOccupied) {
-            html += `
-                <div class="past-paper-slot filled">
-                    <div class="past-paper-info">
-                        <div class="past-paper-subject">${subject}</div>
-                        <div class="past-paper-file">${papers[0] || 'No file set'}</div>
-                        <button class="past-paper-remove" onclick="removePastPaper('${subjectKey}')">
-                            Remove
-                        </button>
-                    </div>
-                </div>
+        // Alert System
+        function showAlert(message, type = 'success') {
+            let container = document.getElementById('notificationContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.className = 'notification-container';
+                document.body.appendChild(container);
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <svg class="icon" viewBox="0 0 24 24">
+                    ${type === 'error' ? 
+                        '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
+                        '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>'
+                    }
+                </svg>
+                ${message}
+                <div class="notification-progress"></div>
             `;
-        } else {
-            html += `
-                <div class="past-paper-slot" onclick="addPastPaper('${subjectKey}', '${subject}')">
-                    <svg class="icon" viewBox="0 0 24 24" style="width: 32px; height: 32px; color: var(--text-muted);">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="16"/>
-                        <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
-                    <div style="color: var(--text-muted); font-weight: 600;">Add ${subject} Past Paper</div>
-                    <div style="color: var(--text-muted); font-size: 0.8rem;">Click to set file path</div>
-                </div>
-            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 400);
+            }, 4000);
         }
-    }
-    
-    grid.innerHTML = html;
-}
-
-function addPastPaper(subjectKey, subjectName) {
-    const filePath = prompt(`Enter the file path for ${subjectName} past paper:\n\nExample: /papers/mathematics-2023.pdf`);
-    
-    if (filePath && filePath.trim()) {
-        pastPapersData[subjectKey] = [filePath.trim()];
-        savePastPapers();
-        renderPastPapersGrid();
-        showAlert(`${subjectName} past paper added successfully`, 'success');
-    }
-}
-
-function removePastPaper(subjectKey) {
-    if (confirm('Are you sure you want to remove this past paper?')) {
-        pastPapersData[subjectKey] = [];
-        savePastPapers();
-        renderPastPapersGrid();
-        showAlert('Past paper removed successfully', 'success');
-    }
-}
-
-// Enhanced function to handle alternative subject names
-function getPastPapersForSubject(subjectName) {
-    // Normalize subject name for matching
-    const subjectKey = subjectName.toLowerCase().trim();
-    
-    // Try exact match first
-    if (pastPapersData[subjectKey]) {
-        return pastPapersData[subjectKey].filter(paper => paper && paper.trim());
-    }
-    
-    // Define alternative name mappings
-    const alternativeNames = {
-        'mathematics': ['maths', 'math'],
-        'maths': ['mathematics', 'math'],
-        'math': ['mathematics', 'maths'],
-        'biology': ['bio'],
-        'bio': ['biology'],
-        'chemistry': ['chem'],
-        'chem': ['chemistry'],
-        'geography': ['geo'],
-        'geo': ['geography'],
-        'computer science': ['computing', 'ict', 'comp sci'],
-        'computing': ['computer science', 'ict'],
-        'ict': ['computer science', 'computing'],
-        'religious studies': ['rs', 'religion'],
-        'rs': ['religious studies', 'religion'],
-        'business studies': ['business'],
-        'business': ['business studies'],
-        'physical education': ['pe', 'sport'],
-        'pe': ['physical education', 'sport'],
-        'art and design': ['art'],
-        'art': ['art and design'],
-        'english literature': ['english lit', 'eng lit'],
-        'english language': ['english lang', 'eng lang']
-    };
-    
-    // Check alternative names
-    if (alternativeNames[subjectKey]) {
-        for (const altName of alternativeNames[subjectKey]) {
-            if (pastPapersData[altName]) {
-                return pastPapersData[altName].filter(paper => paper && paper.trim());
-            }
-        }
-    }
-    
-    // Try partial matches for compound subjects
-    const matchingKey = Object.keys(pastPapersData).find(key => 
-        key.includes(subjectKey) || subjectKey.includes(key) ||
-        key.replace(/\s+/g, '').includes(subjectKey.replace(/\s+/g, '')) ||
-        subjectKey.replace(/\s+/g, '').includes(key.replace(/\s+/g, ''))
-    );
-    
-    if (matchingKey) {
-        return pastPapersData[matchingKey].filter(paper => paper && paper.trim());
-    }
-    
-    return [];
-}
-
-// Check if any past papers exist for current schedule subjects
-function getRelevantPastPapers() {
-    if (!appState.activeSchedule || !appState.schedules[appState.activeSchedule]) {
-        return {};
-    }
-    
-    const schedule = appState.schedules[appState.activeSchedule];
-    const relevantPapers = {};
-    
-    schedule.subjects.forEach(subject => {
-        const papers = getPastPapersForSubject(subject);
-        if (papers.length > 0) {
-            relevantPapers[subject] = papers;
-        }
-    });
-    
-    return relevantPapers;
-}
-
-// Function to handle opening past papers
-function openPastPaper(paperPath) {
-    try {
-        if (paperPath.startsWith('http://') || paperPath.startsWith('https://')) {
-            // For URLs
-            window.open(paperPath, '_blank');
-        } else {
-            // For local file paths
-            const link = document.createElement('a');
-            link.href = paperPath;
-            link.target = '_blank';
-            link.click();
-        }
-        showAlert('Opening past paper...', 'success');
-    } catch (error) {
-        showAlert('Could not open past paper. Please check the file path.', 'error');
-        console.error('Error opening past paper:', error);
-    }
-}
-
-        // Enhanced Alert System with Smooth Animations
-function showAlert(message, type = 'success') {
-    // Create notification container if it doesn't exist
-    let container = document.getElementById('notificationContainer');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'notificationContainer';
-        container.className = 'notification-container';
-        document.body.appendChild(container);
-    }
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <svg class="icon" viewBox="0 0 24 24">
-            ${type === 'error' ? 
-                '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
-                '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>'
-            }
-        </svg>
-        ${message}
-        <div class="notification-progress"></div>
-    `;
-    
-    // Add to container
-    container.appendChild(notification);
-    
-    // Trigger show animation
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    // Auto remove with hide animation
-    setTimeout(() => {
-        notification.classList.add('hide');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 400);
-    }, 4000);
-}
 
         // Data Management
         function saveAppState() {
@@ -4306,14 +5199,279 @@ function showAlert(message, type = 'success') {
             }
         }
 
-        // Event Listeners
+        // Mobile touch and swipe support
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+       function toggleSidebarMobile() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerMenu');
+    const overlay = document.getElementById('sidebarOverlay');
+    const container = document.getElementById('container');
+    const body = document.body;
+    
+    // Initialize isSidebarOpen if undefined
+    if (typeof isSidebarOpen === 'undefined') {
+        window.isSidebarOpen = false;
+    }
+    
+    isSidebarOpen = !isSidebarOpen;
+    
+    if (isSidebarOpen) {
+        if (sidebar) sidebar.classList.add('open');
+        if (hamburger) hamburger.classList.add('active');
+        if (overlay) overlay.classList.add('show');
+        if (container) container.classList.add('sidebar-open');
+        if (body) body.classList.add('sidebar-open-mobile');
+    } else {
+        if (sidebar) sidebar.classList.remove('open');
+        if (hamburger) hamburger.classList.remove('active');
+        if (overlay) overlay.classList.remove('show');
+        if (container) container.classList.remove('sidebar-open');
+        if (body) body.classList.remove('sidebar-open-mobile');
+    }
+}
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchMove(e) {
+            if (!touchStartX || !touchStartY) return;
+            
+            touchEndX = e.touches[0].clientX;
+            touchEndY = e.touches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Only handle horizontal swipes from the left edge
+            if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+            
+            // Swipe from left edge to open sidebar
+            if (touchStartX < 50 && deltaX > 100 && !isSidebarOpen) {
+                e.preventDefault();
+                toggleSidebarMobile();
+            }
+            
+            // Swipe right to left to close sidebar
+            if (isSidebarOpen && deltaX < -100) {
+                e.preventDefault();
+                toggleSidebarMobile();
+            }
+        }
+
+        function handleTouchEnd() {
+            touchStartX = 0;
+            touchStartY = 0;
+            touchEndX = 0;
+            touchEndY = 0;
+        }
+
+        // Add touch event listeners
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+
+        // Task swipe gesture handling
+let taskTouchStartX = 0;
+let taskTouchStartY = 0;
+let currentSwipeTask = null;
+let swipeThreshold = 80;
+
+function handleTaskTouchStart(e) {
+    taskTouchStartX = e.touches[0].clientX;
+    taskTouchStartY = e.touches[0].clientY;
+    currentSwipeTask = e.currentTarget;
+}
+
+function handleTaskTouchMove(e) {
+    if (!currentSwipeTask || !taskTouchStartX) return;
+    
+    e.preventDefault();
+    
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchX - taskTouchStartX;
+    const deltaY = touchY - taskTouchStartY;
+    
+    // Only handle horizontal swipes
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    
+    const taskContent = currentSwipeTask.querySelector('.task-content');
+    const completeAction = currentSwipeTask.querySelector('.task-action-complete');
+    const deleteAction = currentSwipeTask.querySelector('.task-action-delete');
+    
+    if (deltaX > 0) {
+        // Swiping right (complete)
+        currentSwipeTask.classList.remove('swiping-left');
+        currentSwipeTask.classList.add('swiping-right');
+        
+        const progress = Math.min(deltaX / swipeThreshold, 1);
+        taskContent.style.transform = `translateX(${deltaX}px)`;
+        completeAction.style.transform = `translateX(${-swipeThreshold + (deltaX)}px)`;
+        completeAction.style.opacity = progress;
+    } else if (deltaX < 0) {
+        // Swiping left (delete)
+        currentSwipeTask.classList.remove('swiping-right');
+        currentSwipeTask.classList.add('swiping-left');
+        
+        const progress = Math.min(Math.abs(deltaX) / swipeThreshold, 1);
+        taskContent.style.transform = `translateX(${deltaX}px)`;
+        deleteAction.style.transform = `translateX(${swipeThreshold + deltaX}px)`;
+        deleteAction.style.opacity = progress;
+    }
+}
+
+function handleTaskTouchEnd(e) {
+    if (!currentSwipeTask || !taskTouchStartX) return;
+    
+    const touchX = e.changedTouches[0].clientX;
+    const deltaX = touchX - taskTouchStartX;
+    const taskId = currentSwipeTask.dataset.taskId;
+    
+    if (Math.abs(deltaX) > swipeThreshold) {
+        if (deltaX > 0) {
+            // Complete task
+            toggleTaskComplete(taskId);
+        } else {
+            // Delete task
+            showTaskDeleteConfirmation(taskId);
+        }
+    }
+    
+    // Reset task position
+    resetTaskPosition(currentSwipeTask);
+    
+    taskTouchStartX = 0;
+    taskTouchStartY = 0;
+    currentSwipeTask = null;
+}
+
+function resetTaskPosition(taskElement) {
+    const taskContent = taskElement.querySelector('.task-content');
+    const completeAction = taskElement.querySelector('.task-action-complete');
+    const deleteAction = taskElement.querySelector('.task-action-delete');
+    
+    taskElement.classList.remove('swiping-left', 'swiping-right');
+    
+    taskContent.style.transform = '';
+    if (completeAction) {
+        completeAction.style.transform = '';
+        completeAction.style.opacity = '';
+    }
+    if (deleteAction) {
+        deleteAction.style.transform = '';
+        deleteAction.style.opacity = '';
+    }
+}
+
+function showTaskDeleteConfirmation(taskId) {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) return;
+    
+    // Find task details
+    let taskDetails = null;
+    Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
+        tasks.forEach((task, index) => {
+            const currentTaskId = `${schedule.id}_${day}_${index}`;
+            if (currentTaskId === taskId) {
+                taskDetails = { ...task, day };
+            }
+        });
+    });
+    
+    if (!taskDetails) return;
+    
+    const confirmMessage = `Are you sure you want to delete this task?\n\n${taskDetails.subject}: ${taskDetails.topic}\n${taskDetails.day} ${taskDetails.time}`;
+    
+    if (confirm(confirmMessage)) {
+        deleteTask(taskId);
+    }
+}
+
+function deleteTask(taskId) {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) return;
+    
+    // Remove from completed tasks
+    delete schedule.completedTasks[taskId];
+    
+    // Find and remove from schedule
+    Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
+        tasks.forEach((task, index) => {
+            const currentTaskId = `${schedule.id}_${day}_${index}`;
+            if (currentTaskId === taskId) {
+                schedule.weeklySchedule[day].splice(index, 1);
+            }
+        });
+    });
+    
+    saveAppState();
+    updateScheduleContent();
+    updateProgress();
+    showAlert('Task deleted successfully', 'success');
+}
+
+        document.addEventListener('DOMContentLoaded', function() {
+    loadAppState();
+    loadSettings();
+
+    const sidebarTrigger = document.querySelector('.sidebar-trigger');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (sidebarTrigger) {
+        sidebarTrigger.addEventListener('mouseenter', openSidebar);
+    }
+    
+    if (sidebar) {
+        sidebar.addEventListener('mouseleave', function(event) {
+            handleSidebarLeave(event);
+        });
+    }
+
+    const daysSelect = document.getElementById('daysUntilExam');
+    const customDaysGroup = document.getElementById('customDaysGroup');
+    
+    if (daysSelect && customDaysGroup) {
+        daysSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customDaysGroup.style.display = 'block';
+            } else {
+                customDaysGroup.style.display = 'none';
+            }
+        });
+    }
+    
+    setTimeout(() => {
+        updateDashboard();
+        updateProgress();
+    }, 100);
+    
+    setTimeout(() => {
+        if (Object.keys(appState.schedules).length > 0) {
+            updateCenteredCarousel();
+        }
+        appState.isInitialized = true;
+    }, 300);
+});
+
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.revision-card-mini-menu') && !event.target.closest('.dropdown')) {
                 closeAllDropdowns();
             }
+            
+            if (!event.target.closest('.tab-menu')) {
+                document.querySelectorAll('.tab-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeSidebar();
@@ -4326,20 +5484,22 @@ function showAlert(message, type = 'success') {
             }
         });
 
-        // Responsive handling
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 appState.visibleTabCount = 2;
             } else {
                 appState.visibleTabCount = 1;
             }
-            updateTabCarousel();
+            updateCenteredCarousel();
         });
 
         // Prevent sidebar closing when hovering over trigger while leaving sidebar
-        document.querySelector('.sidebar-trigger').addEventListener('mouseenter', function() {
-            clearTimeout(sidebarTimeout);
-        });
+        const sidebarTrigger = document.querySelector('.sidebar-trigger');
+        if (sidebarTrigger) {
+            sidebarTrigger.addEventListener('mouseenter', function() {
+                clearTimeout(sidebarTimeout);
+            });
+        }
     </script>
 </body>
 </html>
