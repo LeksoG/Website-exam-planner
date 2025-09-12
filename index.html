@@ -2975,6 +2975,1075 @@ body.sidebar-open-mobile {
         display: grid !important;
     }
 }
+
+/* Bottom Navigation for Mobile */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-top: 2px solid var(--glass-border);
+    display: none;
+    z-index: 1000;
+    padding: 8px 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    min-width: 60px;
+}
+
+.bottom-nav-item.active {
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+    color: var(--accent-blue);
+    font-weight: 700;
+}
+
+.bottom-nav-icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.bottom-nav-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Haptic feedback animation */
+.bottom-nav-item.haptic {
+    animation: hapticPulse 0.3s ease-out;
+}
+
+@keyframes hapticPulse {
+    0% { transform: translateY(-2px) scale(1); }
+    50% { transform: translateY(-4px) scale(1.05); }
+    100% { transform: translateY(-2px) scale(1); }
+}
+
+/* Show bottom nav on mobile */
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: block;
+    }
+    
+    /* Hide original sidebar elements */
+    .sidebar-trigger,
+    .hamburger-menu {
+        display: none !important;
+    }
+    
+    /* Add bottom padding to container */
+    .container {
+        margin-bottom: 80px;
+    }
+    
+    body {
+        padding-bottom: 80px;
+    }
+}
+
+/* Authentication Modal Styles */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.auth-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.auth-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-overlay.show .auth-modal {
+    transform: scale(1) translateY(0);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-header h2 {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.auth-tabs {
+    display: flex;
+    background: var(--calendar-day);
+    border-radius: 16px;
+    padding: 4px;
+    margin-bottom: 24px;
+    border: 2px solid var(--border-color);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.auth-tab.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-input-group {
+    margin-bottom: 20px;
+}
+
+.auth-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.auth-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.auth-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.auth-close:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--glass-bg);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.user-details h4 {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.user-details p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Swipe Indicator Styles */
+.swipe-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Enhanced Mobile Task Cards with Better Swipe Support */
+.revision-card-mini {
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-x;
+    user-select: none;
+    transition: background-color 0.3s ease;
+}
+
+.task-content {
+    position: relative;
+    z-index: 2;
+    background: inherit;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+}
+
+/* Swipe Action Buttons - Hidden by default */
+.task-action-complete,
+.task-action-delete {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    z-index: 1;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    opacity: 0;
+}
+
+.task-action-complete {
+    right: 0;
+    background: var(--accent-green);
+}
+
+.task-action-delete {
+    left: 0;
+    background: var(--accent-red);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+    .revision-card-mini {
+        min-height: 60px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    
+    .revision-card-mini-content {
+        pointer-events: none; /* Prevent text selection during swipe */
+    }
+    
+    .revision-card-mini-title {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    
+    .revision-card-mini-topic {
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+    }
+    
+    .revision-card-mini-meta {
+        font-size: 0.7rem;
+    }
+}
+
+/* Disable menu button on mobile since we use swipe */
+@media (max-width: 768px) {
+    .revision-card-mini-menu {
+        display: none;
+    }
+}
+
+/* Long press ripple effect */
+.long-press-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Full-Page Authentication Styles */
+.auth-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        #667eea 0%, 
+        #764ba2 25%, 
+        #f093fb 50%, 
+        #f5576c 75%, 
+        #4facfe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    z-index: 50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage.hide {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.1);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating elements */
+.auth-background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-element {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: float 20s infinite ease-in-out;
+}
+
+.floating-element:nth-child(1) {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-element:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    top: 60%;
+    right: 15%;
+    animation-delay: -5s;
+}
+
+.floating-element:nth-child(3) {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    bottom: 30%;
+    left: 20%;
+    animation-delay: -10s;
+}
+
+.floating-element:nth-child(4) {
+    width: 120px;
+    height: 40px;
+    border-radius: 20px;
+    top: 40%;
+    right: 25%;
+    animation-delay: -15s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-30px) rotate(120deg); }
+    66% { transform: translateY(15px) rotate(240deg); }
+}
+
+/* Main auth container */
+.auth-fullpage-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 32px;
+    padding: 48px;
+    max-width: 480px;
+    width: 90%;
+    margin: 20px;
+    box-shadow: 
+        0 32px 64px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    position: relative;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(255, 255, 255, 0.2) 100%);
+    border-radius: 32px;
+    z-index: -1;
+}
+
+/* Welcome section */
+.auth-welcome {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px auto;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 12px 48px rgba(59, 130, 246, 0.5); }
+}
+
+.auth-welcome h1 {
+    color: #1e293b;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-welcome p {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Enhanced form styles */
+.auth-fullpage .auth-tabs {
+    background: rgba(243, 244, 246, 0.8);
+    border-radius: 20px;
+    padding: 6px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.auth-fullpage .auth-tab {
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #6b7280;
+}
+
+.auth-fullpage .auth-tab.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.auth-fullpage .auth-input {
+    padding: 18px 20px;
+    border: 2px solid rgba(209, 213, 219, 0.3);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e293b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage .auth-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+}
+
+.auth-fullpage .auth-submit {
+    padding: 18px 24px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-fullpage .auth-submit:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(59, 130, 246, 0.5);
+}
+
+.auth-fullpage .auth-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.auth-fullpage .auth-submit:hover::before {
+    left: 100%;
+}
+
+/* Security features */
+.security-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.security-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.security-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Password strength indicator */
+.password-strength {
+    margin-top: 8px;
+    height: 4px;
+    background: rgba(209, 213, 219, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak { background: #ef4444; width: 25%; }
+.strength-fair { background: #f59e0b; width: 50%; }
+.strength-good { background: #10b981; width: 75%; }
+.strength-strong { background: #059669; width: 100%; }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .auth-fullpage-container {
+        padding: 32px 24px;
+        margin: 16px;
+        border-radius: 24px;
+    }
+    
+    .auth-welcome h1 {
+        font-size: 1.8rem;
+    }
+    
+    .auth-welcome p {
+        font-size: 1rem;
+    }
+    
+    .floating-element {
+        display: none;
+    }
+    
+    .security-indicators {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Loading state */
+.auth-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile Schedule Day Navigation */
+.mobile-day-navigator {
+    position: sticky;
+    top: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    padding: 16px;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+}
+
+.day-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.current-day-display {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-counter {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.day-nav-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.day-nav-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+}
+
+.day-nav-btn:hover:not(:disabled) {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+    transform: scale(1.1);
+}
+
+.day-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.day-nav-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Day indicator dots */
+.day-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.day-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.day-dot.active {
+    background: var(--accent-blue);
+    transform: scale(1.5);
+}
+
+.day-dot.has-tasks {
+    background: var(--text-muted);
+}
+
+.day-dot.has-tasks.active {
+    background: var(--accent-blue);
+}
+
+/* Enhanced mobile day content */
+.mobile-day-content {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-day-content.sliding-left {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.mobile-day-content.sliding-right {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.mobile-day-content.sliding-in-left {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.mobile-day-content.sliding-in-right {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Enhanced mobile day section */
+.mobile-day-section {
+    margin-bottom: 0;
+    background: var(--glass-bg);
+    border-radius: 20px;
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    min-height: 400px;
+}
+
+.mobile-day-header {
+    display: none; /* Hidden since we have navigator */
+}
+
+/* Task summary for current day */
+.day-summary {
+    background: var(--calendar-day);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.summary-stat {
+    text-align: center;
+}
+
+.summary-stat-number {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.summary-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Empty day state */
+.empty-day {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-day-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px auto;
+    background: var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.empty-day h3 {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.empty-day p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Swipe gestures for day navigation */
+.mobile-schedule-container {
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+/* Progress indicator for current day */
+.day-progress {
+    background: var(--calendar-day);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.day-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.day-progress-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.day-progress-percentage {
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 0.9rem;
+}
+
+.day-progress-bar {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.day-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Quick action buttons */
+.day-quick-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.quick-action-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.quick-action-btn:hover,
+.quick-action-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.quick-action-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Hide desktop grid on mobile */
+@media (max-width: 768px) {
+    .desktop-layout {
+        display: none !important;
+    }
+    
+    .mobile-layout {
+        display: block !important;
+    }
+    
+    /* Adjust container for mobile day navigation */
+    .schedule-grid-container.mobile-layout {
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+}
     </style>
 </head>
 <body>
@@ -3317,6 +4386,44 @@ body.sidebar-open-mobile {
     </div>
 </div>
 
+<!-- Bottom Navigation for Mobile -->
+<div class="bottom-nav" id="bottomNav">
+    <div class="bottom-nav-container">
+        <div class="bottom-nav-item active" onclick="navigateToPage('home')" onmousedown="triggerHaptic(this)">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+            </svg>
+            <span class="bottom-nav-label">Home</span>
+        </div>
+        
+        <div class="bottom-nav-item" onclick="navigateToPage('dashboard')" onmousedown="triggerHaptic(this)">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            </svg>
+            <span class="bottom-nav-label">Dashboard</span>
+        </div>
+        
+        <div class="bottom-nav-item" onclick="navigateToPage('progress')" onmousedown="triggerHaptic(this)">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            <span class="bottom-nav-label">Progress</span>
+        </div>
+        
+        <div class="bottom-nav-item" onclick="navigateToPage('settings')" onmousedown="triggerHaptic(this)">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span class="bottom-nav-label">Settings</span>
+        </div>
+    </div>
+</div>
+
 <!-- Add this as a new settings card -->
 <div class="settings-card">
     <h4>
@@ -3328,6 +4435,62 @@ body.sidebar-open-mobile {
 
     <!-- Dropdown overlay for closing when clicking outside -->
     <div id="dropdownOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; display: none;" onclick="closeAllDropdowns()"></div>
+
+    <!-- Authentication Modal -->
+<div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+        <button class="auth-close" onclick="closeAuthModal()">
+            <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        
+        <div class="auth-header">
+            <h2>Welcome to GCSE Planner</h2>
+            <p>Sign in to sync your progress across devices</p>
+        </div>
+        
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+            <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+        </div>
+        
+        <!-- Login Form -->
+        <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+            <div class="auth-input-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" class="auth-input" required placeholder="Enter your email">
+            </div>
+            <div class="auth-input-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="auth-input" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="auth-submit">Sign In</button>
+        </form>
+        
+        <!-- Signup Form -->
+        <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+            <div class="auth-input-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" class="auth-input" required placeholder="Enter your full name">
+            </div>
+            <div class="auth-input-group">
+                <label for="signupEmail">Email Address</label>
+                <input type="email" id="signupEmail" class="auth-input" required placeholder="Enter your email">
+            </div>
+            <div class="auth-input-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" class="auth-input" required placeholder="Create a password" minlength="6">
+            </div>
+            <div class="auth-input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="auth-input" required placeholder="Confirm your password" minlength="6">
+            </div>
+            <button type="submit" class="auth-submit">Create Account</button>
+        </form>
+    </div>
+</div>
 
     <script>
         // Global variables with proper initialization
@@ -3699,6 +4862,11 @@ let isSidebarOpen = false; // Add this global variable
     
     appState.currentPage = pageId;
     saveAppState();
+
+    // ADD THIS LINE at the end:
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation(pageId);
+    }
 }
 
         function viewScheduleFromProgress(scheduleId) {
@@ -5421,6 +6589,12 @@ function deleteTask(taskId) {
     loadAppState();
     loadSettings();
 
+    // ADD THESE NEW LINES:
+    loadUserData();
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation('home');
+    }
+
     const sidebarTrigger = document.querySelector('.sidebar-trigger');
     const sidebar = document.getElementById('sidebar');
     
@@ -5500,6 +6674,448 @@ function deleteTask(taskId) {
                 clearTimeout(sidebarTimeout);
             });
         }
+
+        // Authentication State
+let currentUser = null;
+let currentMobileDay = 0; // 0 = Monday, 1 = Tuesday, etc.
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Password strength checker
+
+// Load user data on startup
+function loadUserData() {
+    const savedUser = localStorage.getItem('gcseRevisionUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateSettingsWithUserInfo();
+    } else {
+        // Show auth modal for new users
+        setTimeout(() => {
+            showAuthModal();
+        }, 1000);
+    }
+}
+
+// Authentication Functions
+function showAuthModal() {
+    const overlay = document.getElementById('authOverlay');
+    if (overlay) {
+        overlay.classList.add('show');
+    }
+}
+
+function closeAuthModal() {
+    const overlay = document.getElementById('authOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
+}
+
+function switchAuthTab(tab) {
+    // Update tab buttons
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update forms
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById(tab + 'Form').classList.add('active');
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    // Simple local authentication (replace with real auth)
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    const user = savedUsers[email];
+    
+    if (user && user.password === btoa(password)) {
+        currentUser = user;
+        localStorage.setItem('gcseRevisionUser', JSON.stringify(user));
+        closeAuthModal();
+        updateSettingsWithUserInfo();
+        showAlert('Welcome back, ' + user.name + '!', 'success');
+    } else {
+        showAlert('Invalid email or password', 'error');
+    }
+}
+
+function handleSignup(event) {
+    event.preventDefault();
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        showAlert('Passwords do not match', 'error');
+        return;
+    }
+    
+    // Check if user already exists
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    if (savedUsers[email]) {
+        showAlert('Account with this email already exists', 'error');
+        return;
+    }
+    
+    // Create new user
+    const newUser = {
+        name: name,
+        email: email,
+        password: btoa(password), // Base64 encoding (not secure for production)
+        joinDate: new Date().toISOString(),
+        id: 'user_' + Date.now()
+    };
+    
+    savedUsers[email] = newUser;
+    localStorage.setItem('gcseRevisionUsers', JSON.stringify(savedUsers));
+    
+    currentUser = newUser;
+    localStorage.setItem('gcseRevisionUser', JSON.stringify(newUser));
+    
+    closeAuthModal();
+    updateSettingsWithUserInfo();
+    showAlert('Account created successfully! Welcome, ' + name + '!', 'success');
+}
+
+function logout() {
+    if (confirm('Are you sure you want to sign out?')) {
+        currentUser = null;
+        localStorage.removeItem('gcseRevisionUser');
+        updateSettingsWithUserInfo();
+        showAlert('You have been signed out', 'success');
+    }
+}
+
+function updateSettingsWithUserInfo() {
+    const accountCard = document.querySelector('.settings-card:last-child');
+    if (!accountCard) return;
+    
+    if (currentUser) {
+        // Show user info
+        accountCard.innerHTML = `
+            <h4>
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Account
+            </h4>
+            <div class="user-info">
+                <div class="user-avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
+                <div class="user-details">
+                    <h4>${currentUser.name}</h4>
+                    <p>${currentUser.email}</p>
+                </div>
+            </div>
+            <div class="settings-control">
+                <button class="btn-secondary" onclick="showAuthModal()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Manage Account
+                </button>
+                <button class="btn-secondary" onclick="logout()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16,17 21,12 16,7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign Out
+                </button>
+            </div>
+        `;
+    } else {
+        // Show sign in button
+        accountCard.innerHTML = `
+            <h4>
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10,17 15,12 10,7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Account
+            </h4>
+            <p>Sign in to sync your progress across devices and backup your data</p>
+            <div class="settings-control">
+                <button class="btn-primary" onclick="showAuthModal()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                        <polyline points="10,17 15,12 10,7"/>
+                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    Sign In / Sign Up
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Bottom Navigation Functions
+function navigateToPage(pageId) {
+    showPage(pageId);
+    updateBottomNavigation(pageId);
+}
+
+function updateBottomNavigation(activePage) {
+    document.querySelectorAll('.bottom-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Update active state based on page
+    const navItems = document.querySelectorAll('.bottom-nav-item');
+    const pageIndex = ['home', 'dashboard', 'progress', 'settings'].indexOf(activePage);
+    if (pageIndex >= 0 && navItems[pageIndex]) {
+        navItems[pageIndex].classList.add('active');
+    }
+}
+
+// Haptic Feedback Function
+function triggerHaptic(element) {
+    // Add haptic animation class
+    element.classList.add('haptic');
+    
+    // Trigger vibration if supported
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50); // 50ms vibration
+    }
+    
+    // Remove animation class
+    setTimeout(() => {
+        element.classList.remove('haptic');
+    }, 300);
+}
+
+// Enhanced Swipe Gesture Functions
+let isSwipeActive = false;
+let swipeStartX = 0;
+let swipeStartY = 0;
+let activeSwipeElement = null;
+
+// Improved task touch handlers
+function handleTaskTouchStart(e) {
+    if (isSwipeActive) return;
+    
+    const touch = e.touches[0];
+    swipeStartX = touch.clientX;
+    swipeStartY = touch.clientY;
+    activeSwipeElement = e.currentTarget;
+    isSwipeActive = true;
+    
+    // Prevent default to avoid scrolling
+    e.preventDefault();
+}
+
+function handleTaskTouchMove(e) {
+    if (!isSwipeActive || !activeSwipeElement) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const deltaY = touch.clientY - swipeStartY;
+    
+    // Only handle horizontal swipes
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        resetSwipe();
+        return;
+    }
+    
+    e.preventDefault();
+    
+    const progress = Math.min(Math.abs(deltaX) / 120, 1);
+    const content = activeSwipeElement.querySelector('.task-content');
+    
+    if (deltaX > 30) {
+        // Right swipe - Delete (Red)
+        activeSwipeElement.style.background = `linear-gradient(90deg, #ef4444 ${progress * 100}%, var(--bg-secondary) ${progress * 100}%)`;
+        content.style.transform = `translateX(${Math.min(deltaX, 120)}px)`;
+        
+        // Show delete indicator
+        if (progress > 0.3) {
+            showSwipeIndicator(activeSwipeElement, 'delete', progress);
+        }
+    } else if (deltaX < -30) {
+        // Left swipe - Complete (Green)
+        activeSwipeElement.style.background = `linear-gradient(270deg, #10b981 ${progress * 100}%, var(--bg-secondary) ${progress * 100}%)`;
+        content.style.transform = `translateX(${Math.max(deltaX, -120)}px)`;
+        
+        // Show complete indicator
+        if (progress > 0.3) {
+            showSwipeIndicator(activeSwipeElement, 'complete', progress);
+        }
+    }
+}
+
+function handleTaskTouchEnd(e) {
+    if (!isSwipeActive || !activeSwipeElement) return;
+    
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const progress = Math.abs(deltaX) / 120;
+    
+    if (progress > 0.6) { // 60% swipe threshold
+        const taskId = activeSwipeElement.dataset.taskId;
+        
+        if (deltaX > 0) {
+            // Right swipe - Delete
+            showDeleteConfirmation(taskId, activeSwipeElement);
+        } else {
+            // Left swipe - Complete
+            completeTaskWithAnimation(taskId, activeSwipeElement);
+        }
+    } else {
+        // Reset if not enough swipe
+        resetSwipeAnimation(activeSwipeElement);
+    }
+    
+    resetSwipe();
+}
+
+function showSwipeIndicator(element, action, progress) {
+    let indicator = element.querySelector('.swipe-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'swipe-indicator';
+        element.appendChild(indicator);
+    }
+    
+    const icon = action === 'delete' ? 
+        '<svg viewBox="0 0 24 24" fill="white" style="width:24px;height:24px;"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6"/></svg>' :
+        '<svg viewBox="0 0 24 24" fill="white" style="width:24px;height:24px;"><polyline points="20,6 9,17 4,12"/></svg>';
+    
+    indicator.innerHTML = `
+        <div style="
+            position: absolute;
+            ${action === 'delete' ? 'right: 16px;' : 'left: 16px;'}
+            top: 50%;
+            transform: translateY(-50%) scale(${progress});
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: ${progress};
+            pointer-events: none;
+        ">
+            ${icon}
+            ${action === 'delete' ? 'Delete' : 'Complete'}
+        </div>
+    `;
+}
+
+function showDeleteConfirmation(taskId, element) {
+    // Vibrate for confirmation
+    if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]);
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'duplicate-modal-overlay';
+    modal.style.zIndex = '20000';
+    modal.innerHTML = `
+        <div class="duplicate-modal" style="max-width: 320px;">
+            <h3 style="color: var(--accent-red);">Delete Task?</h3>
+            <p>Are you sure you want to delete this revision task? This action cannot be undone.</p>
+            <div class="duplicate-modal-buttons">
+                <button class="duplicate-modal-button add-new" onclick="cancelDelete('${taskId}', this.closest('.duplicate-modal-overlay'))">
+                    Cancel
+                </button>
+                <button class="duplicate-modal-button replace" onclick="confirmDelete('${taskId}', this.closest('.duplicate-modal-overlay'))">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+    
+    // Store reference for cleanup
+    element.deleteModal = modal;
+}
+
+function cancelDelete(taskId, modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+    
+    // Reset the task element
+    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        resetSwipeAnimation(taskElement);
+    }
+}
+
+function confirmDelete(taskId, modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+    
+    // Delete the task
+    deleteTask(taskId);
+    
+    // Haptic feedback
+    if ('vibrate' in navigator) {
+        navigator.vibrate(200);
+    }
+    
+    showAlert('Task deleted', 'success');
+}
+
+function completeTaskWithAnimation(taskId, element) {
+    // Haptic feedback
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+    }
+    
+    // Complete the task
+    toggleTaskComplete(taskId);
+    
+    // Reset animation
+    resetSwipeAnimation(element);
+}
+
+function resetSwipeAnimation(element) {
+    const content = element.querySelector('.task-content');
+    const indicator = element.querySelector('.swipe-indicator');
+    
+    element.style.background = '';
+    content.style.transform = '';
+    
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function resetSwipe() {
+    isSwipeActive = false;
+    swipeStartX = 0;
+    swipeStartY = 0;
+    activeSwipeElement = null;
+}
+
+// Enhanced Page Switching with Bottom Nav Update
+const originalShowPage = showPage;
+showPage = function(pageId) {
+    originalShowPage(pageId);
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation(pageId);
+    }
+};
+
+// Initialize mobile features
+document.addEventListener('DOMContentLoaded', function() {
+    // Load user data
+    loadUserData();
+    
+    // Update bottom navigation on initial load
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation('home');
+    }
+});
     </script>
 </body>
 </html>
+
