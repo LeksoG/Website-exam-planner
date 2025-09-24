@@ -9005,6 +9005,8 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
+    <script src="config.js"></script>
+
 
     <script>
         // GCSE Revision Planner - Complete JavaScript Application
@@ -9041,11 +9043,10 @@ let googleCalendarAccessToken = null;
 let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
 
 // Google Calendar API Configuration
-const GOOGLE_CLIENT_ID = '706092852156-7n7geb46sf0qcqumbk53anb7gl2u6uth.apps.googleusercontent.com';
-const GOOGLE_API_KEY = 'AIzaSyCWGfdMc7ly5C97VNhPWPAHsaGq9fGKCes';
+const GOOGLE_CLIENT_ID = window.CONFIG?.GOOGLE_CLIENT_ID || 'your-google-client-id';
+const GOOGLE_API_KEY = window.CONFIG?.GOOGLE_API_KEY || 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-
 
 // UI State Variables
 let activeDropdown = null;
@@ -9066,7 +9067,7 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 // API Configuration
-const GEMINI_API_KEY = 'AIzaSyCVYNL_SjMbNl5fFPZrlbT3HGNya7IoLfY';
+const GEMINI_API_KEY = window.CONFIG?.GEMINI_API_KEY || 'your-gemini-api-key';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -11754,19 +11755,46 @@ async function toggleGoogleCalendarConnection() {
 let tokenClient;
 let accessToken = null;
 
+// Replace the existing initializeGoogleCalendar function
 async function initializeGoogleCalendar() {
-    console.log('Starting Google Calendar initialization with new GIS...');
+    console.log('Starting Google Calendar initialization...');
     
     // Check if API key and client ID are set
     if (!GOOGLE_API_KEY || GOOGLE_API_KEY === 'your-google-api-key') {
         throw new Error('Google API Key not configured. Please set GOOGLE_API_KEY.');
     }
     
-    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id.googleusercontent.com') {
+    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id') {
         throw new Error('Google Client ID not configured. Please set GOOGLE_CLIENT_ID.');
     }
     
     try {
+        // Wait for gapi to load
+        await new Promise((resolve, reject) => {
+            if (typeof gapi !== 'undefined') {
+                resolve();
+            } else {
+                const script = document.createElement('script');
+                script.src = 'https://apis.google.com/js/api.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            }
+        });
+
+        // Wait for google identity services
+        await new Promise((resolve, reject) => {
+            if (typeof google !== 'undefined' && google.accounts) {
+                resolve();
+            } else {
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            }
+        });
+        
         // Initialize gapi client
         await new Promise((resolve, reject) => {
             gapi.load('client', {
@@ -11805,7 +11833,13 @@ async function initializeGoogleCalendar() {
                 gapi.client.setToken({access_token: accessToken});
                 resolve();
             };
-            tokenClient.requestAccessToken();
+            
+            // Check if user gesture is required
+            if (typeof tokenClient.requestAccessToken === 'function') {
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                reject(new Error('Token client not properly initialized'));
+            }
         });
         
     } catch (error) {
@@ -12623,9 +12657,9 @@ function migrateExistingEmails() {
 
 // EmailJS Configuration
         const EMAILJS_CONFIG = {
-            serviceID: 'service_qpxfn0h',
-            templateID: 'template_4wa1r6s', 
-            publicKey: 'waYmChwv7LiRd1geI'
+            serviceID: window.CONFIG?.EMAILJS_SERVICE_ID || 'your-service-id',
+            templateID: window.CONFIG?.EMAILJS_TEMPLATE_ID || 'your-template-id', 
+            publicKey: window.CONFIG?.EMAILJS_PUBLIC_KEY || 'your-public-key'
         };
 
         // Initialize EmailJS
