@@ -9099,29 +9099,59 @@ async function loadConfig() {
   }
 }
 
-// Initialize configuration before using any APIs
+// Initialize configuration (fallback to hardcoded values if API fails)
 async function initializeApp() {
-  try {
-    await loadConfig();
-    
-    console.log('All configurations loaded');
-    
-    // Initialize EmailJS if available
-    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey) {
-      emailjs.init(EMAILJS_CONFIG.publicKey);
-      console.log('EmailJS initialized successfully');
+    try {
+        // Try to load from API, but don't fail if it doesn't work
+        await loadConfig();
+        console.log('Configuration loaded from API');
+    } catch (error) {
+        console.log('Using hardcoded configuration values');
+        // Configuration already set above as constants
     }
     
-    console.log('App initialization complete');
+    // Initialize EmailJS with existing config
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
     
-  } catch (error) {
-    console.error('App initialization failed:', error);
-    // You can show a user-friendly error message here
-    console.error('Please check your environment variables in Vercel');
-  }
+    console.log('All configurations loaded');
 }
 
-// Call initializeApp instead of loadConfig().then()
+// Also update the loadConfig function to not throw errors
+async function loadConfig() {
+    try {
+        console.log('Attempting to load configuration from /api/config...');
+        const response = await fetch('/api/config');
+        
+        if (!response.ok) {
+            throw new Error(`Config API returned ${response.status}`);
+        }
+        
+        const config = await response.json();
+        
+        // Only update if we got valid config from API
+        if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
+            // Update the global variables
+            window.GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+            window.GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+            
+            if (config.EMAILJS_SERVICE_ID) {
+                window.EMAILJS_CONFIG = {
+                    serviceID: config.EMAILJS_SERVICE_ID,
+                    templateID: config.EMAILJS_TEMPLATE_ID,
+                    publicKey: config.EMAILJS_PUBLIC_KEY
+                };
+            }
+        }
+        
+    } catch (error) {
+        console.log('Failed to load API config, using defaults:', error.message);
+        throw error; // Re-throw so initializeApp can catch it
+    }
+}
+
+// Initialize the app
 initializeApp();
         
 // UI State Variables
@@ -19521,6 +19551,7 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
 
 
