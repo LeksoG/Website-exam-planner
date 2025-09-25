@@ -9077,6 +9077,12 @@ async function loadConfig() {
     // Apply to existing variables
     GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID;
     GOOGLE_API_KEY = config.GOOGLE_API_KEY || GOOGLE_API_KEY;
+    
+    // Optional additional keys
+    GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
+    if (typeof STRIPE_PUBLISHABLE_KEY !== 'undefined') {
+      STRIPE_PUBLISHABLE_KEY = config.STRIPE_PUBLISHABLE_KEY || STRIPE_PUBLISHABLE_KEY;
+    }GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
 
     // EmailJS
     if (typeof EMAILJS_CONFIG !== 'undefined') {
@@ -9182,7 +9188,7 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 // API Configuration
-const GEMINI_API_KEY = 'your-gemini-api-key';
+let GEMINI_API_KEY = '';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -11875,11 +11881,11 @@ async function initializeGoogleCalendar() {
     console.log('Starting Google Calendar initialization...');
     
     // Check if API key and client ID are set
-    if (!GOOGLE_API_KEY || GOOGLE_API_KEY === 'your-google-api-key') {
+    if (!GOOGLE_API_KEY) {
         throw new Error('Google API Key not configured. Please set GOOGLE_API_KEY.');
     }
     
-    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id') {
+    if (!GOOGLE_CLIENT_ID) {
         throw new Error('Google Client ID not configured. Please set GOOGLE_CLIENT_ID.');
     }
     
