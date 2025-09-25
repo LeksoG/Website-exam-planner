@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCSE Revision Planner</title>
+    
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Enhanced Theme System - Root Variables */
@@ -9041,8 +9042,8 @@ let googleCalendarAccessToken = null;
 let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
 
 // Google Calendar API Configuration
-let GOOGLE_CLIENT_ID = 'your-google-client-id';
-let GOOGLE_API_KEY = 'your-google-api-key';
+let GOOGLE_CLIENT_ID = '';
+let GOOGLE_API_KEY = '';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 
@@ -9054,50 +9055,58 @@ let EMAILJS_CONFIG = {
 };
         
 // Fetch configuration from API
+
+
 async function loadConfig() {
   try {
     console.log('Loading configuration from /api/config...');
-    const response = await fetch('/api/config');
-    
+    const response = await fetch('/api/config', { cache: 'no-store' });
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Config API Error:', response.status, errorText);
       throw new Error(`Config API returned ${response.status}: ${errorText}`);
     }
-    
     const config = await response.json();
     console.log('Raw config received:', config);
-    
-    // Validate that we got the required fields
+
+    // Validate required fields
     if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_API_KEY) {
-      throw new Error('Missing Google API credentials in config');
+      console.warn('Missing Google config values in /api/config response');
     }
-    
-    // Update Google Calendar config
-    GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
-    GOOGLE_API_KEY = config.GOOGLE_API_KEY;
-    
-    // Update EmailJS config
-    EMAILJS_CONFIG = {
-      serviceID: config.EMAILJS_SERVICE_ID,
-      templateID: config.EMAILJS_TEMPLATE_ID,
-      publicKey: config.EMAILJS_PUBLIC_KEY
-    };
-    
+
+    // Apply to existing variables
+    GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID;
+    GOOGLE_API_KEY = config.GOOGLE_API_KEY || GOOGLE_API_KEY;
+
+    // EmailJS
+    if (typeof EMAILJS_CONFIG !== 'undefined') {
+      EMAILJS_CONFIG = {
+        serviceID: config.EMAILJS_SERVICE_ID || EMAILJS_CONFIG.serviceID,
+        templateID: config.EMAILJS_TEMPLATE_ID || EMAILJS_CONFIG.templateID,
+        publicKey: config.EMAILJS_PUBLIC_KEY || EMAILJS_CONFIG.publicKey
+      };
+    }
+
+    // Stripe publishable key (if referenced elsewhere)
+    if (typeof STRIPE_PUBLISHABLE_KEY !== 'undefined') {
+      STRIPE_PUBLISHABLE_KEY = config.STRIPE_PUBLISHABLE_KEY || STRIPE_PUBLISHABLE_KEY;
+    }
+
     configLoaded = true;
     console.log('Configuration loaded successfully');
     console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
     console.log('Google API Key set:', !!GOOGLE_API_KEY);
-    console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
-    
+    console.log('EmailJS config set:', EMAILJS_CONFIG && !!EMAILJS_CONFIG.publicKey);
+
     return config;
-    
   } catch (error) {
     console.error('Failed to load configuration:', error);
     configLoaded = false;
     throw error;
   }
 }
+
+
 
 // Initialize configuration (fallback to hardcoded values if API fails)
 async function initializeApp() {
@@ -19551,8 +19560,3 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
-
-
-
-
-
