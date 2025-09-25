@@ -9148,11 +9148,12 @@ async function loadConfig() {
         // Only update if we got valid config from API
         if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
             // Update the global variables
-            window.GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
-            window.GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+            GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+            GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+            GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
             
             if (config.EMAILJS_SERVICE_ID) {
-                window.EMAILJS_CONFIG = {
+                EMAILJS_CONFIG = {
                     serviceID: config.EMAILJS_SERVICE_ID,
                     templateID: config.EMAILJS_TEMPLATE_ID,
                     publicKey: config.EMAILJS_PUBLIC_KEY
@@ -14747,7 +14748,7 @@ async function processAIResponse(userMessage) {
 // Google Gemini API Integration with improved error handling
 async function callGeminiAPI(userMessage, context) {
     // First check if API key is valid
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyAd9K0tS-0p-bVyVUhlFkNNCbuU9qJ5qQ4' || GEMINI_API_KEY.length < 30) {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY.length < 30) {
         console.log('Using mock response - API key not configured');
         throw new Error('API key not configured');
     }
