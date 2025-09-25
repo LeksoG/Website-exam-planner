@@ -11796,7 +11796,10 @@ function saveEnhancedSubjectReminder(event, subject) {
 }
 
 async function createEnhancedCalendarReminder(reminderData) {
-    if (!isGoogleCalendarConnected || !accessToken) return;
+    if (!isGoogleCalendarConnected || !accessToken) {
+        console.log('Google Calendar not connected, skipping calendar reminder creation');
+        return;
+    }
     
     try {
         const { subject, time, message, type, selectedDays } = reminderData;
@@ -11814,21 +11817,30 @@ async function createEnhancedCalendarReminder(reminderData) {
             // Create daily recurring event
             const startDate = new Date();
             startDate.setHours(hours, minutes, 0, 0);
+            // If time has passed today, start tomorrow
+            if (startDate.getTime() < Date.now()) {
+                startDate.setDate(startDate.getDate() + 1);
+            }
             
             await createRecurringCalendarEvent(subject, message, startDate, 'DAILY');
             
         } else if (type === 'weekly' || type === 'custom') {
             // Create events for selected days
-            for (const day of selectedDays) {
+            const promises = selectedDays.map(async (day) => {
                 const startDate = getNextDateForDay(day);
                 startDate.setHours(hours, minutes, 0, 0);
                 
-                await createRecurringCalendarEvent(subject, message, startDate, 'WEEKLY');
-            }
+                return await createRecurringCalendarEvent(subject, message, startDate, 'WEEKLY');
+            });
+            
+            await Promise.allSettled(promises);
         }
+        
+        console.log('Enhanced calendar reminder created successfully');
         
     } catch (error) {
         console.error('Failed to create enhanced calendar reminder:', error);
+        // Don't throw the error - just log it so the local reminder still works
     }
 }
 
@@ -11866,6 +11878,89 @@ function saveSubjectReminder(event, subject) {
     document.querySelector('.auth-overlay').remove();
     populateSubjectReminders();
     showAlert(`${subject} reminder set for ${time}`, 'success');
+}
+
+// ADD THE TWO NEW FUNCTIONS RIGHT HERE:
+
+async function createSingleCalendarEvent(subject, message, dateTime) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const endDateTime = new Date(dateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        
+        const event = {
+            summary: `Study Reminder: ${subject}`,
+            description: message,
+            start: {
+                dateTime: dateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            end: {
+                dateTime: endDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    {method: 'popup', minutes: 0},
+                    {method: 'email', minutes: 10}
+                ]
+            }
+        };
+        
+        const response = await gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: event
+        });
+        
+        console.log('Single calendar reminder created for', subject, response);
+        return response;
+        
+    } catch (error) {
+        console.error('Failed to create single calendar reminder:', error);
+        throw error;
+    }
+}
+
+async function createRecurringCalendarEvent(subject, message, startDateTime, frequency) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        
+        const event = {
+            summary: `Study Reminder: ${subject}`,
+            description: message,
+            start: {
+                dateTime: startDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            end: {
+                dateTime: endDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            recurrence: [`RRULE:FREQ=${frequency}`],
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    {method: 'popup', minutes: 0},
+                    {method: 'email', minutes: 10}
+                ]
+            }
+        };
+        
+        const response = await gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: event
+        });
+        
+        console.log('Recurring calendar reminder created for', subject, response);
+        return response;
+        
+    } catch (error) {
+        console.error('Failed to create recurring calendar reminder:', error);
+        throw error;
+    }
 }
 
 function addRemindersToSchedule() {
@@ -14821,17 +14916,17 @@ async function processAIResponse(userMessage) {
     }
 }
 
-// Google Gemini API Integration with improved error handling
 async function callGeminiAPI(userMessage, context) {
-    // First check if API key is valid
+    // Check if API key is valid
     if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyAd9K0tS-0p-bVyVUhlFkNNCbuU9qJ5qQ4' || GEMINI_API_KEY.length < 30) {
         console.log('Using mock response - API key not configured');
         throw new Error('API key not configured');
     }
 
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+    // Updated API URL - use the correct endpoint
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
     
-    // Create system prompt with context
+    // Rest of the function stays the same...
     const systemPrompt = createSystemPrompt(context);
     const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`;
     
@@ -14846,25 +14941,7 @@ async function callGeminiAPI(userMessage, context) {
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 1024,
-        },
-        safetySettings: [
-            {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-        ]
+        }
     };
 
     try {
@@ -14895,19 +14972,10 @@ async function callGeminiAPI(userMessage, context) {
 
         const aiResponse = data.candidates[0].content.parts[0].text;
         
-        // Parse response for actions
         return parseGeminiResponse(aiResponse, context);
         
     } catch (error) {
         console.error('Gemini API Error:', error);
-        
-        // For development purposes, show a helpful message
-        if (error.message.includes('404')) {
-            console.log('API endpoint not found. Using mock response.');
-        } else if (error.message.includes('403')) {
-            console.log('API key invalid or no permissions. Using mock response.');
-        }
-        
         throw error;
     }
 }
@@ -19177,49 +19245,27 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAppState();
     loadSettings();
     
-    // Initialize authentication system (will show auth modal if not logged in)
+    // Initialize authentication system
     initAuthenticationSystem();
     
     // Initialize EmailJS
     initEmailJS();
     
-    // Rest of your existing initialization code...
+    // Migrate existing emails to lowercase
+    migrateExistingEmails();
+    
+    // Rest of initialization...
     const currentPage = appState.currentPage || 'home';
     
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.getElementById(currentPage).classList.add('active');
-    
-    document.querySelectorAll('.sidebar-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    const sidebarItem = document.querySelector(`[onclick="showPage('${currentPage}')"]`);
-    if (sidebarItem) {
-        const closestItem = sidebarItem.closest('.sidebar-item');
-        if (closestItem) closestItem.classList.add('active');
-    }
-    
-    if (window.innerWidth <= 768) {
-        updateBottomNavigation(currentPage);
-    }
-    
-    if (userSettings.useTopTabBar && window.innerWidth > 768) {
-        setTimeout(() => {
-            updateTopTabActive();
-            initDragNavigation();
-
-        }, 100);
-    }
-    
-    toggleAIButtonVisibility(currentPage);
-    
-    setTimeout(initHomeUpload, 100);
-    handleDaysUntilExamChange();
-    
+    // Initialize upload after a delay to ensure DOM is ready
     setTimeout(() => {
-        updateDashboard();
-        updateProgress();
-    }, 100);
+        initHomeUpload();
+    }, 500);
+    
+    // Handle days until exam change
+    setTimeout(() => {
+        handleDaysUntilExamChange();
+    }, 300);
     
     setTimeout(() => {
         if (Object.keys(appState.schedules).length > 0) {
@@ -19510,59 +19556,87 @@ function closeFileView() {
 }
 
 function initHomeUpload() {
+    // Wait for DOM to be fully ready
+    if (document.readyState !== 'complete') {
+        setTimeout(initHomeUpload, 100);
+        return;
+    }
+    
     const uploadArea = document.getElementById('homeUploadArea');
     const fileInput = document.getElementById('homeFileUpload');
+    const uploadSection = document.getElementById('homeUploadSection');
     
-    if (!uploadArea || !fileInput) {
-        console.log('Upload elements not found, retrying...');
+    if (!uploadSection) {
+        console.log('Upload section not found, retrying...');
         setTimeout(initHomeUpload, 500);
         return;
     }
     
+    // If upload area doesn't exist but section does, create it
+    if (!uploadArea) {
+        updateHomeUploadDisplay();
+        setTimeout(initHomeUpload, 200);
+        return;
+    }
+    
+    if (!fileInput) {
+        console.log('File input not found, creating it...');
+        const newFileInput = document.createElement('input');
+        newFileInput.type = 'file';
+        newFileInput.id = 'homeFileUpload';
+        newFileInput.accept = 'image/*,application/pdf';
+        newFileInput.multiple = true;
+        newFileInput.style.display = 'none';
+        uploadSection.appendChild(newFileInput);
+        setTimeout(initHomeUpload, 200);
+        return;
+    }
+    
     // Remove existing listeners to prevent duplicates
-    uploadArea.replaceWith(uploadArea.cloneNode(true));
-    const newUploadArea = document.getElementById('homeUploadArea');
-    const newFileInput = document.getElementById('homeFileUpload');
+    const newUploadArea = uploadArea.cloneNode(true);
+    const newFileInput = fileInput.cloneNode(true);
     
+    uploadArea.parentNode.replaceChild(newUploadArea, uploadArea);
+    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    
+    // Add event listeners
+    setupUploadListeners(newUploadArea, newFileInput);
+    
+    console.log('Upload initialization complete');
+}
+
+function setupUploadListeners(uploadArea, fileInput) {
     // Drag and drop events
-    newUploadArea.addEventListener('dragover', (e) => {
+    uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.add('dragover');
+        uploadArea.classList.add('dragover');
     });
     
-    newUploadArea.addEventListener('dragleave', (e) => {
+    uploadArea.addEventListener('dragleave', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.remove('dragover');
+        uploadArea.classList.remove('dragover');
     });
     
-    newUploadArea.addEventListener('drop', (e) => {
+    uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.remove('dragover');
+        uploadArea.classList.remove('dragover');
         handleFiles(e.dataTransfer.files);
     });
     
-    newUploadArea.addEventListener('click', (e) => {
+    uploadArea.addEventListener('click', (e) => {
         e.preventDefault();
-        newFileInput.click();
+        fileInput.click();
     });
     
-    newFileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             handleFiles(e.target.files);
         }
     });
-    
-    updateHomeUploadDisplay();
 }
-
-// Ensure this is called after DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // ... existing code ...
-    setTimeout(initHomeUpload, 100);
-});
 
 function updateHomeUploadDisplay() {
     const section = document.getElementById('homeUploadSection');
