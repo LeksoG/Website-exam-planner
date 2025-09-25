@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCSE Revision Planner</title>
-    
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Enhanced Theme System - Root Variables */
@@ -9042,134 +9041,12 @@ let googleCalendarAccessToken = null;
 let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
 
 // Google Calendar API Configuration
-let GOOGLE_CLIENT_ID = '';
-let GOOGLE_API_KEY = '';
+const GOOGLE_CLIENT_ID = '706092852156-7n7geb46sf0qcqumbk53anb7gl2u6uth.apps.googleusercontent.com';
+const GOOGLE_API_KEY = 'AIzaSyCWGfdMc7ly5C97VNhPWPAHsaGq9fGKCes';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 
-        // EmailJS Configuration
-let EMAILJS_CONFIG = {
-    serviceID: 'your-service-id',
-    templateID: 'your-template-id',
-    publicKey: 'your-public-key'
-};
-        
-// Fetch configuration from API
 
-
-async function loadConfig() {
-  try {
-    console.log('Loading configuration from /api/config...');
-    const response = await fetch('/api/config', { cache: 'no-store' });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Config API Error:', response.status, errorText);
-      throw new Error(`Config API returned ${response.status}: ${errorText}`);
-    }
-    const config = await response.json();
-    console.log('Raw config received:', config);
-
-    // Validate required fields
-    if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_API_KEY) {
-      console.warn('Missing Google config values in /api/config response');
-    }
-
-    // Apply to existing variables
-    GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID;
-    GOOGLE_API_KEY = config.GOOGLE_API_KEY || GOOGLE_API_KEY;
-    
-    // Optional additional keys
-    GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
-    if (typeof STRIPE_PUBLISHABLE_KEY !== 'undefined') {
-      STRIPE_PUBLISHABLE_KEY = config.STRIPE_PUBLISHABLE_KEY || STRIPE_PUBLISHABLE_KEY;
-    }GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
-
-    // EmailJS
-    if (typeof EMAILJS_CONFIG !== 'undefined') {
-      EMAILJS_CONFIG = {
-        serviceID: config.EMAILJS_SERVICE_ID || EMAILJS_CONFIG.serviceID,
-        templateID: config.EMAILJS_TEMPLATE_ID || EMAILJS_CONFIG.templateID,
-        publicKey: config.EMAILJS_PUBLIC_KEY || EMAILJS_CONFIG.publicKey
-      };
-    }
-
-    // Stripe publishable key (if referenced elsewhere)
-    if (typeof STRIPE_PUBLISHABLE_KEY !== 'undefined') {
-      STRIPE_PUBLISHABLE_KEY = config.STRIPE_PUBLISHABLE_KEY || STRIPE_PUBLISHABLE_KEY;
-    }
-
-    configLoaded = true;
-    console.log('Configuration loaded successfully');
-    console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
-    console.log('Google API Key set:', !!GOOGLE_API_KEY);
-    console.log('EmailJS config set:', EMAILJS_CONFIG && !!EMAILJS_CONFIG.publicKey);
-
-    return config;
-  } catch (error) {
-    console.error('Failed to load configuration:', error);
-    configLoaded = false;
-    throw error;
-  }
-}
-
-
-
-// Initialize configuration (fallback to hardcoded values if API fails)
-async function initializeApp() {
-    try {
-        // Try to load from API, but don't fail if it doesn't work
-        await loadConfig();
-        console.log('Configuration loaded from API');
-    } catch (error) {
-        console.log('Using hardcoded configuration values');
-        // Configuration already set above as constants
-    }
-    
-    // Initialize EmailJS with existing config
-    if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_CONFIG.publicKey);
-    }
-    
-    console.log('All configurations loaded');
-}
-
-// Also update the loadConfig function to not throw errors
-async function loadConfig() {
-    try {
-        console.log('Attempting to load configuration from /api/config...');
-        const response = await fetch('/api/config');
-        
-        if (!response.ok) {
-            throw new Error(`Config API returned ${response.status}`);
-        }
-        
-        const config = await response.json();
-        
-        // Only update if we got valid config from API
-        if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
-            // Update the global variables
-            GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
-            GOOGLE_API_KEY = config.GOOGLE_API_KEY;
-            GEMINI_API_KEY = (config.GEMINI_API_KEY || GEMINI_API_KEY);
-            
-            if (config.EMAILJS_SERVICE_ID) {
-                EMAILJS_CONFIG = {
-                    serviceID: config.EMAILJS_SERVICE_ID,
-                    templateID: config.EMAILJS_TEMPLATE_ID,
-                    publicKey: config.EMAILJS_PUBLIC_KEY
-                };
-            }
-        }
-        
-    } catch (error) {
-        console.log('Failed to load API config, using defaults:', error.message);
-        throw error; // Re-throw so initializeApp can catch it
-    }
-}
-
-// Initialize the app
-initializeApp();
-        
 // UI State Variables
 let activeDropdown = null;
 let sidebarTimeout = null;
@@ -9189,7 +9066,7 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 // API Configuration
-let GEMINI_API_KEY = '';
+const GEMINI_API_KEY = 'AIzaSyCVYNL_SjMbNl5fFPZrlbT3HGNya7IoLfY';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -11690,6 +11567,22 @@ function populateSubjectReminders() {
     
     container.innerHTML = activeSchedule.subjects.map(subject => {
         const existingReminder = studyReminders.find(r => r.subject === subject);
+        
+        let frequencyText = '';
+        if (existingReminder) {
+            if (existingReminder.type === 'daily') {
+                frequencyText = 'Daily';
+            } else if (existingReminder.type === 'weekly' && existingReminder.selectedDays) {
+                frequencyText = `Weekly (${existingReminder.selectedDays.length} days)`;
+            } else if (existingReminder.type === 'custom' && existingReminder.selectedDays) {
+                frequencyText = `${existingReminder.selectedDays.length} days per week`;
+            } else if (existingReminder.type === 'once') {
+                frequencyText = 'One-time';
+            } else {
+                frequencyText = 'Daily';
+            }
+        }
+        
         return `
             <div class="subject-reminder-item" style="
                 display: flex;
@@ -11703,7 +11596,7 @@ function populateSubjectReminders() {
                 <div>
                     <strong style="color: var(--text-primary);">${subject}</strong>
                     <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.8rem;">
-                        ${existingReminder ? `Daily at ${existingReminder.time}` : 'No reminder set'}
+                        ${existingReminder ? `${frequencyText} at ${existingReminder.time}` : 'No reminder set'}
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -11717,7 +11610,7 @@ function populateSubjectReminders() {
                         font-weight: 600;
                         cursor: pointer;
                     ">
-                        ${existingReminder ? 'Update' : 'Set Time'}
+                        ${existingReminder ? 'Update' : 'Set Reminder'}
                     </button>
                     ${existingReminder ? `
                         <button onclick="removeSubjectReminder('${subject}')" style="
@@ -11741,21 +11634,82 @@ function setSubjectReminder(subject) {
     const modal = document.createElement('div');
     modal.className = 'auth-overlay';
     modal.innerHTML = `
-        <div class="auth-modal">
+        <div class="auth-modal" style="max-width: 500px;">
             <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">×</button>
             <div class="auth-header">
                 <h2>Set ${subject} Reminder</h2>
-                <p>Choose when you'd like to be reminded to study ${subject}</p>
+                <p>Configure when and how often you'd like to be reminded to study ${subject}</p>
             </div>
-            <form onsubmit="saveSubjectReminder(event, '${subject}')">
+            <form onsubmit="saveEnhancedSubjectReminder(event, '${subject}')">
                 <div class="auth-input-group">
                     <label>Reminder Time</label>
                     <input type="time" id="reminderTime" class="auth-input" required>
                 </div>
+                
                 <div class="auth-input-group">
-                    <label>Message (Optional)</label>
+                    <label>Reminder Type</label>
+                    <select id="reminderType" class="auth-input" onchange="toggleRecurringOptions()" required>
+                        <option value="">Choose reminder type...</option>
+                        <option value="once">One-time reminder</option>
+                        <option value="daily">Daily reminder</option>
+                        <option value="weekly">Weekly reminder</option>
+                        <option value="custom">Custom frequency</option>
+                    </select>
+                </div>
+                
+                <div id="recurringOptions" style="display: none; margin-top: 16px;">
+                    <div class="auth-input-group">
+                        <label>Days of the Week</label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-monday" value="monday"> Monday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-tuesday" value="tuesday"> Tuesday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-wednesday" value="wednesday"> Wednesday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-thursday" value="thursday"> Thursday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-friday" value="friday"> Friday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-saturday" value="saturday"> Saturday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-sunday" value="sunday"> Sunday
+                            </label>
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <button type="button" onclick="selectAllDays()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border-color);
+                                border-radius: 6px;
+                                padding: 6px 12px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                                margin-right: 8px;
+                            ">Select All</button>
+                            <button type="button" onclick="selectWeekdays()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border-color);
+                                border-radius: 6px;
+                                padding: 6px 12px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                            ">Weekdays Only</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label>Custom Message (Optional)</label>
                     <input type="text" id="reminderMessage" class="auth-input" placeholder="Time to study ${subject}!">
                 </div>
+                
                 <button type="submit" class="auth-submit">Save Reminder</button>
             </form>
         </div>
@@ -11764,19 +11718,134 @@ function setSubjectReminder(subject) {
     setTimeout(() => modal.classList.add('show'), 100);
 }
 
-function removeSubjectReminder(subject) {
-    if (confirm(`Remove reminder for ${subject}?`)) {
-        studyReminders = studyReminders.filter(r => r.subject !== subject);
-        localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+function toggleRecurringOptions() {
+    const type = document.getElementById('reminderType').value;
+    const options = document.getElementById('recurringOptions');
+    
+    if (type === 'weekly' || type === 'custom') {
+        options.style.display = 'block';
+        if (type === 'weekly') {
+            selectWeekdays(); // Auto-select weekdays for weekly reminders
+        }
+    } else {
+        options.style.display = 'none';
+    }
+}
+
+function selectAllDays() {
+    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = true);
+}
+
+function selectWeekdays() {
+    const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
+    
+    checkboxes.forEach(cb => {
+        cb.checked = weekdays.includes(cb.value);
+    });
+}
+
+function saveEnhancedSubjectReminder(event, subject) {
+    event.preventDefault();
+    
+    const time = document.getElementById('reminderTime').value;
+    const type = document.getElementById('reminderType').value;
+    const message = document.getElementById('reminderMessage').value || `Time to study ${subject}!`;
+    
+    let selectedDays = [];
+    if (type === 'weekly' || type === 'custom') {
+        const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]:checked');
+        selectedDays = Array.from(checkboxes).map(cb => cb.value);
         
-        // Clear the notification timer for this subject
-        if (isGoogleCalendarConnected) {
-            setupAllReminders(); // Refresh all reminders
+        if (selectedDays.length === 0) {
+            showAlert('Please select at least one day for recurring reminders', 'error');
+            return;
+        }
+    }
+    
+    // Remove existing reminders for this subject
+    studyReminders = studyReminders.filter(r => r.subject !== subject);
+    
+    // Add new reminder(s)
+    const reminderData = {
+        subject: subject,
+        time: time,
+        message: message,
+        type: type,
+        selectedDays: selectedDays,
+        created: new Date().toISOString()
+    };
+    
+    studyReminders.push(reminderData);
+    localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+    
+    // Create calendar events if connected
+    if (isGoogleCalendarConnected) {
+        createEnhancedCalendarReminder(reminderData);
+    }
+    
+    document.querySelector('.auth-overlay').remove();
+    populateSubjectReminders();
+    
+    const frequency = type === 'daily' ? 'daily' : 
+                     type === 'weekly' ? `weekly (${selectedDays.length} days)` :
+                     type === 'custom' ? `${selectedDays.length} days per week` : 'once';
+    
+    showAlert(`${subject} reminder set for ${time} - ${frequency}`, 'success');
+}
+
+async function createEnhancedCalendarReminder(reminderData) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const { subject, time, message, type, selectedDays } = reminderData;
+        const [hours, minutes] = time.split(':');
+        
+        if (type === 'once') {
+            // Create single event for tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(hours, minutes, 0, 0);
+            
+            await createSingleCalendarEvent(subject, message, tomorrow);
+            
+        } else if (type === 'daily') {
+            // Create daily recurring event
+            const startDate = new Date();
+            startDate.setHours(hours, minutes, 0, 0);
+            
+            await createRecurringCalendarEvent(subject, message, startDate, 'DAILY');
+            
+        } else if (type === 'weekly' || type === 'custom') {
+            // Create events for selected days
+            for (const day of selectedDays) {
+                const startDate = getNextDateForDay(day);
+                startDate.setHours(hours, minutes, 0, 0);
+                
+                await createRecurringCalendarEvent(subject, message, startDate, 'WEEKLY');
+            }
         }
         
-        populateSubjectReminders();
-        showAlert(`${subject} reminder removed`, 'success');
+    } catch (error) {
+        console.error('Failed to create enhanced calendar reminder:', error);
     }
+}
+
+function getNextDateForDay(dayName) {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date();
+    const todayIndex = today.getDay();
+    const targetIndex = days.indexOf(dayName.toLowerCase());
+    
+    let daysUntilTarget = targetIndex - todayIndex;
+    if (daysUntilTarget <= 0) {
+        daysUntilTarget += 7; // Next week
+    }
+    
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + daysUntilTarget);
+    return targetDate;
 }
 
 function saveSubjectReminder(event, subject) {
@@ -11882,11 +11951,11 @@ async function initializeGoogleCalendar() {
     console.log('Starting Google Calendar initialization...');
     
     // Check if API key and client ID are set
-    if (!GOOGLE_API_KEY) {
+    if (!GOOGLE_API_KEY || GOOGLE_API_KEY === 'your-google-api-key') {
         throw new Error('Google API Key not configured. Please set GOOGLE_API_KEY.');
     }
     
-    if (!GOOGLE_CLIENT_ID) {
+    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id') {
         throw new Error('Google Client ID not configured. Please set GOOGLE_CLIENT_ID.');
     }
     
@@ -12776,6 +12845,13 @@ function migrateExistingEmails() {
     
     return migratedUsers;
 }
+
+// EmailJS Configuration
+        const EMAILJS_CONFIG = {
+            serviceID: 'service_qpxfn0h',
+            templateID: 'template_fgzy3dv', 
+            publicKey: 'waYmChwv7LiRd1geI'
+        };
 
         // Initialize EmailJS
 function initEmailJS() {
@@ -14748,7 +14824,7 @@ async function processAIResponse(userMessage) {
 // Google Gemini API Integration with improved error handling
 async function callGeminiAPI(userMessage, context) {
     // First check if API key is valid
-    if (!GEMINI_API_KEY || GEMINI_API_KEY.length < 30) {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyAd9K0tS-0p-bVyVUhlFkNNCbuU9qJ5qQ4' || GEMINI_API_KEY.length < 30) {
         console.log('Using mock response - API key not configured');
         throw new Error('API key not configured');
     }
@@ -19331,33 +19407,105 @@ function deleteUploadedFile(fileId) {
     showAlert('File deleted', 'success');
 }
 
-// Add the viewUploadedFile function here:
 function viewUploadedFile(fileId) {
     const file = uploadedFiles.find(f => f.id == fileId);
     if (!file) return;
     
+    // Create full-screen modal
+    const modal = document.createElement('div');
+    modal.id = 'fileViewModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    let content = '';
     if (file.type === 'application/pdf') {
-        // Open PDF in new window
-        const newWindow = window.open('', '_blank');
-        newWindow.document.write(`
-            <html>
-                <head><title>${file.name}</title></head>
-                <body style="margin:0;padding:0;">
-                    <embed src="${file.data}" type="application/pdf" width="100%" height="100%" />
-                </body>
-            </html>
-        `);
+        content = `<embed src="${file.data}" type="application/pdf" style="width: 90%; height: 90%; border-radius: 8px;" />`;
     } else {
-        // Open image in new window
-        const newWindow = window.open('', '_blank');
-        newWindow.document.write(`
-            <html>
-                <head><title>${file.name}</title></head>
-                <body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;background:#000;">
-                    <img src="${file.data}" style="max-width:100%;max-height:100%;object-fit:contain;" />
-                </body>
-            </html>
-        `);
+        content = `<img src="${file.data}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;" alt="${file.name}">`;
+    }
+    
+    modal.innerHTML = `
+        ${content}
+        <button onclick="closeFileView()" style="
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000000;
+        " onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">×</button>
+        <div style="
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        ">${file.name} • ${file.size} • Press ESC to close</div>
+    `;
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeFileView();
+        }
+    });
+    
+    document.body.appendChild(modal);
+    
+    // Add ESC key listener
+    function handleEscape(event) {
+        if (event.key === 'Escape') {
+            closeFileView();
+        }
+    }
+    
+    document.addEventListener('keydown', handleEscape);
+    modal.escapeHandler = handleEscape; // Store reference for cleanup
+    
+    // Animate in
+    setTimeout(() => modal.style.opacity = '1', 50);
+}
+
+function closeFileView() {
+    const modal = document.getElementById('fileViewModal');
+    if (modal) {
+        // Remove ESC listener
+        if (modal.escapeHandler) {
+            document.removeEventListener('keydown', modal.escapeHandler);
+        }
+        
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 300);
     }
 }
 
@@ -19567,3 +19715,4 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
