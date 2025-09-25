@@ -1,4 +1,4 @@
-// api/config.js
+// api/config.js just for test
 export default function handler(req, res) {
   // Only allow GET requests
   if (req.method !== 'GET') {
@@ -33,4 +33,5 @@ export default function handler(req, res) {
   }
 
   res.status(200).json(config);
+
 }
