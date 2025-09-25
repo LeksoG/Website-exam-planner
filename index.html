@@ -9043,11 +9043,55 @@ let googleCalendarAccessToken = null;
 let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
 
 // Google Calendar API Configuration
-const GOOGLE_CLIENT_ID = window.CONFIG?.GOOGLE_CLIENT_ID || 'your-google-client-id';
-const GOOGLE_API_KEY = window.CONFIG?.GOOGLE_API_KEY || 'your-google-api-key';
+let GOOGLE_CLIENT_ID = 'your-google-client-id';
+let GOOGLE_API_KEY = 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 
+        // EmailJS Configuration
+let EMAILJS_CONFIG = {
+    serviceID: 'your-service-id',
+    templateID: 'your-template-id',
+    publicKey: 'your-public-key'
+};
+        
+// Fetch configuration from API
+async function loadConfig() {
+  try {
+    const response = await fetch('/api/config');
+    if (response.ok) {
+      const config = await response.json();
+      
+      // Update Google Calendar config
+      GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+      GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+      
+      // Update EmailJS config
+      EMAILJS_CONFIG = {
+        serviceID: config.EMAILJS_SERVICE_ID,
+        templateID: config.EMAILJS_TEMPLATE_ID,
+        publicKey: config.EMAILJS_PUBLIC_KEY
+      };
+      
+      console.log('Configuration loaded successfully');
+    }
+  } catch (error) {
+    console.error('Failed to load configuration:', error);
+    // Fallback to default values
+  }
+}
+
+        // Initialize configuration before using any APIs
+loadConfig().then(() => {
+  // Your Google Calendar and EmailJS initialization code here
+  console.log('All configurations loaded');
+  
+  // Example: Initialize EmailJS
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_CONFIG.publicKey);
+  }
+});
+        
 // UI State Variables
 let activeDropdown = null;
 let sidebarTimeout = null;
@@ -9067,7 +9111,7 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 // API Configuration
-const GEMINI_API_KEY = window.CONFIG?.GEMINI_API_KEY || 'your-gemini-api-key';
+const GEMINI_API_KEY = 'your-gemini-api-key';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -12654,13 +12698,6 @@ function migrateExistingEmails() {
     
     return migratedUsers;
 }
-
-// EmailJS Configuration
-        const EMAILJS_CONFIG = {
-            serviceID: window.CONFIG?.EMAILJS_SERVICE_ID || 'your-service-id',
-            templateID: window.CONFIG?.EMAILJS_TEMPLATE_ID || 'your-template-id', 
-            publicKey: window.CONFIG?.EMAILJS_PUBLIC_KEY || 'your-public-key'
-        };
 
         // Initialize EmailJS
 function initEmailJS() {
@@ -19452,4 +19489,5 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
