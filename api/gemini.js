@@ -1,76 +1,20208 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCSE Revision Planner</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Enhanced Theme System - Root Variables */
+/* Updated Theme System - Only White and Black */
+:root {
+    /* Default White Theme */
+    --bg-primary: linear-gradient(135deg, #ffffff 0%, #fefefe 25%, #f9fafb 50%, #f3f4f6 75%, #e5e7eb 100%);
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.98);
+    --bg-card-hover: rgba(255, 255, 255, 1);
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --accent-blue-light: rgba(59, 130, 246, 0.08);
+    --accent-green: #059669;
+    --accent-red: #dc2626;
+    --border-color: rgba(209, 213, 219, 0.3);
+    --border-hover: rgba(59, 130, 246, 0.3);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(209, 213, 219, 0.3);
+    --sidebar-bg: rgba(255, 255, 255, 0.99);
+    --sidebar-highlight: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%);
+    --calendar-header: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    --calendar-day: #fefefe;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+/* Black Theme */
+[data-theme="black"] {
+    --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+    --bg-secondary: #1e293b;
+    --bg-card: rgba(30, 41, 59, 0.95);
+    --bg-card-hover: rgba(30, 41, 59, 0.98);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --accent-blue: #60a5fa;
+    --accent-blue-hover: #3b82f6;
+    --accent-blue-light: rgba(96, 165, 250, 0.15);
+    --accent-green: #34d399;
+    --accent-red: #f87171;
+    --border-color: rgba(71, 85, 105, 0.3);
+    --border-hover: rgba(96, 165, 250, 0.4);
+    --glass-bg: rgba(30, 41, 59, 0.9);
+    --glass-border: rgba(71, 85, 105, 0.4);
+    --sidebar-bg: rgba(15, 23, 42, 0.98);
+    --sidebar-highlight: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(96, 165, 250, 0.08) 100%);
+    --calendar-header: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --calendar-day: #334155;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+}
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+/* Ensure only 4 tab colors work consistently */
+.tab.color-1 { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6; }
+.tab.color-2 { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-color: #7c3aed; }
+.tab.color-3 { background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: #059669; }
+.tab.color-4 { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border-color: #ea580c; }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+/* Smooth theme transitions */
+* {
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  if (!GEMINI_API_KEY) {
-    return res.status(500).json({ error: 'API key not configured' });
-  }
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  try {
-    const { prompt, imageData, type } = req.body;
-    
-    let requestBody;
-    let modelName;
-    
-    if (type === 'image' && imageData) {
-      modelName = 'gemini-pro-vision';
-      requestBody = {
-        contents: [{
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType: imageData.mimeType,
-                data: imageData.data
-              }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-weight: 400;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-overlay);
+            backdrop-filter: blur(0.5px);
+            z-index: -1;
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .container.sidebar-open {
+            margin-left: 280px;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #60a5fa  75%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.04em;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Professional Icon Styles */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Enhanced Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(30px);
+            border-right: 2px solid var(--glass-border);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 32px 28px;
+            border-bottom: 2px solid var(--glass-border);
+            background: var(--gradient-overlay);
+        }
+
+        .sidebar-header h2 {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-nav {
+            padding: 32px 0;
+        }
+
+        /* Enhanced Sidebar Item with Oval Highlighting */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 28px;
+            margin: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.05rem;
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background: var(--sidebar-highlight);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .sidebar-item::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 32px;
+            background: var(--accent-blue);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            color: var(--accent-blue);
+            background: var(--sidebar-highlight);
+            border-radius: 24px;
+            transform: translateX(4px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            left: 0;
+        }
+
+        .sidebar-item:hover::after,
+        .sidebar-item.active::after {
+            width: 4px;
+        }
+
+        .sidebar-item.active {
+            background: var(--accent-blue-light);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+        }
+
+        /* Sidebar Trigger - Updated for hover */
+        .sidebar-trigger {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 100vh;
+            z-index: 998;
+            cursor: pointer;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.05) 0%, transparent 100%);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-trigger:hover {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%);
+            width: 40px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(24px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Card Styles */
+        .card {
+            background: var(--bg-card);
+            border: 2px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-overlay);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.15);
+            background: var(--bg-card-hover);
+            border-color: var(--border-hover);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Form Styles */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 12px;
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: -0.01em;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px var(--accent-blue-light), var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Enhanced Tab Container with Carousel */
+        .tab-carousel {
+            position: relative;
+            margin-bottom: 32px;
+            padding: 20px;
+            border-radius: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .tab-viewport {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 16px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 100%;
+        }
+
+        .tab {
+            border: 2px solid;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .tab.color-1 { background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%); border-color: var(--accent-blue); }
+        .tab.color-2 { background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); border-color: var(--accent-purple); }
+        .tab.color-3 { background: linear-gradient(135deg, var(--accent-green) 0%, #047857 100%); border-color: var(--accent-green); }
+        .tab.color-4 { background: linear-gradient(135deg, var(--accent-orange) 0%, #c2410c 100%); border-color: var(--accent-orange); }
+        .tab.color-5 { background: linear-gradient(135deg, var(--accent-pink) 0%, #be185d 100%); border-color: var(--accent-pink); }
+        .tab.color-6 { background: linear-gradient(135deg, var(--accent-yellow) 0%, #a16207 100%); border-color: var(--accent-yellow); }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.4s ease;
+        }
+
+        .tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab:hover::before {
+            left: 100%;
+        }
+
+        .tab.active {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Carousel Navigation */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-secondary);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav.prev {
+            left: -10px;
+        }
+
+        .carousel-nav.next {
+            right: -10px;
+        }
+
+        .carousel-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: translateY(-50%);
+        }
+
+        /* New Schedule Grid Layout */
+        .schedule-grid-container {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 40px;
+            overflow: hidden;
+            backdrop-filter: blur(30px);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 200px repeat(7, 1fr);
+            grid-template-rows: auto repeat(var(--subject-count, 6), 1fr);
+            min-height: 600px;
+            gap: 2px;
+            background: var(--border-color);
+            padding: 2px;
+        }
+
+        .grid-header {
+            background: var(--calendar-header);
+            padding: 20px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--glass-border);
+            position: relative;
+        }
+
+        .grid-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        .subject-label {
+            background: var(--calendar-header);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+            text-align: center;
+            word-wrap: break-word;
+            border-right: 2px solid var(--glass-border);
+            writing-mode: horizontal-tb;
+            min-height: 120px;
+        }
+
+        .schedule-cell {
+            background: var(--calendar-day);
+            padding: 8px;
+            min-height: 120px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .schedule-cell.today {
+            background: var(--calendar-today);
+            box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.3);
+        }
+
+        .schedule-cell:hover {
+            background: rgba(37, 99, 235, 0.03);
+            transform: scale(1.02);
+            z-index: 10;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Revision Card Styles - Compact for Grid */
+        .revision-card-mini {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            font-size: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            min-height: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .revision-card-mini:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-blue);
+            background: rgba(37, 99, 235, 0.02);
+            z-index: 5;
+        }
+
+        .revision-card-mini.completed {
+            background: rgba(5, 150, 105, 0.08);
+            border-color: var(--accent-green);
+            opacity: 0.85;
+        }
+
+        .revision-card-mini-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .revision-card-mini-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            line-height: 1.2;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .revision-card-mini-topic {
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+            font-size: 0.7rem;
+            line-height: 1.1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .revision-card-mini-meta {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        .revision-card-mini-menu {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .revision-card-mini:hover .revision-card-mini-menu {
+            opacity: 1;
+        }
+
+        .revision-card-mini-menu:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Enhanced Dropdown Menu */
+        .dropdown {
+            position: fixed;
+            background: var(--bg-secondary);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            min-width: 200px;
+            box-shadow: var(--shadow-xl);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-12px) scale(0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            backdrop-filter: blur(30px);
+        }
+
+        .dropdown.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .dropdown-item {
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        /* Loading Animation Styles */
+        .loading-container {
+            display: none;
+            padding: 32px 0;
+        }
+
+        .loading-container.show {
+            display: block;
+        }
+
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .loading-card {
+            height: 200px;
+            border-radius: 30px;
+            background: var(--loading-bg);
+            background-size: 400% 400%;
+            animation: glowPulse 2.5s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loading-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { 
+                background-position: 0% 50%;
+                opacity: 0.9;
+                transform: scale(1);
             }
-          ]
-        }],
-        generationConfig: {
-          temperature: 0.4,
-          topP: 0.8,
-          maxOutputTokens: 1500,
+            50% { 
+                background-position: 100% 50%;
+                opacity: 1;
+                transform: scale(1.01);
+            }
         }
-      };
+
+        @keyframes wave {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            background: var(--calendar-day);
+            border-radius: 20px;
+            height: 24px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+            border-radius: 20px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShimmer 2.5s ease-in-out infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .settings-card {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .settings-card h4 {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+
+        .alert.error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .alert.success {
+            background: rgba(5, 150, 105, 0.1);
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        /* Hide scrollbars globally */
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 16px;
+                border-radius: 30px;
+            }
+
+            .header h1 {
+                font-size: 2.4rem;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 150px repeat(7, 1fr);
+            }
+
+            .subject-label {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+            }
+
+            .loading-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+                border-radius: 20px;
+                margin: 10px;
+            }
+
+            .container.sidebar-open {
+                margin-left: 0;
+            }
+
+            .header {
+                margin-bottom: 24px;
+                padding: 12px 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 100px repeat(3, 1fr);
+                gap: 1px;
+            }
+
+            .schedule-cell {
+                min-height: 80px;
+                padding: 4px;
+            }
+
+            .revision-card-mini {
+                min-height: 35px;
+                padding: 4px 6px;
+                font-size: 0.65rem;
+            }
+
+            .revision-card-mini-title {
+                font-size: 0.7rem;
+            }
+
+            .revision-card-mini-topic {
+                font-size: 0.65rem;
+            }
+
+            .revision-card-mini-meta {
+                font-size: 0.6rem;
+            }
+
+            .grid-header {
+                padding: 12px 8px;
+                font-size: 0.8rem;
+            }
+
+            .subject-label {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+                min-height: 80px;
+            }
+
+            .card {
+                padding: 20px;
+                border-radius: 25px;
+            }
+
+            .loading-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab {
+                min-width: 160px;
+                padding: 14px 20px;
+            }
+
+            .carousel-nav {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Accessibility Improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: rgba(0, 0, 0, 0.5);
+                --glass-border: rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        /* Enhanced Tab Carousel with Hover Navigation */
+.tab-carousel {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 20px 60px; /* Add space for arrows */
+    border-radius: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.tab-carousel:hover .carousel-nav {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+}
+
+/* Smooth Carousel Navigation */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    background: var(--bg-secondary);
+    border: 2px solid var(--glass-border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg);
+    z-index: 20;
+    opacity: 0;
+    backdrop-filter: blur(20px);
+}
+
+.carousel-nav:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.carousel-nav.prev {
+    left: 16px;
+}
+
+.carousel-nav.next {
+    right: 16px;
+}
+
+.carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(0.8);
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.carousel-nav:disabled:hover {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    border-color: var(--border-color);
+    transform: translateY(-50%) scale(0.8);
+    box-shadow: var(--shadow-md);
+}
+
+/* Smooth Tab Container Animation */
+.tab-container {
+    display: flex;
+    gap: 16px;
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    min-width: 100%;
+    will-change: transform;
+}
+
+/* Enhanced Tab Animations */
+.tab {
+    border: 2px solid;
+    color: white;
+    padding: 16px 28px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    min-width: 200px;
+    justify-content: center;
+    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+.tab.active {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.tab:not(.active):hover {
+    opacity: 0.9;
+    transform: scale(0.98);
+}
+
+/* Smooth Tab Entrance/Exit Animations */
+@keyframes tabSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px) scale(0.9);
+    }
+    to {
+        opacity: 0.8;
+        transform: translateX(0) scale(0.95);
+    }
+}
+
+@keyframes tabSlideOut {
+    from {
+        opacity: 0.8;
+        transform: translateX(0) scale(0.95);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-30px) scale(0.9);
+    }
+}
+
+.tab.entering {
+    animation: tabSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.tab.exiting {
+    animation: tabSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Smooth Content Transition */
+.schedule-grid-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.schedule-grid-container.transitioning {
+    opacity: 0.7;
+    transform: translateY(10px);
+}
+
+/* Enhanced Progress Cards with Hover Button */
+.progress-card {
+    margin-bottom: 24px; 
+    padding: 24px; 
+    background: var(--glass-bg); 
+    border-radius: 30px; 
+    border: 2px solid var(--glass-border); 
+    backdrop-filter: blur(20px); 
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.progress-view-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-card:hover .progress-view-button {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.progress-view-button:hover {
+    background: var(--accent-blue-hover);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Centered Tab Carousel */
+.tab-carousel {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 20px 80px; /* More space for arrows */
+    border-radius: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-viewport {
+    width: 300px; /* Fixed width to show one tab */
+    overflow: hidden;
+    position: relative;
+}
+
+.tab-container {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: transform;
+}
+
+/* Centered Tab Styling */
+.tab {
+    border: 2px solid;
+    color: white;
+    padding: 20px 32px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 280px; /* Fixed width */
+    justify-content: center;
+    opacity: 0.6;
+    transform: scale(0.85);
+    filter: blur(1px);
+}
+
+.tab.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.tab.prev-tab,
+.tab.next-tab {
+    opacity: 0.4;
+    transform: scale(0.75);
+    filter: blur(2px);
+}
+
+/* Enhanced Navigation Arrows */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    z-index: 20;
+    opacity: 0.8;
+}
+
+.carousel-nav:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6);
+}
+
+.carousel-nav.prev {
+    left: 20px;
+}
+
+.carousel-nav.next {
+    right: 20px;
+}
+
+/* Smooth Content Transition */
+.schedule-grid-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.schedule-grid-container.transitioning {
+    opacity: 0.3;
+    transform: translateY(20px);
+}
+
+/* Fixed Centered Tab Carousel */
+.tab-viewport {
+    width: 320px; /* Slightly wider for better centering */
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-container {
+    display: flex;
+    gap: 40px; /* Increased gap for better spacing */
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: transform;
+    align-items: center;
+}
+
+.tab {
+    border: 2px solid;
+    color: white;
+    padding: 20px 32px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 280px; /* Fixed width */
+    justify-content: center;
+    opacity: 0.4;
+    transform: scale(0.8);
+    filter: blur(1.5px);
+}
+
+.tab.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+/* Enhanced Tab Carousel with Scroll Support */
+.tab-carousel {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 20px 80px;
+    border-radius: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab; /* Indicate scrollable */
+}
+
+.tab-carousel:active {
+    cursor: grabbing;
+}
+
+/* Page Transition Animations */
+.page {
+    display: none;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page.transitioning-out {
+    opacity: 0;
+    transform: translateY(-24px);
+}
+
+.page.transitioning-in {
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+/* Enhanced Progress Button Animation */
+.progress-view-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-view-button:active {
+    transform: translateY(-8px) scale(0.95);
+}
+
+/* Dynamic Completed Tab Animation */
+.completed-tab-container {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.completed-tab {
+    background: linear-gradient(135deg, var(--accent-green) 0%, #047857 100%);
+    border: 2px solid var(--accent-green);
+    color: white;
+    padding: 16px 28px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+    transform: translateY(-100%);
+    opacity: 0;
+    margin-bottom: 0;
+}
+
+.completed-tab.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.completed-tab.active {
+    box-shadow: 0 12px 32px rgba(5, 150, 105, 0.4);
+    transform: translateY(0) scale(1.05);
+}
+
+.completed-tab:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 16px 36px rgba(5, 150, 105, 0.5);
+}
+
+/* Smooth card filtering animation */
+.revision-card-mini.filtering-out {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.revision-card-mini.filtering-in {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Functional Settings Styles */
+.settings-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.settings-select {
+    padding: 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.settings-select:hover, .settings-select:focus {
+    border-color: var(--accent-blue);
+    outline: none;
+}
+
+.settings-toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: var(--border-color);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.settings-toggle.active {
+    background: var(--accent-blue);
+}
+
+.settings-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-toggle.active::after {
+    transform: translateX(30px);
+}
+
+.theme-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.theme-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.theme-option.active {
+    border-color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.theme-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.theme-green { background: linear-gradient(135deg, #059669, #10b981); }
+.theme-purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+.theme-orange { background: linear-gradient(135deg, #ea580c, #f97316); }
+.theme-pink { background: linear-gradient(135deg, #db2777, #ec4899); }
+.theme-dark { background: linear-gradient(135deg, #374151, #4b5563); }
+
+/* Enhanced Notification System */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.notification {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    min-width: 300px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    pointer-events: all;
+    
+    /* Animation properties */
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.notification.hide {
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.notification.success {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    background: rgba(5, 150, 105, 0.1);
+}
+
+.notification.error {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+    background: rgba(220, 38, 38, 0.1);
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: currentColor;
+    border-radius: 0 0 14px 14px;
+    opacity: 0.3;
+    animation: notificationProgress 4s linear forwards;
+}
+
+@keyframes notificationProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Theme transition overlay */
+.theme-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.theme-transition-overlay.active {
+    opacity: 0.9;
+    visibility: visible;
+}
+
+/* Enhanced Tab Styling for Better Readability */
+.tab {
+    border: 2px solid;
+    color: white;
+    padding: 20px 32px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 280px;
+    justify-content: center;
+    opacity: 0.4;
+    transform: scale(0.8);
+    filter: blur(1.5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Add text shadow for readability */
+}
+
+.tab.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); /* Stronger shadow for active tab */
+}
+
+/* Enhanced tab colors with better contrast */
+.tab.color-1 { 
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
+    border-color: #3b82f6; 
+    color: #ffffff;
+}
+.tab.color-2 { 
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); 
+    border-color: #7c3aed; 
+    color: #ffffff;
+}
+.tab.color-3 { 
+    background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+    border-color: #059669; 
+    color: #ffffff;
+}
+.tab.color-4 { 
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); 
+    border-color: #ea580c; 
+    color: #ffffff;
+}
+
+/* Dark theme adjustments for tabs */
+[data-theme="black"] .tab {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="black"] .tab.active {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Light theme adjustments for tabs */
+[data-theme="white"] .tab {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="white"] .tab.active {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Past Papers Management Styles */
+.past-papers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.past-paper-slot {
+    background: var(--glass-bg);
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.past-paper-slot:hover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.past-paper-slot.filled {
+    border-style: solid;
+    border-color: var(--accent-green);
+    background: rgba(5, 150, 105, 0.05);
+}
+
+.past-paper-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.past-paper-subject {
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+}
+
+.past-paper-file {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    word-break: break-all;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.past-paper-remove {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.past-paper-remove:hover {
+    background: #b91c1c;
+    transform: scale(1.05);
+}
+
+/* Enhanced Past Papers Display */
+.past-papers-section {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 3px solid var(--border-color);
+}
+
+.past-papers-container {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.past-papers-container:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.past-papers-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    color: var(--accent-blue);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.past-papers-grid-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.past-paper-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.past-paper-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-overlay);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.past-paper-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.past-paper-card:hover::before {
+    opacity: 1;
+}
+
+.past-paper-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.past-paper-card-content {
+    flex: 1;
+}
+
+.past-paper-card-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.past-paper-card-subject {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    flex-shrink: 0;
+}
+
+.past-paper-card-path {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    word-break: break-all;
+    background: var(--calendar-day);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    font-family: 'Courier New', monospace;
+}
+
+.past-paper-card-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: var(--accent-blue);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.past-paper-card:hover .past-paper-card-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Empty state for no past papers */
+.no-past-papers {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Tab Menu Styles */
+.tab-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+}
+
+.tab:hover .tab-menu {
+    opacity: 1;
+}
+
+.tab-menu-dots {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.tab-menu-dots:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.tab-dropdown {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 2px solid var(--glass-border);
+    border-radius: 12px;
+    min-width: 160px;
+    box-shadow: var(--shadow-xl);
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+}
+
+.tab-dropdown.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.tab-dropdown-item:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.tab-dropdown-item:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.tab-dropdown-item:last-child {
+    border-radius: 0 0 10px 10px;
+}
+
+/* Duplicate Confirmation Modal */
+.duplicate-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.duplicate-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.duplicate-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 480px;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duplicate-modal-overlay.show .duplicate-modal {
+    transform: scale(1) translateY(0);
+}
+
+.duplicate-modal h3 {
+    color: var(--accent-blue);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.duplicate-modal p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.duplicate-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.duplicate-modal-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.duplicate-modal-button.replace {
+    background: var(--accent-red);
+    color: white;
+}
+
+.duplicate-modal-button.add-new {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.duplicate-modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Tab Dropdown Overlay */
+.tab-dropdown-overlay {
+    position: fixed;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.tab-dropdown-overlay.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    min-width: 180px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(30px);
+    overflow: hidden;
+}
+
+.tab-dropdown-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.tab-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent-red);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-dropdown-item:hover {
+    color: white;
+    transform: translateX(4px);
+}
+
+.tab-dropdown-item:hover::before {
+    width: 100%;
+}
+
+/* Enhanced Floating Sidebar */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 20px;
+    bottom: 20px;
+    width: 280px;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-radius: 32px;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 20px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 80px rgba(59, 130, 246, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-header {
+    padding: 32px 28px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.1) 0%, 
+        rgba(59, 130, 246, 0.05) 50%, 
+        transparent 100%);
+    border-radius: 30px 30px 0 0;
+}
+
+/* Enhanced Sidebar Overlay with Gradient */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dark theme sidebar enhancements */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(96, 165, 250, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="black"] .sidebar-overlay.show {
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+        rgba(0, 0, 0, 0.6);
+}
+
+/* Enhanced Sidebar - Attached with Right Curves */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-left: none;
+    border-radius: 0 32px 32px 0;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 0;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-header {
+    padding: 32px 28px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.1) 0%, 
+        rgba(59, 130, 246, 0.05) 50%, 
+        transparent 100%);
+}
+
+/* Simple Dim Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dark theme sidebar */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="black"] .sidebar-overlay.show {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Fixed Tab Dropdown with Better Readability */
+.tab-dropdown-overlay {
+    position: fixed;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.tab-dropdown-overlay.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.tab-dropdown-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    min-width: 180px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(30px);
+    overflow: hidden;
+}
+
+.tab-dropdown-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    position: relative;
+    background: var(--bg-secondary);
+}
+
+.tab-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent-red);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.tab-dropdown-item:hover {
+    color: white;
+    transform: translateX(4px);
+}
+
+.tab-dropdown-item:hover::before {
+    width: 100%;
+}
+
+/* Better contrast for delete button */
+.tab-dropdown-item:hover svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Enhanced Floating Sidebar with Top/Bottom Spacing */
+.sidebar {
+    position: fixed;
+    left: -280px;
+    top: 20px;
+    bottom: 20px;
+    width: 280px;
+    height: calc(100vh - 40px);
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(30px);
+    border: 2px solid var(--glass-border);
+    border-radius: 0 32px 32px 0;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.sidebar.open {
+    left: 0;
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.2),
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 -8px 32px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Dark theme floating sidebar */
+[data-theme="black"] .sidebar.open {
+    box-shadow: 
+        8px 0 32px rgba(0, 0, 0, 0.4),
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 -8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Sidebar Full Screen */
+@media (max-width: 768px) {
+    .sidebar {
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+        border-radius: 0 20px 20px 0;
+        width: 100%;
+        left: -100%;
+    }
+    
+    .sidebar.open {
+        left: 0;
+        box-shadow: none;
+    }
+}
+
+/* Mobile Header Layout */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Show hamburger on mobile */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .sidebar-trigger {
+        display: none;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Enhanced Mobile Optimization */
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+        border-radius: 20px;
+        margin: 10px;
+        margin-left: 10px !important; /* Override sidebar-open margin */
+    }
+    
+    .container.sidebar-open {
+        margin-left: 10px; /* Keep consistent margin on mobile */
+    }
+    
+    .header {
+        margin-bottom: 20px;
+        padding: 10px 0;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    /* Mobile tab carousel */
+    .tab-carousel {
+        padding: 15px 40px;
+    }
+    
+    .tab {
+        min-width: 240px;
+        padding: 16px 24px;
+        font-size: 0.9rem;
+    }
+    
+    .carousel-nav {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .carousel-nav.prev {
+        left: 8px;
+    }
+    
+    .carousel-nav.next {
+        right: 8px;
+    }
+    
+    /* Mobile schedule grid */
+    .schedule-grid {
+        grid-template-columns: 100px repeat(3, 1fr);
+        gap: 1px;
+        font-size: 0.8rem;
+    }
+    
+    .schedule-cell {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .revision-card-mini {
+        min-height: 35px;
+        padding: 4px 6px;
+        font-size: 0.65rem;
+    }
+    
+    /* Mobile dropdown positioning */
+    .tab-dropdown-overlay {
+        position: fixed !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) scale(0.9) !important;
+    }
+    
+    .tab-dropdown-overlay.show {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+}
+
+/* Tablet optimizations */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .sidebar {
+        top: 15px;
+        bottom: 15px;
+        height: calc(100vh - 30px);
+    }
+    
+    .container {
+        padding: 16px;
+        border-radius: 25px;
+    }
+    
+    .tab {
+        min-width: 220px;
+        padding: 16px 26px;
+    }
+}
+
+/* Smaller Home Form Container */
+#home .card {
+    max-width: 800px;
+    margin: 0 auto 24px auto;
+}
+
+@media (max-width: 768px) {
+    #home .card {
+        max-width: 100%;
+    }
+}
+
+/* Fixed Hamburger Menu - No Scrolling */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1001;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open-mobile {
+    overflow: hidden;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .header-left h1 {
+        margin-left: 60px;
+    }
+}
+
+/* Mobile Vertical Calendar Layout */
+@media (max-width: 768px) {
+    .schedule-grid-container {
+        border-radius: 20px;
+    }
+    
+    .schedule-grid {
+        display: block;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 0;
+    }
+    
+    .grid-header:first-child {
+        display: none;
+    }
+    
+    .subject-label {
+        display: none;
+    }
+    
+    .mobile-day-section {
+        margin-bottom: 24px;
+        background: var(--glass-bg);
+        border-radius: 16px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-day-header {
+        background: var(--calendar-header);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        text-align: center;
+        font-weight: 800;
+        color: var(--accent-blue);
+        font-size: 1.1rem;
+    }
+    
+    .mobile-day-header.today {
+        background: var(--accent-blue);
+        color: white;
+    }
+    
+    .mobile-subject-group {
+        margin-bottom: 16px;
+    }
+    
+    .mobile-subject-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        background: var(--calendar-day);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .mobile-tasks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Swipeable Task Styles */
+.swipeable-task {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.task-content {
+    position: relative;
+    z-index: 2;
+    background: var(--bg-secondary);
+    transition: transform 0.3s ease;
+}
+
+.task-action-complete,
+.task-action-delete {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.task-action-complete {
+    right: 0;
+    background: var(--accent-green);
+    transform: translateX(100%);
+}
+
+.task-action-delete {
+    left: 0;
+    background: var(--accent-red);
+    transform: translateX(-100%);
+}
+
+.task-action-complete svg,
+.task-action-delete svg {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 4px;
+}
+
+/* Swipe states */
+.swipeable-task.swiping-right .task-content {
+    transform: translateX(80px);
+}
+
+.swipeable-task.swiping-right .task-action-complete {
+    transform: translateX(0);
+}
+
+.swipeable-task.swiping-left .task-content {
+    transform: translateX(-80px);
+}
+
+.swipeable-task.swiping-left .task-action-delete {
+    transform: translateX(0);
+}
+
+/* Ensure desktop layout stays original */
+.desktop-layout .schedule-grid {
+    display: grid;
+    grid-template-columns: 200px repeat(7, 1fr);
+    grid-template-rows: auto repeat(var(--subject-count, 6), 1fr);
+    min-height: 600px;
+    gap: 2px;
+    background: var(--border-color);
+    padding: 2px;
+}
+
+.mobile-layout {
+    display: block !important;
+}
+
+/* Prevent mobile styles from affecting desktop */
+@media (min-width: 769px) {
+    .mobile-day-section,
+    .mobile-day-header,
+    .mobile-subject-group,
+    .mobile-subject-title,
+    .mobile-tasks-container {
+        display: none !important;
+    }
+    
+    .schedule-grid {
+        display: grid !important;
+    }
+}
+
+/* Bottom Navigation for Mobile */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-top: 2px solid var(--glass-border);
+    display: none;
+    z-index: 1000;
+    padding: 8px 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    min-width: 60px;
+}
+
+.bottom-nav-item.active {
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+    color: var(--accent-blue);
+    font-weight: 700;
+}
+
+.bottom-nav-icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.bottom-nav-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Haptic feedback animation */
+.bottom-nav-item.haptic {
+    animation: hapticPulse 0.3s ease-out;
+}
+
+@keyframes hapticPulse {
+    0% { transform: translateY(-2px) scale(1); }
+    50% { transform: translateY(-4px) scale(1.05); }
+    100% { transform: translateY(-2px) scale(1); }
+}
+
+/* Show bottom nav on mobile */
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: block;
+    }
+    
+    /* Hide original sidebar elements */
+    .sidebar-trigger,
+    .hamburger-menu {
+        display: none !important;
+    }
+    
+    /* Add bottom padding to container */
+    .container {
+        margin-bottom: 80px;
+    }
+    
+    body {
+        padding-bottom: 80px;
+    }
+}
+
+/* Authentication Modal Styles */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.auth-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.auth-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-overlay.show .auth-modal {
+    transform: scale(1) translateY(0);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-header h2 {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.auth-tabs {
+    display: flex;
+    background: var(--calendar-day);
+    border-radius: 16px;
+    padding: 4px;
+    margin-bottom: 24px;
+    border: 2px solid var(--border-color);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.auth-tab.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-input-group {
+    margin-bottom: 20px;
+}
+
+.auth-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.auth-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.auth-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.auth-close:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--glass-bg);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.user-details h4 {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.user-details p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Swipe Indicator Styles */
+.swipe-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Enhanced Mobile Task Cards with Better Swipe Support */
+.revision-card-mini {
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-x;
+    user-select: none;
+    transition: background-color 0.3s ease;
+}
+
+.task-content {
+    position: relative;
+    z-index: 2;
+    background: inherit;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+}
+
+/* Swipe Action Buttons - Hidden by default */
+.task-action-complete,
+.task-action-delete {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    z-index: 1;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    opacity: 0;
+}
+
+.task-action-complete {
+    right: 0;
+    background: var(--accent-green);
+}
+
+.task-action-delete {
+    left: 0;
+    background: var(--accent-red);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+    .revision-card-mini {
+        min-height: 60px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    
+    .revision-card-mini-content {
+        pointer-events: none; /* Prevent text selection during swipe */
+    }
+    
+    .revision-card-mini-title {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    
+    .revision-card-mini-topic {
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+    }
+    
+    .revision-card-mini-meta {
+        font-size: 0.7rem;
+    }
+}
+
+/* Disable menu button on mobile since we use swipe */
+@media (max-width: 768px) {
+    .revision-card-mini-menu {
+        display: none;
+    }
+}
+
+/* Long press ripple effect */
+.long-press-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Full-Page Authentication Styles */
+.auth-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        #667eea 0%, 
+        #764ba2 25%, 
+        #f093fb 50%, 
+        #f5576c 75%, 
+        #4facfe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    z-index: 50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage.hide {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.1);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating elements */
+.auth-background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-element {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: float 20s infinite ease-in-out;
+}
+
+.floating-element:nth-child(1) {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-element:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    top: 60%;
+    right: 15%;
+    animation-delay: -5s;
+}
+
+.floating-element:nth-child(3) {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    bottom: 30%;
+    left: 20%;
+    animation-delay: -10s;
+}
+
+.floating-element:nth-child(4) {
+    width: 120px;
+    height: 40px;
+    border-radius: 20px;
+    top: 40%;
+    right: 25%;
+    animation-delay: -15s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-30px) rotate(120deg); }
+    66% { transform: translateY(15px) rotate(240deg); }
+}
+
+/* Main auth container */
+.auth-fullpage-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 32px;
+    padding: 48px;
+    max-width: 480px;
+    width: 90%;
+    margin: 20px;
+    box-shadow: 
+        0 32px 64px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    position: relative;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(255, 255, 255, 0.2) 100%);
+    border-radius: 32px;
+    z-index: -1;
+}
+
+/* Welcome section */
+.auth-welcome {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px auto;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 12px 48px rgba(59, 130, 246, 0.5); }
+}
+
+.auth-welcome h1 {
+    color: #1e293b;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-welcome p {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Enhanced form styles */
+.auth-fullpage .auth-tabs {
+    background: rgba(243, 244, 246, 0.8);
+    border-radius: 20px;
+    padding: 6px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.auth-fullpage .auth-tab {
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #6b7280;
+}
+
+.auth-fullpage .auth-tab.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.auth-fullpage .auth-input {
+    padding: 18px 20px;
+    border: 2px solid rgba(209, 213, 219, 0.3);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e293b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-fullpage .auth-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+}
+
+.auth-fullpage .auth-submit {
+    padding: 18px 24px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-fullpage .auth-submit:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(59, 130, 246, 0.5);
+}
+
+.auth-fullpage .auth-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.auth-fullpage .auth-submit:hover::before {
+    left: 100%;
+}
+
+/* Security features */
+.security-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.security-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.security-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Password strength indicator */
+.password-strength {
+    margin-top: 8px;
+    height: 4px;
+    background: rgba(209, 213, 219, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak { background: #ef4444; width: 25%; }
+.strength-fair { background: #f59e0b; width: 50%; }
+.strength-good { background: #10b981; width: 75%; }
+.strength-strong { background: #059669; width: 100%; }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .auth-fullpage-container {
+        padding: 32px 24px;
+        margin: 16px;
+        border-radius: 24px;
+    }
+    
+    .auth-welcome h1 {
+        font-size: 1.8rem;
+    }
+    
+    .auth-welcome p {
+        font-size: 1rem;
+    }
+    
+    .floating-element {
+        display: none;
+    }
+    
+    .security-indicators {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Loading state */
+.auth-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile Schedule Day Navigation */
+.mobile-day-navigator {
+    position: sticky;
+    top: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    padding: 16px;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+}
+
+.day-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.current-day-display {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-counter {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.day-nav-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.day-nav-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+}
+
+.day-nav-btn:hover:not(:disabled) {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+    transform: scale(1.1);
+}
+
+.day-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.day-nav-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Day indicator dots */
+.day-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.day-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.day-dot.active {
+    background: var(--accent-blue);
+    transform: scale(1.5);
+}
+
+.day-dot.has-tasks {
+    background: var(--text-muted);
+}
+
+.day-dot.has-tasks.active {
+    background: var(--accent-blue);
+}
+
+/* Enhanced mobile day content */
+.mobile-day-content {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-day-content.sliding-left {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.mobile-day-content.sliding-right {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.mobile-day-content.sliding-in-left {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.mobile-day-content.sliding-in-right {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Enhanced mobile day section */
+.mobile-day-section {
+    margin-bottom: 0;
+    background: var(--glass-bg);
+    border-radius: 20px;
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    min-height: 400px;
+}
+
+.mobile-day-header {
+    display: none; /* Hidden since we have navigator */
+}
+
+/* Task summary for current day */
+.day-summary {
+    background: var(--calendar-day);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.summary-stat {
+    text-align: center;
+}
+
+.summary-stat-number {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.summary-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Empty day state */
+.empty-day {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-day-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px auto;
+    background: var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.empty-day h3 {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.empty-day p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Swipe gestures for day navigation */
+.mobile-schedule-container {
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+/* Progress indicator for current day */
+.day-progress {
+    background: var(--calendar-day);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.day-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.day-progress-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.day-progress-percentage {
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 0.9rem;
+}
+
+.day-progress-bar {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.day-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Quick action buttons */
+.day-quick-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.quick-action-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.quick-action-btn:hover,
+.quick-action-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.quick-action-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Hide desktop grid on mobile */
+@media (max-width: 768px) {
+    .desktop-layout {
+        display: none !important;
+    }
+    
+    .mobile-layout {
+        display: block !important;
+    }
+    
+    /* Adjust container for mobile day navigation */
+    .schedule-grid-container.mobile-layout {
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+}
+
+/* Add this to your CSS section around line 1800 */
+
+/* Enhanced Delete Account Modal Styling */
+.delete-account-modal .auth-modal {
+    max-width: 600px !important;
+    width: 95% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    margin: 20px !important;
+}
+
+.delete-warning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.warning-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    border-left: 4px solid var(--accent-red);
+}
+
+.backup-progress-modal .auth-modal {
+    max-width: 450px !important;
+    text-align: center;
+}
+
+.sync-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 0;
+}
+
+.sync-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .delete-account-modal .auth-modal {
+        width: 98% !important;
+        margin: 10px !important;
+        max-height: 95vh !important;
+    }
+    
+    .delete-warning-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .warning-item {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Add this to your existing CSS section around line 1900 */
+
+.restore-item {
+    animation: slideInFromLeft 0.5s ease-out both;
+}
+
+.restore-item:nth-child(1) { animation-delay: 0.1s; }
+.restore-item:nth-child(2) { animation-delay: 0.2s; }
+.restore-item:nth-child(3) { animation-delay: 0.3s; }
+.restore-item:nth-child(4) { animation-delay: 0.4s; }
+.restore-item:nth-child(5) { animation-delay: 0.5s; }
+.restore-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInFromLeft {
+    0% { 
+        opacity: 0; 
+        transform: translateX(-50px) scale(0.9); 
+    }
+    100% { 
+        opacity: 0.6; 
+        transform: translateX(0) scale(1); 
+    }
+}
+
+/* Smooth scrollbar for restore items */
+#restoreItemsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#restoreItemsList::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+#restoreItemsList::-webkit-scrollbar-thumb {
+    background: var(--accent-green);
+    border-radius: 3px;
+}
+
+#restoreItemsList::-webkit-scrollbar-thumb:hover {
+    background: #047857;
+}
+
+/* Enhanced Dashboard Design */
+.dashboard-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 40px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+}
+
+.dashboard-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--accent-blue) 0%, 
+        #7c3aed 25%, 
+        var(--accent-green) 50%, 
+        #ea580c 75%, 
+        #db2777 100%);
+    opacity: 0.8;
+}
+
+/* Enhanced Tab Carousel */
+.tab-carousel {
+    position: relative;
+    padding: 32px 80px 24px 80px;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.03) 0%, 
+        rgba(124, 58, 237, 0.03) 25%, 
+        rgba(5, 150, 105, 0.03) 50%, 
+        rgba(234, 88, 12, 0.03) 75%, 
+        rgba(219, 39, 119, 0.03) 100%);
+    border-bottom: 2px solid var(--glass-border);
+}
+
+/* Enhanced Schedule Grid */
+.schedule-grid-container {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    padding: 32px;
+    position: relative;
+}
+
+.schedule-grid-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.02) 0%, 
+        rgba(124, 58, 237, 0.02) 25%, 
+        rgba(5, 150, 105, 0.02) 50%, 
+        rgba(234, 88, 12, 0.02) 75%, 
+        rgba(219, 39, 119, 0.02) 100%);
+    pointer-events: none;
+}
+
+.schedule-grid {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(15px);
+}
+
+/* Enhanced Grid Headers */
+.grid-header {
+    background: linear-gradient(135deg, var(--calendar-header) 0%, rgba(59, 130, 246, 0.08) 100%);
+    padding: 24px 16px;
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--glass-border);
+    position: relative;
+    text-align: center;
+}
+
+.grid-header::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    border-radius: 2px;
+}
+
+.grid-header.today {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #2563eb 100%);
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+.grid-header.today::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+/* Enhanced Subject Labels */
+.subject-label {
+    background: linear-gradient(135deg, var(--calendar-header) 0%, rgba(59, 130, 246, 0.06) 100%);
+    padding: 20px 16px;
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 1rem;
+    text-align: center;
+    border-right: 3px solid var(--glass-border);
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.subject-label::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 4px;
+    background: linear-gradient(180deg, transparent, var(--accent-blue), transparent);
+    border-radius: 2px;
+}
+
+/* Enhanced Schedule Cells */
+.schedule-cell {
+    background: var(--calendar-day);
+    padding: 12px;
+    min-height: 140px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    position: relative;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.schedule-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.01) 0%, 
+        rgba(124, 58, 237, 0.01) 25%, 
+        rgba(5, 150, 105, 0.01) 50%, 
+        rgba(234, 88, 12, 0.01) 75%, 
+        rgba(219, 39, 119, 0.01) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.schedule-cell:hover::before {
+    opacity: 1;
+}
+
+.schedule-cell.today {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.schedule-cell:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(124, 58, 237, 0.06) 100%);
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Enhanced Revision Cards */
+.revision-card-mini {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+    font-size: 0.8rem;
+    box-shadow: 
+        var(--shadow-sm),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    min-height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.revision-card-mini::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.08) 0%, 
+        rgba(124, 58, 237, 0.08) 50%, 
+        rgba(5, 150, 105, 0.08) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.revision-card-mini:hover::before {
+    opacity: 1;
+}
+
+.revision-card-mini:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: var(--accent-blue);
+    z-index: 5;
+}
+
+.revision-card-mini.completed {
+    background: linear-gradient(135deg, 
+        rgba(5, 150, 105, 0.12) 0%, 
+        rgba(5, 150, 105, 0.08) 100%);
+    border-color: var(--accent-green);
+    opacity: 0.9;
+}
+
+.revision-card-mini.completed::before {
+    background: linear-gradient(135deg, 
+        rgba(5, 150, 105, 0.1) 0%, 
+        rgba(34, 197, 94, 0.1) 100%);
+    opacity: 0.8;
+}
+
+/* Enhanced Mini Card Content */
+.revision-card-mini-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.revision-card-mini-topic {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.revision-card-mini-meta {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-top: auto;
+}
+
+/* Enhanced Dashboard Stats */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+    padding: 0 32px;
+}
+
+.dashboard-stat {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.05) 0%, 
+        rgba(124, 58, 237, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dashboard-stat:hover::before {
+    opacity: 1;
+}
+
+.dashboard-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.dashboard-stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.dashboard-stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Mobile Dashboard Enhancements */
+@media (max-width: 768px) {
+    .dashboard-container {
+        border-radius: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .tab-carousel {
+        padding: 20px 40px 16px 40px;
+    }
+    
+    .schedule-grid-container {
+        padding: 16px;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin: 20px 0;
+        padding: 0 16px;
+    }
+    
+    .dashboard-stat {
+        padding: 16px;
+    }
+    
+    .dashboard-stat-number {
+        font-size: 2rem;
+    }
+    
+    .dashboard-stat-label {
+        font-size: 0.8rem;
+    }
+}
+
+.past-paper-card {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.past-paper-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.past-paper-card::after {
+    content: 'Click to open PDF';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.past-paper-card:hover::after {
+    opacity: 1;
+}
+
+.resource-card {
+    background: linear-gradient(135deg, var(--calendar-day) 0%, var(--surface-color) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.resource-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.paper-info h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.paper-description {
+    margin: 0 0 12px 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.tier-badge {
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.open-icon {
+    font-size: 1.5rem;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.resource-card:hover .open-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.resource-button {
+    display: inline-block;
+    background: var(--accent-blue);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin: 8px;
+    transition: all 0.3s ease;
+}
+
+.resource-button:hover {
+    background: var(--accent-blue-dark);
+    transform: translateY(-2px);
+}
+
+.no-papers-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--surface-color);
+    border-radius: 16px;
+    border: 2px dashed var(--border-color);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.header-left h1 {
+    margin: 0; /* Remove any default margins */
+}
+
+/* Make AI button smaller on mobile */
+@media (max-width: 768px) {
+    .header-left {
+        gap: 12px;
+    }
+    
+    .ai-assistant-btn span {
+        display: none;
+    }
+    
+    .ai-assistant-btn {
+        padding: 10px;
+        min-width: auto;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* AI Assistant Button */
+.ai-assistant-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-assistant-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.ai-assistant-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+.ai-assistant-btn:hover::before {
+    left: 100%;
+}
+
+.ai-assistant-btn .icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* AI Chatbot Sidebar */
+.ai-chatbot-sidebar {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    border-left: 2px solid var(--glass-border);
+    transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+.ai-chatbot-sidebar.open {
+    right: 0;
+    box-shadow: -12px 0 48px rgba(0, 0, 0, 0.2);
+}
+
+.ai-chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+}
+
+.ai-chatbot-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.ai-chatbot-title span:first-of-type {
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 1.2rem;
+}
+
+.ai-subject-context {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.ai-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.ai-close-btn:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+/* Quick Actions */
+.ai-quick-actions {
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.ai-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
+.ai-action-btn:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.ai-action-btn .icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Chat Container */
+.ai-chat-container {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.ai-message {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    animation: messageSlideIn 0.4s ease-out;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ai-message.ai-user {
+    flex-direction: row-reverse;
+}
+
+.ai-message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.ai-message.ai-assistant .ai-message-avatar {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.ai-message.ai-user .ai-message-avatar {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.ai-message-content {
+    flex: 1;
+    background: var(--bg-secondary);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.ai-message.ai-user .ai-message-content {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.ai-message-content p {
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.ai-message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.ai-message-content ul, .ai-message-content ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.ai-message-content li {
+    margin-bottom: 4px;
+}
+
+/* Action Buttons in AI Responses */
+.ai-action-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.ai-action-button {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-action-button:hover {
+    background: var(--accent-blue-hover);
+    transform: translateY(-1px);
+}
+
+/* Input Container */
+.ai-input-container {
+    padding: 20px 24px;
+    border-top: 2px solid var(--glass-border);
+    background: var(--bg-secondary);
+}
+
+.ai-input-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ai-input-wrapper input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.ai-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.ai-send-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-send-btn:hover {
+    background: var(--accent-blue-hover);
+    transform: scale(1.05);
+}
+
+.ai-send-btn .icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Suggested Prompts */
+.ai-suggested-prompts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ai-suggested-prompt {
+    background: var(--calendar-day);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.ai-suggested-prompt:hover {
+    background: var(--accent-blue-light);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+/* Chatbot Overlay */
+.ai-chatbot-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1499;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.ai-chatbot-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Layout Shift for Main Content */
+.container.ai-open {
+    margin-right: 400px;
+    transition: margin-right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .ai-chatbot-sidebar {
+        width: 350px;
+    }
+    
+    .container.ai-open {
+        margin-right: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ai-chatbot-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .container.ai-open {
+        margin-right: 0;
+    }
+    
+    .ai-assistant-btn span {
+        display: none;
+    }
+    
+    .ai-assistant-btn {
+        padding: 12px;
+    }
+}
+
+/* Typing Indicator */
+.ai-typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.ai-typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.ai-typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    animation: typingPulse 1.4s infinite ease-in-out;
+}
+
+.ai-typing-dot:nth-child(1) { animation-delay: 0s; }
+.ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingPulse {
+    0%, 60%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    30% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Hide AI button by default */
+.ai-assistant-btn {
+    display: none;
+}
+
+/* Show AI button only on dashboard page */
+.page.active#dashboard ~ * .ai-assistant-btn,
+body.dashboard-active .ai-assistant-btn {
+    display: flex;
+}
+
+/* Alternative approach - show when dashboard is active */
+.ai-assistant-btn.dashboard-only {
+    display: none;
+}
+
+.ai-assistant-btn.dashboard-only.show {
+    display: flex;
+}
+
+/* Vertical Suggestion Pills */
+.ai-suggested-prompts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.ai-suggested-prompt {
+    background: var(--calendar-day);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ai-suggested-prompt:hover {
+    background: var(--accent-blue-light);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: translateX(4px);
+}
+
+/* File Upload Styles */
+.upload-section {
+    margin-top: 32px;
+    padding: 32px;
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    color: var(--accent-blue);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.upload-area {
+    border: 3px dashed var(--border-color);
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area:hover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.upload-area.dragover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px auto;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+    color: var(--accent-blue);
+}
+
+.upload-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.upload-subtext {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.uploaded-files {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.uploaded-file {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.uploaded-file:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-blue);
+}
+
+.uploaded-file img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    word-break: break-word;
+    margin-bottom: 8px;
+}
+
+.file-size {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.file-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.uploaded-file:hover .file-delete {
+    opacity: 1;
+}
+
+.file-delete:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
+}
+
+/* Hidden file input */
+#fileUpload {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .upload-area {
+        padding: 32px 16px;
+    }
+    
+    .uploaded-files {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Subscription Management Styles */
+.subscription-section {
+    background: linear-gradient(135deg, var(--glass-bg) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border: 2px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 32px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-lg);
+}
+
+.subscription-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.subscription-header h3 {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.subscription-header p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.pricing-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pricing-card:hover::before {
+    opacity: 1;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.pricing-card.current {
+    border-color: var(--accent-blue);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, var(--bg-secondary) 100%);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+}
+
+.pricing-card.popular {
+    border-color: var(--accent-blue);
+    transform: scale(1.05);
+    box-shadow: 0 16px 40px rgba(59, 130, 246, 0.3);
+}
+
+.pricing-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-blue);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plan-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.plan-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    margin-bottom: 4px;
+}
+
+.plan-price .currency {
+    font-size: 1.2rem;
+    vertical-align: top;
+}
+
+.plan-price .period {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.plan-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.plan-features li svg {
+    width: 18px;
+    height: 18px;
+    color: var(--accent-green);
+    flex-shrink: 0;
+}
+
+.plan-button {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.plan-button.primary {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+}
+
+.plan-button.secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.plan-button.current {
+    background: var(--accent-green);
+    color: white;
+    cursor: default;
+}
+
+.plan-button:hover:not(.current) {
+    transform: translateY(-2px);
+}
+
+.plan-button.primary:hover {
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+}
+
+.plan-button.secondary:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.subscription-note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .pricing-card.popular {
+        transform: none;
+    }
+    
+    .plan-price {
+        font-size: 2rem;
+    }
+}
+
+/* Separate subscription section */
+.settings-subscription-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 3px solid var(--border-color);
+}
+
+.settings-main-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+/* Home page upload styles */
+.home-upload-section {
+    margin-top: 24px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-upload-compact {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 16px;
+    margin-top: 16px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.upload-count {
+    color: var(--accent-blue);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.upload-add-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.upload-add-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.home-files-preview {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+}
+
+.home-file-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--calendar-day);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.home-file-thumb:hover {
+    transform: scale(1.05);
+}
+
+.home-file-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Enhanced home upload display */
+.upload-image-display {
+    margin-top: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-image-display.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.uploaded-image-square {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 16px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 3px solid var(--accent-blue);
+    position: relative;
+    background: var(--calendar-day);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.uploaded-image-square img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.uploaded-image-square .pdf-icon {
+    color: var(--accent-red);
+    width: 64px;
+    height: 64px;
+}
+
+.upload-image-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.upload-manage-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.upload-manage-btn {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.upload-manage-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.upload-manage-btn.view {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+.upload-manage-btn.add {
+    background: var(--accent-green);
+    color: white;
+    border-color: var(--accent-green);
+}
+
+/* Sidebar Upload Stats */
+.sidebar-stats {
+    padding: 20px 28px;
+    border-top: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+    margin-top: auto;
+}
+
+.sidebar-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+}
+
+.sidebar-stat-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.sidebar-stat-value {
+    color: var(--accent-blue);
+    font-weight: 800;
+}
+
+.sidebar-stat-bar {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.sidebar-stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main Tab Switches */
+.main-tab-switches {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 8px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main-tab-switch {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.main-tab-switch.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.main-tab-switch:hover:not(.active) {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+}
+
+/* Flashcard Styles */
+.flashcard-container {
+    display: none;
+}
+
+.flashcard-container.active {
+    display: block;
+}
+
+.flashcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.flashcard-title {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.create-flashcard-btn {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.create-flashcard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.flashcards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.flashcard {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    min-height: 150px;
+}
+
+.flashcard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.flashcard-subject {
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.flashcard-topic {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.flashcard-preview {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Flashcard Interface */
+.flashcard-interface {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--glass-bg);
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flashcard-interface.show {
+    display: flex;
+    opacity: 1;
+}
+
+.flashcard-content-side {
+    flex: 1;
+    padding: 32px;
+    background: var(--bg-secondary);
+    border-right: 2px solid var(--glass-border);
+    overflow-y: auto;
+}
+
+.flashcard-notes-side {
+    flex: 1;
+    padding: 32px;
+    background: var(--calendar-day);
+    overflow-y: auto;
+}
+
+.flashcard-interface-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.flashcard-close-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.flashcard-close-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+.flashcard-notes-area {
+    width: 100%;
+    height: calc(100% - 100px);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    resize: none;
+    outline: none;
+    font-family: inherit;
+}
+
+.flashcard-notes-area:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.flashcard-notes-area::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.content-display {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.content-display img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.pdf-display {
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 16px;
+}
+
+/* Delete button for uploaded image */
+.uploaded-image-square {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 16px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 3px solid var(--accent-blue);
+    position: relative;
+    background: var(--calendar-day);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.uploaded-image-square .image-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    z-index: 10;
+}
+
+.uploaded-image-square:hover .image-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.image-delete-btn:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.6);
+}
+
+/* Smooth container transitions */
+.schedule-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.schedule-container:not(.active) {
+    opacity: 0;
+    transform: translateY(20px);
+    display: none;
+}
+
+.flashcard-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.flashcard-container:not(.active) {
+    opacity: 0;
+    transform: translateY(20px);
+    display: none;
+}
+
+/* Payment Modal Styles */
+.payment-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 15000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.payment-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.payment-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 450px;
+    width: 90%;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.payment-modal-overlay.show .payment-modal {
+    transform: scale(1) translateY(0);
+}
+
+.payment-modal-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.payment-modal-header h2 {
+    color: var(--accent-blue);
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.payment-modal-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.payment-plan-info {
+    background: var(--accent-blue-light);
+    border: 2px solid var(--accent-blue);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.payment-plan-name {
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.payment-plan-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.payment-input-group {
+    margin-bottom: 20px;
+}
+
+.payment-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.payment-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.payment-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.payment-input-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 12px;
+}
+
+.payment-security {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: var(--calendar-day);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.payment-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.payment-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.payment-btn-primary {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.payment-btn-primary:hover:not(:disabled) {
+    background: var(--accent-blue-hover);
+    transform: translateY(-2px);
+}
+
+.payment-btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.payment-btn-secondary:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.payment-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.payment-close:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .payment-modal {
+        width: 95%;
+        padding: 24px;
+    }
+    
+    .payment-input-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+/* Subject Flashcard Cards */
+.subject-flashcard-card {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.subject-flashcard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.subject-flashcard-card.color-1::before { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%); }
+.subject-flashcard-card.color-2::before { background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%); }
+.subject-flashcard-card.color-3::before { background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%); }
+.subject-flashcard-card.color-4::before { background: linear-gradient(135deg, rgba(234, 88, 12, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%); }
+
+.subject-flashcard-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.subject-flashcard-card:hover::before {
+    opacity: 1;
+}
+
+.subject-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.subject-card-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--accent-blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.subject-flashcard-card.color-1 .subject-card-icon { background: #3b82f6; }
+.subject-flashcard-card.color-2 .subject-card-icon { background: #7c3aed; }
+.subject-flashcard-card.color-3 .subject-card-icon { background: #059669; }
+.subject-flashcard-card.color-4 .subject-card-icon { background: #ea580c; }
+
+.flashcard-count {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.subject-card-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    flex: 1;
+}
+
+.subject-card-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Subject View Styles */
+.subject-flashcards-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--glass-bg);
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+}
+
+.subject-flashcards-view.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.subject-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 2px solid var(--glass-border);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+}
+
+.subject-view-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.subject-view-title h2 {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.subject-view-count {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.subject-view-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.create-subject-flashcard-btn {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.create-subject-flashcard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.close-subject-view-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-subject-view-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+.subject-flashcards-grid {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+/* Top Tab Bar Styles */
+.top-tab-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    display: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-tab-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-tab-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 40px;
+}
+
+.top-tab-item:hover {
+    color: var(--accent-blue);
+    background: var(--accent-blue-light);
+}
+
+.top-tab-item.active {
+    color: white;
+    background: var(--accent-blue);
+}
+
+.top-tab-item.active::before {
+    opacity: 1;
+}
+
+.top-tab-item .icon {
+    width: 18px;
+    height: 18px;
+    z-index: 1;
+    position: relative;
+}
+
+.top-tab-item span {
+    z-index: 1;
+    position: relative;
+}
+
+/* Search Container */
+.top-search-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    display: none;
+    min-width: 400px;
+}
+
+.top-search-container.show {
+    display: block;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-close-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.search-close-btn:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.search-suggestions.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.search-suggestion-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+}
+
+.search-suggestion-type {
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+    .top-tab-bar,
+    .top-search-container {
+        display: none !important;
+    }
+}
+
+/* Top Tab Bar Styles */
+.top-tab-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    display: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-tab-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-tab-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 40px;
+}
+
+.top-tab-item:hover {
+    color: var(--accent-blue);
+    background: var(--accent-blue-light);
+}
+
+.top-tab-item.active {
+    color: white;
+    background: var(--accent-blue);
+}
+
+.top-tab-item.active::before {
+    opacity: 1;
+}
+
+.top-tab-item .icon {
+    width: 18px;
+    height: 18px;
+    z-index: 1;
+    position: relative;
+}
+
+.top-tab-item span {
+    z-index: 1;
+    position: relative;
+}
+
+/* Search Container */
+.top-search-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    display: none;
+    min-width: 400px;
+}
+
+.top-search-container.show {
+    display: block;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-close-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.search-close-btn:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.search-suggestions.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.search-suggestion-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+}
+
+.search-suggestion-type {
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+    .top-tab-bar,
+    .top-search-container {
+        display: none !important;
+    }
+    
+    .settings-card:has(#topTabBarToggle) {
+        display: none !important;
+    }
+}
+
+/* Enhanced Top Tab Bar Styles */
+.top-tab-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    display: none;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 60px;
+    align-items: center;
+}
+
+.top-tab-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-tab-bar.search-mode {
+    min-width: 500px;
+    padding: 8px 16px;
+}
+
+/* Dark theme support */
+[data-theme="black"] .top-tab-bar {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(71, 85, 105, 0.4);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.top-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    background: transparent;
+}
+
+.top-tab-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 40px;
+    transform: scale(0.8);
+}
+
+.top-tab-item:hover {
+    color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.top-tab-item.active {
+    color: white;
+    background: var(--accent-blue);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.top-tab-item.active::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.top-tab-item .icon {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+.top-tab-item span {
+    z-index: 1;
+    position: relative;
+}
+
+.top-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-search-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    transform: scale(0.8);
+}
+
+.top-search-btn:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.top-search-btn.active {
+    color: white;
+    background: var(--accent-blue);
+}
+
+.top-search-btn.active::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.top-search-btn .icon {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+/* Search Input Styling */
+.top-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+    placeholder-color: var(--text-muted);
+}
+
+.top-search-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.top-search-close:hover {
+    background: var(--accent-red);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Tab content animation origin */
+.page {
+    transform-origin: top center;
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+    .top-tab-bar {
+        display: none !important;
+    }
+}
+
+/* Fixed Top Tab Bar Styles */
+.top-tab-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    display: none;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 60px;
+}
+
+.top-tab-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-tab-bar.search-mode {
+    min-width: 500px;
+    padding: 8px 16px;
+}
+
+/* Dark theme support */
+[data-theme="black"] .top-tab-bar {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(71, 85, 105, 0.4);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Tab Content Container */
+.top-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.top-search-content {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.top-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+.top-tab-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #3b82f6 100%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 40px;
+    transform: scale(0.8);
+}
+
+.top-tab-item:hover {
+    color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    transform: translateY(-2px);
+}
+
+.top-tab-item.active {
+    color: white;
+    background: var(--accent-blue);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.top-tab-item.active::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.top-tab-item .icon {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+.top-tab-item span {
+    z-index: 1;
+    position: relative;
+}
+
+.top-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.top-search-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    transform: scale(0.8);
+}
+
+.top-search-btn:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.top-search-btn.active {
+    color: white;
+    background: var(--accent-blue);
+}
+
+.top-search-btn.active::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.top-search-btn .icon {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+/* Search Input Styling */
+.top-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.top-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.top-search-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.top-search-close:hover {
+    background: var(--accent-red);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+    .top-tab-bar {
+        display: none !important;
+    }
+}
+
+/* Background blur when search is active */
+.search-blur-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-blur-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+[data-theme="black"] .search-blur-overlay.active {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Top Tab Bar */
+.top-tab-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    display: none;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 60px;
+}
+
+.top-tab-bar.show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-tab-bar.search-mode {
+    min-width: 600px;
+    padding: 8px 16px;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    margin-top: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.search-suggestions.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.search-suggestion-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: translateX(4px);
+}
+
+.search-suggestion-type {
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-suggestion-type.flashcard {
+    background: #7c3aed;
+}
+
+.search-suggestion-type.schedule {
+    background: var(--accent-blue);
+}
+
+.search-suggestion-content {
+    flex: 1;
+}
+
+.search-suggestion-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.search-suggestion-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Page animation improvements */
+.page {
+    transform-origin: top center;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page.dropdown-enter {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+}
+
+.page.dropdown-enter-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Add this to your CSS section around line 2000 */
+
+/* Top nav bar spacing fix */
+body.top-nav-active {
+    padding-top: 80px;
+}
+
+body.top-nav-active .container {
+    padding-top: 24px;
+}
+
+/* Smooth transition for body padding */
+body {
+    transition: padding-top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+    body.top-nav-active {
+        padding-top: 0;
+    }
+}
+
+/* AI Hover Area and Sidebar */
+.ai-trigger-area {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40px;
+    height: 100vh;
+    z-index: 998;
+    cursor: pointer;
+    background: linear-gradient(270deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.ai-trigger-area.dashboard-active {
+    display: block;
+}
+
+.ai-trigger-area:hover {
+    background: linear-gradient(270deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+    width: 50px;
+}
+
+.ai-trigger-area.glowing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        rgba(139, 92, 246, 0.6) 25%, 
+        rgba(139, 92, 246, 0.8) 50%, 
+        rgba(139, 92, 246, 0.6) 75%, 
+        transparent 100%);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    animation: aiGlowPulse 2s ease-in-out infinite;
+}
+
+@keyframes aiGlowPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+    50% { 
+        opacity: 1;
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+    }
+}
+
+/* AI Chatbot Sidebar - Updated positioning */
+.ai-chatbot-sidebar {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    border-left: 2px solid var(--glass-border);
+    transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+.ai-chatbot-sidebar.open {
+    right: 0;
+    box-shadow: -12px 0 48px rgba(0, 0, 0, 0.2);
+}
+
+/* Container adjustment when AI is open */
+.container.ai-open {
+    margin-right: 400px;
+    transition: margin-right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 1024px) {
+    .container.ai-open {
+        margin-right: 350px;
+    }
+    
+    .ai-chatbot-sidebar {
+        width: 350px;
+        right: -350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ai-trigger-area {
+        display: none !important;
+    }
+    
+    .container.ai-open {
+        margin-right: 0;
+    }
+    
+    .ai-chatbot-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+}
+
+/* Full-Page Flashcard Interface */
+.flashcard-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    z-index: 15000;
+    display: none;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center center;
+}
+
+.flashcard-fullpage.show {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.flashcard-fullpage.animate-from-card {
+    transform-origin: var(--click-x, 50%) var(--click-y, 50%);
+}
+
+.flashcard-fullpage-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.flashcard-fullpage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--glass-border);
+    margin-bottom: 20px;
+}
+
+.flashcard-header-info {
+    flex: 1;
+}
+
+.flashcard-subject-badge {
+    background: var(--accent-blue);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.flashcard-topic-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.flashcard-close-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+}
+
+.flashcard-close-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.flashcard-content-area {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    min-height: 0;
+}
+
+.flashcard-notes-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.flashcard-notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.flashcard-notes-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+.flashcard-save-btn {
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.flashcard-save-btn.has-changes {
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.flashcard-save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+}
+
+.flashcard-notes-textarea {
+    flex: 1;
+    width: 100%;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    resize: none;
+    outline: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.flashcard-notes-textarea:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-light);
+}
+
+.flashcard-reference-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.flashcard-reference-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin-bottom: 16px;
+}
+
+.flashcard-reference-content {
+    flex: 1;
+    background: var(--calendar-day);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flashcard-no-reference {
+    color: var(--text-muted);
+    text-align: center;
+    font-style: italic;
+}
+
+.flashcard-reference-image {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+}
+
+.flashcard-reference-pdf {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .flashcard-fullpage-container {
+        padding: 10px;
+    }
+    
+    .flashcard-content-area {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .flashcard-topic-title {
+        font-size: 1.4rem;
+    }
+    
+    .flashcard-close-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.flashcard-fullpage.animate-to-card {
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: var(--click-x, 50%) var(--click-y, 50%);
+}
+
+.flashcard-fullpage.animate-from-card {
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: var(--click-x, 50%) var(--click-y, 50%);
+}
+
+.flashcard-fullpage.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.flashcard-hoverable {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flashcard-hoverable:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.flashcard-hoverable:hover .flashcard-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.flashcard-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.flashcard-delete-btn:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
+}
+
+.flashcard-delete-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.flashcard-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--page-bg);
+    z-index: 10000;
+    overflow-y: auto;
+    transform-origin: var(--origin-x, 50%) var(--origin-y, 50%);
+}
+
+.flashcard-hoverable {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flashcard-hoverable:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.flashcard-hoverable:hover .flashcard-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.flashcard-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.flashcard-delete-btn:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
+}
+
+.flashcard-delete-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.flashcard-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--page-bg);
+    z-index: 10000;
+    overflow-y: auto;
+    transform-origin: var(--origin-x, 50%) var(--origin-y, 50%);
+}
+
+.flashcard-content {
+    pointer-events: none;
+}
+
+.flashcard-hoverable .flashcard-content {
+    pointer-events: auto;
+}
+
+/* Enhanced Schedule Grid Styling */
+.schedule-grid-container {
+    padding: 20px;
+    border-radius: 24px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    margin-top: 20px;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 140px repeat(7, 1fr);
+    gap: 16px;
+    min-height: 400px;
+}
+
+.grid-header {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+    color: white;
+    padding: 16px 12px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-header.today {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+    transform: scale(1.02);
+}
+
+.subject-label {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.subject-label:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-cell {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 12px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.schedule-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.schedule-cell:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+.schedule-cell:hover::before {
+    opacity: 1;
+}
+
+.schedule-cell.today {
+    border-color: var(--accent-green);
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(16, 185, 129, 0.05));
+}
+
+.schedule-cell.today::before {
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+    opacity: 1;
+}
+
+.revision-card-mini {
+    background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.1));
+    border: 1.5px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 12px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.revision-card-mini::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.revision-card-mini:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+}
+
+.revision-card-mini:hover::before {
+    transform: translateX(0);
+}
+
+.revision-card-mini.completed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    border-color: var(--accent-green);
+    opacity: 0.8;
+}
+
+.revision-card-mini.completed::before {
+    background: var(--accent-green);
+    transform: translateX(0);
+}
+
+.revision-card-mini-content {
+    position: relative;
+    z-index: 2;
+}
+
+.revision-card-mini-title {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.revision-card-mini-topic {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.revision-card-mini-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.revision-card-mini-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.revision-card-mini:hover .revision-card-mini-menu {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.revision-card-mini-menu:hover {
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* Dashboard Stats Styling */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dashboard-stat {
+    background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.1));
+    border: 1.5px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 20px 16px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-stat:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    margin-bottom: 4px;
+}
+
+.dashboard-stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .schedule-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .grid-header {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .subject-label {
+        padding: 12px;
+        font-size: 0.8rem;
+    }
+    
+    .schedule-cell {
+        padding: 10px;
+        min-height: 100px;
+    }
+    
+    .revision-card-mini {
+        padding: 10px;
+    }
+}
+
+/* Enhanced Professional Schedule Grid */
+.schedule-grid-container {
+    padding: 24px;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    margin-top: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    gap: 12px;
+    width: 100%;
+    height: auto; /* Remove fixed height */
+}
+
+.grid-header {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
+    color: white;
+    padding: 12px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+    transition: all 0.3s ease;
+    height: 50px; /* Fixed height for headers */
+}
+
+.grid-header.today {
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    transform: scale(1.02);
+}
+
+.subject-label {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 8px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    min-height: 120px; /* Minimum height for subject cells */
+}
+
+.schedule-cell {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px; /* Fixed minimum height */
+    max-height: 300px; /* Maximum height to prevent excessive growth */
+}
+
+.schedule-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.schedule-cell:hover::before {
+    opacity: 1;
+}
+
+.schedule-cell.today {
+    border-color: var(--accent-green);
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(16, 185, 129, 0.05));
+}
+
+.schedule-cell.today::before {
+    background: var(--accent-green);
+    opacity: 1;
+}
+
+.revision-card-mini {
+    background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.revision-card-mini:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+}
+
+.revision-card-mini-content {
+    position: relative;
+    z-index: 2;
+}
+
+.revision-card-mini-title {
+    font-weight: 600;
+    font-size: 0.65rem;
+    color: var(--accent-blue);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.revision-card-mini-topic {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.revision-card-mini-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Remove extra container heights */
+.dashboard-container {
+    width: 100%;
+    height: auto; /* Remove fixed height */
+}
+
+.schedule-grid-container.desktop-layout {
+    height: auto; /* Remove fixed height */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.flashcard-loading {
+    transition: all 0.3s ease;
+}
+
+.flashcard {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Mobile Auth Modal */
+@media (max-width: 768px) {
+    .auth-overlay {
+        padding: 10px;
+    }
+    
+    .auth-modal {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 24px 20px;
+        border-radius: 20px;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .auth-fullpage-container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 32px 20px;
+        border-radius: 16px;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 20px;
+    }
+    
+    .auth-tab {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+        min-height: 48px; /* Ensure tap targets are large enough */
+    }
+    
+    .auth-submit {
+        padding: 18px 24px;
+        font-size: 16px;
+        min-height: 48px; /* Ensure tap targets are large enough */
+        width: 100%;
+    }
+    
+    .auth-input {
+        padding: 16px 14px;
+        font-size: 16px; /* Prevent zoom on iOS */
+        min-height: 48px;
+    }
+    
+    .auth-input-group label {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+}
+
+/* Full Background Theme Support */
+body {
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Ensure the entire viewport background changes */
+html {
+    background: var(--bg-primary);
+}
+
+/* Update root variables for better background control */
+:root {
+    --page-bg: var(--bg-primary);
+    --body-bg: linear-gradient(135deg, #ffffff 0%, #fefefe 25%, #f9fafb 50%, #f3f4f6 75%, #e5e7eb 100%);
+}
+
+[data-theme="black"] {
+    --page-bg: var(--bg-primary);
+    --body-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+}
+
+/* Apply to html and body */
+html, body {
+    background: var(--body-bg);
+    background-attachment: fixed;
+}
+
+/* Mobile Dashboard Tabs */
+.mobile-dashboard-tabs {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-dashboard-tabs {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 2px solid var(--glass-border);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        padding: 8px;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .mobile-tab-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 4px 0;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .mobile-tab-scroll::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .mobile-tab-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .mobile-subject-tab {
+        flex-shrink: 0;
+        padding: 12px 20px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        min-width: 100px;
+        text-align: center;
+        user-select: none;
+    }
+    
+    .mobile-subject-tab.active {
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .mobile-subject-tab:hover:not(.active) {
+        background: var(--accent-blue-light);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    
+    /* Hide desktop schedule grid on mobile */
+    .schedule-grid-container.desktop-layout {
+        display: none !important;
+    }
+    
+    /* Mobile subject content */
+    .mobile-subject-content {
+        display: none;
+        background: var(--glass-bg);
+        border: 2px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 20px;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .mobile-subject-content.active {
+        display: block;
+        animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .mobile-subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .mobile-subject-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--accent-blue);
+    }
+    
+    .mobile-task-count {
+        background: var(--accent-blue-light);
+        color: var(--accent-blue);
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    
+    .mobile-day-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+    }
+    
+    .mobile-day-column {
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        padding: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-day-column:hover {
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .mobile-day-header {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-day-header.today {
+        color: var(--accent-green);
+        border-bottom-color: var(--accent-green);
+    }
+    
+    .mobile-task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mobile-task-item {
+        background: var(--calendar-day);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-task-item:hover {
+        border-color: var(--accent-blue);
+        background: var(--accent-blue-light);
+    }
+    
+    .mobile-task-item.completed {
+        opacity: 0.7;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--accent-green);
+    }
+    
+    .mobile-task-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    
+    .mobile-task-topic {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+    }
+    
+    /* Empty state for mobile */
+    .mobile-empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+    }
+    
+    .mobile-empty-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 16px auto;
+        background: var(--border-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Ensure desktop layout is shown on larger screens */
+@media (min-width: 769px) {
+    .mobile-dashboard-tabs,
+    .mobile-subject-content {
+        display: none !important;
+    }
+    
+    .schedule-grid-container.desktop-layout {
+        display: block !important;
+    }
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+    /* Ensure all interactive elements are at least 44px */
+    .btn-primary,
+    .btn-secondary,
+    .auth-tab,
+    .auth-submit,
+    .mobile-subject-tab {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better spacing for touch */
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    /* Prevent zoom on input focus */
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+    
+    /* Better modal positioning */
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 20px);
+        max-height: calc(100% - 40px);
+        overflow-y: auto;
+    }
+    
+    /* Improved button spacing */
+    .auth-tabs {
+        gap: 4px;
+    }
+    
+    .auth-tab {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+/* Fixed Modal Centering */
+.auth-overlay,
+.duplicate-modal-overlay,
+.payment-modal-overlay,
+.delete-account-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10000 !important;
+}
+
+.auth-modal,
+.duplicate-modal,
+.payment-modal {
+    position: relative !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 20px !important;
+    max-height: calc(100vh - 40px) !important;
+    overflow-y: auto !important;
+}
+
+/* Mobile specific modal fixes */
+@media (max-width: 768px) {
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        margin: 20px !important;
+    }
+    
+    .auth-fullpage-container {
+        position: relative !important;
+        transform: none !important;
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        margin: 20px !important;
+    }
+}
+
+/* Fixed Bottom Navigation */
+.bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    transform: translateZ(0); /* Force hardware acceleration */
+    -webkit-transform: translateZ(0);
+}
+
+/* Prevent body scroll affecting bottom nav */
+body {
+    padding-bottom: 80px !important;
+}
+
+/* Ensure container doesn't overlap bottom nav */
+.container {
+    margin-bottom: 0 !important;
+    padding-bottom: 20px !important;
+}
+
+/* Fix for settings page specifically */
+@media (max-width: 768px) {
+    .page#settings {
+        padding-bottom: 100px !important; /* Extra padding for settings */
+    }
+    
+    /* Ensure bottom nav is always on top */
+    .bottom-nav {
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        background: var(--glass-bg) !important;
+        border-top: 2px solid var(--glass-border) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Prevent any content from going behind bottom nav */
+    .settings-grid,
+    .settings-card {
+        margin-bottom: 20px !important;
+    }
+}
+
+/* Ensure all modals are properly centered */
+.modal-overlay,
+.overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 10000 !important;
+}
+
+/* Fix dropdown positioning */
+.dropdown,
+.tab-dropdown-overlay {
+    position: fixed !important;
+    z-index: 11000 !important;
+}
+
+/* Mobile dropdown centering */
+@media (max-width: 768px) {
+    .dropdown,
+    .tab-dropdown-overlay {
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+    }
+    
+    .dropdown.show,
+    .tab-dropdown-overlay.show {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+}
+
+/* Fix notification positioning */
+.notification-container {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 12000 !important;
+}
+
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        width: calc(100% - 20px) !important;
+    }
+    
+    .notification {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+}
+
+/* Prevent viewport issues on mobile */
+html {
+    height: 100% !important;
+    overflow-x: hidden !important;
+}
+
+body {
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+}
+
+/* Fix mobile viewport units */
+@media (max-width: 768px) {
+    /* Use viewport units that account for mobile browsers */
+    .auth-overlay,
+    .duplicate-modal-overlay,
+    .payment-modal-overlay {
+        height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height for mobile */
+    }
+    
+    /* Prevent horizontal scroll */
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix modal max heights */
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        max-height: calc(100vh - 40px) !important;
+        max-height: calc(100dvh - 40px) !important;
+    }
+}
+
+/* Proper z-index layering */
+:root {
+    --z-bottom-nav: 1000;
+    --z-sidebar: 1500;
+    --z-modal: 10000;
+    --z-dropdown: 11000;
+    --z-notification: 12000;
+}
+
+.bottom-nav { z-index: var(--z-bottom-nav) !important; }
+.sidebar { z-index: var(--z-sidebar) !important; }
+.auth-overlay,
+.duplicate-modal-overlay,
+.payment-modal-overlay { z-index: var(--z-modal) !important; }
+.dropdown,
+.tab-dropdown-overlay { z-index: var(--z-dropdown) !important; }
+.notification-container { z-index: var(--z-notification) !important; }
+    </style>
+</head>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+<body>
+    <!-- Top Tab Bar (will be created by JavaScript) -->
+    
+    <!-- Sidebar Components -->
+    <div class="sidebar-trigger" onmouseenter="openSidebar()"></div>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ADD THE AI TRIGGER AREA HERE: -->
+<div class="ai-trigger-area" id="aiTriggerArea" onmouseenter="showAIPreview()" onmouseleave="hideAIPreview()"></div>
+
+    
+    <div class="sidebar" id="sidebar" onmouseleave="handleSidebarLeave(event)">
+        <div class="sidebar-header">
+            <h2>
+                <svg class="icon icon-lg" viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                Navigation
+            </h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-item active" onclick="showPage('home')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                Home
+            </a>
+            <a href="#" class="sidebar-item" onclick="showPage('dashboard')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="#" class="sidebar-item" onclick="showPage('progress')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                Progress
+            </a>
+            <a href="#" class="sidebar-item" onclick="showPage('settings')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-stats" id="sidebarStats">
+            <div class="sidebar-stat-item">
+                <span class="sidebar-stat-label">Uploads</span>
+                <span class="sidebar-stat-value" id="uploadStatsValue">0</span>
+            </div>
+            <div class="sidebar-stat-item" style="margin-top: 12px;">
+                <span class="sidebar-stat-label">Flashcards</span>
+                <span class="sidebar-stat-value" id="flashcardStatsValue">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu" onclick="toggleSidebarMobile()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1>GCSE Revision Planner</h1>
+            </div>
+            <div class="header-right">
+                <button class="ai-assistant-btn dashboard-only" id="aiAssistantBtn" onclick="toggleAIChatbot()" title="AI Study Assistant">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span>AI Assistant</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Home Page -->
+            <div id="home" class="page active">
+                <div class="card">
+                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Create Your Personalized Revision Schedule</h2>
+                    
+                    <form onsubmit="generateSchedule(event)">
+                        <div class="input-group">
+                            <label for="subjects">Enter your GCSE subjects (comma-separated):</label>
+                            <input 
+                                type="text" 
+                                id="subjects" 
+                                placeholder="e.g., English Literature, Mathematics, Biology, Chemistry, History" 
+                                required 
+                            />
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                            <div class="input-group">
+                                <label for="currentGrade">Current Grade Level:</label>
+                                <select id="currentGrade" class="settings-select" style="width: 100%;" required>
+                                    <option value="">Select your current grade</option>
+                                    <option value="grade-9">Grade 9 (Excellent)</option>
+                                    <option value="grade-8">Grade 8 (Very Good)</option>
+                                    <option value="grade-7">Grade 7 (Good)</option>
+                                    <option value="grade-6">Grade 6 (Above Average)</option>
+                                    <option value="grade-5">Grade 5 (Average)</option>
+                                    <option value="grade-4">Grade 4 (Below Average)</option>
+                                    <option value="grade-3">Grade 3 (Needs Improvement)</option>
+                                    <option value="struggling">Struggling with GCSEs</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="examBoard">Exam Board:</label>
+                                <select id="examBoard" class="settings-select" style="width: 100%;" required>
+                                    <option value="">Select your exam board</option>
+                                    <option value="aqa">AQA</option>
+                                    <option value="edexcel">Edexcel/Pearson</option>
+                                    <option value="mixed">Mixed Boards</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                            <div class="input-group">
+                                <label for="examType">Exam Type:</label>
+                                <select id="examType" class="settings-select" style="width: 100%;" required>
+                                    <option value="">Select exam type</option>
+                                    <option value="gcse">GCSE Final Exams</option>
+                                    <option value="mock">Mock Exams</option>
+                                    <option value="practice">Practice/Assessment</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="daysUntilExam">Days until exam:</label>
+                                <select id="daysUntilExam" class="settings-select" style="width: 100%;" required>
+                                    <option value="">Select timeframe</option>
+                                    <option value="from-today">From Today (Auto-calculate GCSE dates)</option>
+                                    <option value="custom">Custom timeframe</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group" id="daysDisplayContainer" style="display: none;">
+                            <label>Days until GCSE exams:</label>
+                            <div id="daysDisplay" style="
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: space-between; 
+                                padding: 18px 20px; 
+                                background: var(--calendar-day); 
+                                border: 2px solid var(--accent-blue); 
+                                border-radius: 20px; 
+                                font-weight: 700; 
+                                color: var(--accent-blue);
+                            ">
+                                <span id="calculatedDays"></span>
+                                <button type="button" onclick="cancelDaysCalculation()" style="
+                                    background: none; 
+                                    border: none; 
+                                    color: var(--accent-red); 
+                                    font-size: 20px; 
+                                    cursor: pointer; 
+                                    padding: 0; 
+                                    width: 24px; 
+                                    height: 24px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center;
+                                ">×</button>
+                            </div>
+                        </div>
+
+                        <div class="input-group" id="customDaysGroup" style="display: none;">
+                            <label for="customDays">Enter custom number of days:</label>
+                            <input 
+                                type="number" 
+                                id="customDays" 
+                                placeholder="Enter number of days until exam" 
+                                min="1" 
+                                max="365"
+                            />
+                        </div>
+
+                        <div class="input-group" id="studyIntensityGroup">
+                            <label for="studyIntensity">Study Intensity Level:</label>
+                            <select id="studyIntensity" class="settings-select" style="width: 100%;" required>
+                                <option value="">Select intensity</option>
+                                <option value="light">Light (1-2 hours/day)</option>
+                                <option value="moderate">Moderate (2-4 hours/day)</option>
+                                <option value="intensive">Intensive (4-6 hours/day)</option>
+                                <option value="exam-mode">Exam Mode (6+ hours/day)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="generateBtn" style="width: 100%; max-width: 400px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+                            </svg>
+                            Create Personalized Schedule
+                        </button>
+                    </form>
+
+                    <!-- Upload Section -->
+                    <div class="home-upload-section" id="homeUploadSection">
+                        <div class="upload-area" id="homeUploadArea" style="margin-top: 24px;">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            <div class="upload-text">Upload Study Materials</div>
+                            <div class="upload-subtext">Drag files here or click to browse</div>
+                        </div>
+                        <input type="file" id="homeFileUpload" accept="image/*,application/pdf" multiple style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page">
+                <div class="main-tab-switches">
+                    <button class="main-tab-switch active" onclick="switchMainTab('schedule')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                        </svg>
+                        Schedule
+                    </button>
+                    <button class="main-tab-switch" onclick="switchMainTab('flashcards')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        Flashcards
+                    </button>
+                </div>
+
+                <div id="scheduleContainer" class="schedule-container active">
+                    <div class="tab-carousel" id="scheduleTabsCarousel">
+                        <!-- Subject tabs will be here -->
+                    </div>
+                    
+                    <div class="loading-container" id="loadingContainer">
+                        <h3 style="color: var(--accent-blue); margin-bottom: 24px; text-align: center; font-weight: 800; font-size: 1.6rem;">
+                            Generating your personalized revision schedule...
+                        </h3>
+                        <div class="loading-grid" id="loadingGrid">
+                            <!-- Loading cards will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="scheduleContent">
+                        <div class="empty-state">
+                            <h3>No schedules created yet</h3>
+                            <p>Go to the Home page to create your first revision schedule</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="flashcardContainer" class="flashcard-container">
+                    <div class="flashcard-header">
+                        <h2 class="flashcard-title">Study Flashcards</h2>
+                        <button class="create-flashcard-btn" onclick="createFlashcard()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Create Flashcard
+                        </button>
+                    </div>
+                    
+                    <div class="flashcards-grid" id="flashcardsGrid">
+                        <!-- Flashcards will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Page -->
+            <div id="progress" class="page">
+                <div class="card">
+                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Your Progress</h2>
+                    <div id="progressContent">
+                        <div class="empty-state">
+                            <h3>No progress data yet</h3>
+                            <p>Complete some revision tasks to see your progress here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <div class="card">
+                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Settings & Preferences</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="10,8 16,12 10,16 10,8"/>
+                                </svg>
+                                Study Sessions
+                            </h4>
+                            <p>Customize your default study session length and break intervals</p>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Session Length:</label>
+                                <select class="settings-select" id="sessionLength" onchange="updateSessionLength(this.value)">
+                                    <option value="30">30 minutes</option>
+                                    <option value="45" selected>45 minutes</option>
+                                    <option value="60">60 minutes</option>
+                                    <option value="90">90 minutes</option>
+                                </select>
+                            </div>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Break Length:</label>
+                                <select class="settings-select" id="breakLength" onchange="updateBreakLength(this.value)">
+                                    <option value="5">5 minutes</option>
+                                    <option value="10" selected>10 minutes</option>
+                                    <option value="15">15 minutes</option>
+                                    <option value="20">20 minutes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                                Notifications
+                            </h4>
+                            <p>Set up reminders for your study sessions and break times</p>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Study Reminders:</label>
+                                <div class="settings-toggle" id="studyNotifications" onclick="toggleNotifications('study')"></div>
+                            </div>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Break Reminders:</label>
+                                <div class="settings-toggle" id="breakNotifications" onclick="toggleNotifications('break')"></div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="M1 12h6m6 0h6"/>
+                                </svg>
+                                Theme Options
+                            </h4>
+                            <p>Choose between Light or Dark theme</p>
+                            <div class="theme-selector">
+                                <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; color: #374151; font-weight: 800; font-size: 10px;">Light</div>
+                                </div>
+                                <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #0f172a 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #f1f5f9; font-weight: 800; font-size: 10px;">Dark</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9,22 9,12 15,12 15,22"/>
+                                </svg>
+                                Navigation Style
+                            </h4>
+                            <p>Choose between sidebar or top tab bar navigation</p>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Use Top Tab Bar:</label>
+                                <div class="settings-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()"></div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+                                Note: This feature is disabled on mobile devices
+                            </p>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <polyline points="1 20 1 14 7 14"/>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                </svg>
+                                Backup & Sync
+                            </h4>
+                            <p>Sync your data across devices and create automatic backups</p>
+                            <div class="settings-control">
+                                <button class="btn-secondary" onclick="createBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    Create Backup
+                                </button>
+                                <button class="btn-secondary" onclick="restoreBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Restore Backup
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <div class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-container">
+            <div class="bottom-nav-item active" onclick="navigateToPage('home')" onmousedown="triggerHaptic(this)">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span class="bottom-nav-label">Home</span>
+            </div>
+            
+            <div class="bottom-nav-item" onclick="navigateToPage('dashboard')" onmousedown="triggerHaptic(this)">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                </svg>
+                <span class="bottom-nav-label">Dashboard</span>
+            </div>
+            
+            <div class="bottom-nav-item" onclick="navigateToPage('progress')" onmousedown="triggerHaptic(this)">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                <span class="bottom-nav-label">Progress</span>
+            </div>
+            
+            <div class="bottom-nav-item" onclick="navigateToPage('settings')" onmousedown="triggerHaptic(this)">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span class="bottom-nav-label">Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dropdown Overlay -->
+    <div id="dropdownOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; display: none;" onclick="closeAllDropdowns()"></div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal">
+            <button class="auth-close" onclick="closeAuthModal()">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            
+            <div class="auth-header">
+                <h2>Welcome to GCSE Planner</h2>
+                <p>Sign in to sync your progress across devices</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+                <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+            </div>
+            
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="auth-input-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" class="auth-input" required placeholder="Enter your email">
+                </div>
+                <div class="auth-input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="auth-input" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="auth-submit">Sign In</button>
+            </form>
+            
+            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+                <div class="auth-input-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" class="auth-input" required placeholder="Enter your full name">
+                </div>
+                <div class="auth-input-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" class="auth-input" required placeholder="Enter your email">
+                </div>
+                <div class="auth-input-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" class="auth-input" required placeholder="Create a password" minlength="6">
+                </div>
+                <div class="auth-input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="auth-input" required placeholder="Confirm your password" minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Components -->
+    <div class="ai-chatbot-sidebar" id="aiChatbotSidebar">
+        <div class="ai-chatbot-header">
+            <div class="ai-chatbot-title">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
+                </svg>
+                <span>AI Study Assistant</span>
+                <span class="ai-subject-context" id="aiSubjectContext">General</span>
+            </div>
+            <button class="ai-close-btn" onclick="toggleAIChatbot()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="ai-quick-actions">
+            <button class="ai-action-btn" onclick="aiQuickAction('explain-topic')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Explain Topic
+            </button>
+            <button class="ai-action-btn" onclick="aiQuickAction('create-quiz')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                Create Quiz
+            </button>
+            <button class="ai-action-btn" onclick="aiQuickAction('study-tips')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                Study Tips
+            </button>
+        </div>
+
+        <div class="ai-chat-container" id="aiChatContainer">
+            <div class="ai-welcome-message" id="aiWelcomeMessage">
+                <div class="ai-message ai-assistant">
+                    <div class="ai-message-avatar">AI</div>
+                    <div class="ai-message-content">
+                        <p>Hello! I'm your AI study assistant for <strong id="contextSubject">your current subject</strong>.</p>
+                        <div id="subjectSpecificWelcome">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                        <p>I can help you with study strategies, explanations, and managing your revision schedule.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-input-container">
+            <div class="ai-input-wrapper">
+                <input type="text" 
+                       id="aiChatInput" 
+                       placeholder="Ask me anything about your studies..."
+                       onkeypress="handleAIChatKeypress(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="ai-suggested-prompts" id="aiSuggestedPrompts">
+                <!-- Dynamic prompts based on current subject -->
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-chatbot-overlay" id="aiChatbotOverlay" onclick="toggleAIChatbot()"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+
+    <script>
+        // GCSE Revision Planner - Complete JavaScript Application
+
+// ===== GLOBAL STATE AND VARIABLES =====
+let appState = {
+    schedules: {},
+    activeSchedule: null,
+    currentPage: 'home',
+    currentTabIndex: 0,
+    visibleTabCount: 2,
+    showingCompleted: false,
+    isInitialized: false
+};
+
+let userSettings = {
+    sessionLength: 45,
+    breakLength: 10,
+    studyNotifications: false,
+    breakNotifications: false,
+    theme: 'white',
+    useTopTabBar: false  // Add this line
+};
+
+// ADD THIS HERE:
+let limits = {
+    uploads: 10,      // Free tier upload limit
+    flashcards: 50    // Free tier flashcard limit
+};
+
+// Google Calendar Integration
+let isGoogleCalendarConnected = JSON.parse(localStorage.getItem('gcseGoogleCalendarConnected') || 'false');
+let googleCalendarAccessToken = null;
+let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
+
+// Google Calendar API Configuration
+const GOOGLE_CLIENT_ID = '706092852156-7n7geb46sf0qcqumbk53anb7gl2u6uth.apps.googleusercontent.com';
+const GOOGLE_API_KEY = 'AIzaSyCWGfdMc7ly5C97VNhPWPAHsaGq9fGKCes';
+const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+
+
+// UI State Variables
+let activeDropdown = null;
+let sidebarTimeout = null;
+let navigationTimeout = null;
+let isNavigating = false;
+let isSidebarOpen = false;
+
+// Authentication State
+let currentUser = null;
+let currentMobileDay = 0;
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// AI Chatbot State
+let aiChatbotOpen = false;
+let currentAISubject = 'General';
+let aiChatHistory = [];
+let aiGeneratedQuestions = [];
+
+// API Configuration
+const GEMINI_API_KEY = 'AIzaSyCVYNL_SjMbNl5fFPZrlbT3HGNya7IoLfY';
+
+
+// ADD THE STRIPE CONFIGURATION HERE:
+// ===== STRIPE PAYMENT CONFIGURATION =====
+let stripe = null;
+let elements = null;
+let cardElement = null;
+
+// Touch/Swipe State
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+let isSwipeActive = false;
+let swipeStartX = 0;
+let swipeStartY = 0;
+let activeSwipeElement = null;
+let selectedBackupItems = new Set(['account', 'settings']);
+
+
+// ===== CORE NAVIGATION AND SIDEBAR FUNCTIONS =====
+function openSidebar() {
+    clearTimeout(sidebarTimeout);
+    
+    const sidebar = document.getElementById('sidebar');
+    const container = document.getElementById('container');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar) sidebar.classList.add('open');
+    if (container) container.classList.add('sidebar-open');
+    if (overlay) overlay.classList.add('show');
+}
+
+function handleSidebarLeave(event) {
+    if (window.innerWidth > 768) {
+        sidebarTimeout = setTimeout(() => {
+            const trigger = document.querySelector('.sidebar-trigger');
+            if (trigger && event && event.clientX !== undefined) {
+                const rect = trigger.getBoundingClientRect();
+                const mouseX = event.clientX;
+                if (mouseX > rect.right) {
+                    closeSidebar();
+                }
+            } else {
+                closeSidebar();
+            }
+        }, 300);
+    }
+}
+
+function closeSidebar() {
+    clearTimeout(sidebarTimeout);
+    
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerMenu');
+    const overlay = document.getElementById('sidebarOverlay');
+    const container = document.getElementById('container');
+    const body = document.body;
+    
+    if (sidebar) sidebar.classList.remove('open');
+    if (hamburger) hamburger.classList.remove('active');
+    if (overlay) overlay.classList.remove('show');
+    if (container) container.classList.remove('sidebar-open');
+    if (body) body.classList.remove('sidebar-open-mobile');
+    
+    isSidebarOpen = false;
+}
+
+function showPage(pageId) {
+    const currentPage = document.querySelector('.page.active');
+    const targetPage = document.getElementById(pageId);
+    
+    if (!targetPage || currentPage === targetPage) return;
+    
+    // Special handling for dashboard
+    if (pageId === 'dashboard') {
+        ensureMostRecentScheduleActive();
+        updateScheduleTabs();
+        
+        setTimeout(() => {
+            updateScheduleContent();
+            updateCenteredCarousel();
+        }, 100);
+    }
+    
+    // Close mobile sidebar properly
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburgerMenu');
+        const overlay = document.getElementById('sidebarOverlay');
+        const container = document.getElementById('container');
+        const body = document.body;
+        
+        if (sidebar) sidebar.classList.remove('open');
+        if (hamburger) hamburger.classList.remove('active');
+        if (overlay) overlay.classList.remove('show');
+        if (container) container.classList.remove('sidebar-open');
+        if (body) body.classList.remove('sidebar-open-mobile');
+        
+        isSidebarOpen = false;
     } else {
-      modelName = 'gemini-pro';
-      requestBody = {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          topP: 0.8,
-          maxOutputTokens: 1500,
+        closeSidebar();
+    }
+    
+    if (currentPage) {
+        currentPage.classList.add('transitioning-out');
+    }
+    
+    setTimeout(() => {
+        if (currentPage) {
+            currentPage.classList.remove('active', 'transitioning-out');
         }
-      };
+        
+        targetPage.classList.add('transitioning-in');
+        targetPage.classList.add('active');
+        
+        if (pageId === 'dashboard') {
+            setTimeout(() => {
+                updateCenteredCarousel();
+            }, 50);
+        }
+        
+        setTimeout(() => {
+            targetPage.classList.remove('transitioning-in');
+        }, 50);
+    }, 200);
+    
+    // Update sidebar item states
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const sidebarItem = document.querySelector(`[onclick="showPage('${pageId}')"]`);
+    if (sidebarItem) {
+        const closestItem = sidebarItem.closest('.sidebar-item');
+        if (closestItem) closestItem.classList.add('active');
+    }
+    
+    appState.currentPage = pageId;
+    saveAppState();
+
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation(pageId);
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
+    // Update top tab bar if active
+    if (userSettings.useTopTabBar) {
+        updateTopTabActive();
+    }
+    
+    // Control AI button visibility
+    toggleAIButtonVisibility(pageId);
+}
+
+function toggleSidebarMobile() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerMenu');
+    const overlay = document.getElementById('sidebarOverlay');
+    const container = document.getElementById('container');
+    const body = document.body;
+    
+    if (typeof isSidebarOpen === 'undefined') {
+        isSidebarOpen = false;
+    }
+    
+    isSidebarOpen = !isSidebarOpen;
+    
+    if (isSidebarOpen) {
+        if (sidebar) sidebar.classList.add('open');
+        if (hamburger) hamburger.classList.add('active');
+        if (overlay) overlay.classList.add('show');
+        if (container) container.classList.add('sidebar-open');
+        if (body) body.classList.add('sidebar-open-mobile');
+    } else {
+        if (sidebar) sidebar.classList.remove('open');
+        if (hamburger) hamburger.classList.remove('active');
+        if (overlay) overlay.classList.remove('show');
+        if (container) container.classList.remove('sidebar-open');
+        if (body) body.classList.remove('sidebar-open-mobile');
+    }
+}
+
+// Add validation helper function
+function validateScheduleForm() {
+    const subjects = document.getElementById('subjects').value.trim();
+    const currentGrade = document.getElementById('currentGrade').value;
+    const examBoard = document.getElementById('examBoard').value;
+    const examType = document.getElementById('examType').value;
+    const daysUntilExam = document.getElementById('daysUntilExam').value;
+    const studyIntensity = document.getElementById('studyIntensity').value;
+    
+    if (!subjects) {
+        showAlert('Please enter your GCSE subjects', 'error');
+        return false;
+    }
+    
+    if (!currentGrade) {
+        showAlert('Please select your current grade level', 'error');
+        return false;
+    }
+    
+    if (!examBoard) {
+        showAlert('Please select your exam board', 'error');
+        return false;
+    }
+    
+    if (!examType) {
+        showAlert('Please select your exam type', 'error');
+        return false;
+    }
+    
+    if (!daysUntilExam) {
+        showAlert('Please select timeframe until exam', 'error');
+        return false;
+    }
+    
+    if (!studyIntensity) {
+        showAlert('Please select study intensity level', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+// Replace the existing generateSchedule function with this updated version
+async function generateSchedule(event) {
+    event.preventDefault();
+    
+    const generateBtn = document.getElementById('generateBtn');
+    const originalText = generateBtn.innerHTML;
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '<svg class="icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Creating...';
+    
+    try {
+        if (!validateScheduleForm()) {
+            return;
+        }
+        
+        const subjectsInput = document.getElementById('subjects').value.trim();
+        const currentGrade = document.getElementById('currentGrade').value;
+        const examBoard = document.getElementById('examBoard').value;
+        const examType = document.getElementById('examType').value;
+        const daysUntilExam = document.getElementById('daysUntilExam').value;
+        const customDays = document.getElementById('customDays').value;
+        const studyIntensity = document.getElementById('studyIntensity').value;
+        
+        let totalDays;
+        if (daysUntilExam === 'custom') {
+            totalDays = parseInt(customDays);
+            if (!totalDays || totalDays < 1) {
+                showAlert('Please enter a valid number of days', 'error');
+                return;
+            }
+        } else if (daysUntilExam === 'from-today') {
+            const daysSelect = document.getElementById('daysUntilExam');
+            totalDays = parseInt(daysSelect.dataset.calculatedDays);
+            if (!totalDays) {
+                showAlert('Please calculate days from today first', 'error');
+                return;
+            }
+        } else {
+            showAlert('Please select a timeframe', 'error');
+            return;
+        }
+        
+        const subjects = subjectsInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const scheduleName = subjects.join(', ');
+        
+        // Check for uploaded images and create flashcards
+        if (uploadedFiles.length > 0) {
+            generateBtn.innerHTML = '<svg class="icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Analyzing images...';
+            
+            await processUploadedImagesForFlashcards(subjects);
+        }
+        
+        const existingSchedule = findSimilarSchedule(scheduleName, subjects);
+        if (existingSchedule) {
+            showDuplicateModal(scheduleName, subjects, {
+                currentGrade: currentGrade,
+                examBoard: examBoard,
+                examType: examType,
+                daysUntilExam: totalDays,
+                studyIntensity: studyIntensity,
+                examDate: new Date(Date.now() + totalDays * 24 * 60 * 60 * 1000)
+            }, existingSchedule);
+            return;
+        }
+        
+        showPage('dashboard');
+        
+        showGenerationAnimation(subjects, {
+            currentGrade: currentGrade,
+            examBoard: examBoard,
+            examType: examType,
+            daysUntilExam: totalDays,
+            studyIntensity: studyIntensity,
+            examDate: new Date(Date.now() + totalDays * 24 * 60 * 60 * 1000)
+        });
+        
+        document.querySelector('form').reset();
+        updateHomeUploadDisplay();
+        
+    } finally {
+        setTimeout(() => {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = originalText;
+        }, 1000);
+    }
+}
+
+function handleDaysUntilExamChange() {
+    const daysSelect = document.getElementById('daysUntilExam');
+    if (daysSelect) {
+        daysSelect.addEventListener('change', function() {
+            if (this.value === 'from-today') {
+                calculateGCSEDays();
+            } else {
+                cancelDaysCalculation();
+            }
+        });
+    }
+}
+
+function calculateGCSEDays() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    // GCSE exams typically start in mid-May
+    let gcseStartDate = new Date(currentYear, 4, 15); // May 15th
+    
+    // If we're past this year's GCSE date, use next year
+    if (today > gcseStartDate) {
+        gcseStartDate = new Date(currentYear + 1, 4, 15);
+    }
+    
+    const timeDiff = gcseStartDate.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    // Show the calculated days with smooth animation
+    const daysDisplayContainer = document.getElementById('daysDisplayContainer');
+    const calculatedDays = document.getElementById('calculatedDays');
+    
+    if (!daysDisplayContainer || !calculatedDays) {
+        console.error('Days display elements not found');
+        return;
+    }
+    
+    calculatedDays.textContent = `${daysDiff} days until GCSE exams (${gcseStartDate.toLocaleDateString('en-GB', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+    })})`;
+    
+    // Store the calculated days for form submission
+    const daysSelect = document.getElementById('daysUntilExam');
+    if (daysSelect) {
+        daysSelect.dataset.calculatedDays = daysDiff;
+    }
+    
+    // Show with smooth animation
+    daysDisplayContainer.style.display = 'block';
+    daysDisplayContainer.style.opacity = '0';
+    daysDisplayContainer.style.transform = 'translateY(-10px)';
+    daysDisplayContainer.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    // Force reflow
+    daysDisplayContainer.offsetHeight;
+    
+    setTimeout(() => {
+        daysDisplayContainer.style.opacity = '1';
+        daysDisplayContainer.style.transform = 'translateY(0)';
+    }, 50);
+}
+
+function cancelDaysCalculation() {
+    const daysDisplayContainer = document.getElementById('daysDisplayContainer');
+    const daysSelect = document.getElementById('daysUntilExam');
+    
+    if (!daysDisplayContainer || !daysSelect) return;
+    
+    // Smooth hide animation
+    daysDisplayContainer.style.opacity = '0';
+    daysDisplayContainer.style.transform = 'translateY(-10px)';
+    
+    setTimeout(() => {
+        daysDisplayContainer.style.display = 'none';
+        daysSelect.value = '';
+        delete daysSelect.dataset.calculatedDays;
+    }, 400);
+}
+
+function showGenerationAnimationAndNavigate(subjects, scheduleData) {
+    // Auto-navigate to dashboard
+    showPage('dashboard');
+    
+    // Show enhanced loading
+    const carousel = document.getElementById('scheduleTabsCarousel');
+    const content = document.getElementById('scheduleContent');
+    
+    carousel.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: var(--accent-blue);">
+            <div style="width: 60px; height: 60px; margin: 0 auto 20px; border: 4px solid var(--accent-blue-light); border-top: 4px solid var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Creating Your Schedule</h3>
+            <p style="color: var(--text-secondary);">Analyzing ${subjects.length} subjects and generating personalized study plan...</p>
+        </div>
+    `;
+    
+    content.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px;">
+                ${subjects.map((subject, i) => `
+                    <div class="generation-card" style="
+                        background: var(--glass-bg); 
+                        border: 2px solid var(--glass-border); 
+                        border-radius: 20px; 
+                        padding: 24px; 
+                        opacity: 0;
+                        transform: translateY(20px);
+                        animation: slideInUp 0.5s ease ${i * 0.2}s forwards;
+                    ">
+                        <h4 style="color: var(--accent-blue); margin-bottom: 12px;">${subject}</h4>
+                        <div style="height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden;">
+                            <div style="height: 100%; background: var(--accent-blue); width: 0%; animation: fillProgress 2s ease ${i * 0.1}s forwards;"></div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Generating tasks...</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fillProgress {
+            to {
+                width: 100%;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Generate schedule after 3 seconds
+    setTimeout(() => {
+        const scheduleId = `schedule_${Date.now()}`;
+        createPersonalizedSchedule(scheduleId, { subjects, ...scheduleData });
+        
+        setTimeout(() => {
+            switchToSchedule(scheduleId);
+            showAlert('Schedule created successfully! 🎉', 'success');
+            
+            // Remove the style element
+            style.remove();
+        }, 500);
+    }, 3000);
+}
+function findSimilarSchedule(scheduleName, subjects) {
+    for (const [scheduleId, schedule] of Object.entries(appState.schedules)) {
+        if (schedule.name === scheduleName) {
+            return { id: scheduleId, schedule: schedule, type: 'exact' };
+        }
+        
+        const similarity = calculateSubjectSimilarity(subjects, schedule.subjects);
+        if (similarity > 0.8) {
+            return { id: scheduleId, schedule: schedule, type: 'similar' };
+        }
+    }
+    return null;
+}
+
+function calculateSubjectSimilarity(subjects1, subjects2) {
+    const set1 = new Set(subjects1.map(s => s.toLowerCase().trim()));
+    const set2 = new Set(subjects2.map(s => s.toLowerCase().trim()));
+    
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    const union = new Set([...set1, ...set2]);
+    
+    return intersection.size / union.size;
+}
+
+function showDuplicateModal(scheduleName, subjects, scheduleData, existingSchedule) {
+    const modal = document.createElement('div');
+    modal.className = 'duplicate-modal-overlay';
+    modal.innerHTML = `
+        <div class="duplicate-modal">
+            <h3>Schedule Already Exists</h3>
+            <p>A schedule with ${existingSchedule.type === 'exact' ? 'the same name' : 'similar subjects'} already exists: "<strong>${existingSchedule.schedule.name}</strong>"</p>
+            <p>Would you like to replace the existing schedule or add this as a new schedule?</p>
+            <div class="duplicate-modal-buttons">
+                <button class="duplicate-modal-button replace" onclick="replaceExistingSchedule('${existingSchedule.id}', '${JSON.stringify(subjects).replace(/"/g, '&quot;')}', '${JSON.stringify(scheduleData).replace(/"/g, '&quot;')}')">
+                    Replace Current
+                </button>
+                <button class="duplicate-modal-button add-new" onclick="addAsNewSchedule('${JSON.stringify(subjects).replace(/"/g, '&quot;')}', '${JSON.stringify(scheduleData).replace(/"/g, '&quot;')}')">
+                    Add as New
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 100);
+}
+
+function replaceExistingSchedule(existingId, subjectsJson, scheduleDataJson) {
+    const subjects = JSON.parse(subjectsJson.replace(/&quot;/g, '"'));
+    const scheduleData = JSON.parse(scheduleDataJson.replace(/&quot;/g, '"'));
+    
+    delete appState.schedules[existingId];
+    
+    createNewSchedule(subjects, scheduleData, existingId);
+    
+    closeDuplicateModal();
+    showAlert('Schedule replaced successfully!', 'success');
+}
+
+function addAsNewSchedule(subjectsJson, scheduleDataJson) {
+    const subjects = JSON.parse(subjectsJson.replace(/&quot;/g, '"'));
+    const scheduleData = JSON.parse(scheduleDataJson.replace(/&quot;/g, '"'));
+    
+    createNewSchedule(subjects, scheduleData);
+    
+    closeDuplicateModal();
+    showAlert('New schedule created successfully!', 'success');
+}
+
+function closeDuplicateModal() {
+    const modal = document.querySelector('.duplicate-modal-overlay');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.remove();
+        }, 400);
+    }
+}
+
+function createNewSchedule(subjects, scheduleData, existingId = null) {
+    const scheduleId = existingId || `schedule_${Date.now()}`;
+    
+    showDashboardWithLoading();
+    
+    createPersonalizedSchedule(scheduleId, { subjects, ...scheduleData });
+    
+    setTimeout(() => {
+        hideLoading();
+        switchToSchedule(scheduleId);
+    }, 1500);
+}
+
+// Fix for showGenerationAnimation - use the existing function
+function showGenerationAnimation(subjects, scheduleData) {
+    showGenerationAnimationAndNavigate(subjects, scheduleData);
+}
+
+function rebindFlashcardEvents() {
+    const grid = document.getElementById('flashcardsGrid');
+    if (!grid) return;
+    
+    // Remove any existing click handlers to prevent duplicates
+    grid.removeEventListener('click', handleFlashcardClick);
+    
+    // Add single event listener
+    grid.addEventListener('click', handleFlashcardClick);
+}
+
+// Create separate handler function
+function handleFlashcardClick(event) {
+    const flashcardElement = event.target.closest('.flashcard');
+    if (!flashcardElement) return;
+    
+    // Don't open if clicking delete button
+    if (event.target.closest('.flashcard-delete-btn')) return;
+    
+    // Prevent multiple clicks
+    if (flashcardElement.classList.contains('loading')) return;
+    
+    const flashcardId = flashcardElement.dataset.flashcardId;
+    flashcardElement.classList.add('loading');
+    
+    // Show loading state
+    showFlashcardLoading(flashcardElement, flashcardId, event);
+}
+
+function displayFlashcards() {
+    const grid = document.getElementById('flashcardsGrid');
+    if (!grid) return;
+    
+    if (flashcards.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                <h3 style="color: var(--text-primary); margin-bottom: 12px;">No flashcards yet</h3>
+                <p>Create your first flashcard to start studying!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = '';
+    
+    flashcards.forEach((flashcard, index) => {
+        const colorIndex = (index % 4) + 1;
+        
+        const flashcardElement = document.createElement('div');
+        flashcardElement.className = `flashcard color-${colorIndex} flashcard-hoverable`;
+        flashcardElement.dataset.flashcardId = flashcard.id;
+        flashcardElement.style.position = 'relative';
+        flashcardElement.style.cursor = 'pointer';
+        
+        // Choose what to display - image thumbnail or text preview
+        let contentDisplay = '';
+        if (flashcard.imageData) {
+            contentDisplay = `
+                <div class="flashcard-image-preview" style="
+                    width: 100%;
+                    height: 120px;
+                    background-image: url('${flashcard.imageData}');
+                    background-size: cover;
+                    background-position: center;
+                    border-radius: 8px;
+                    margin-bottom: 12px;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+                        color: white;
+                        padding: 8px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                    ">📷 Image Study Material</div>
+                </div>
+            `;
+        } else {
+            contentDisplay = `
+                <div class="flashcard-preview">${flashcard.notes ? flashcard.notes.substring(0, 100) + (flashcard.notes.length > 100 ? '...' : '') : 'Click to add notes...'}</div>
+            `;
+        }
+        
+        flashcardElement.innerHTML = `
+            <div class="flashcard-content">
+                <div class="flashcard-subject">${flashcard.subject}</div>
+                <div class="flashcard-topic">${flashcard.topic}</div>
+                ${contentDisplay}
+            </div>
+            
+            <!-- Hover buttons container -->
+            <div class="flashcard-hover-buttons" style="
+                position: absolute;
+                bottom: 12px;
+                left: 12px;
+                right: 12px;
+                display: flex;
+                gap: 8px;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            ">
+                <button class="flashcard-hover-btn open-btn" onclick="event.stopPropagation(); openFlashcardInterface('${flashcard.id}', event)" style="
+                    flex: 1;
+                    background: var(--accent-blue);
+                    color: white;
+                    border: none;
+                    padding: 10px 16px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                ">
+                    <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Open Notes
+                </button>
+                <button class="flashcard-hover-btn delete-btn" onclick="event.stopPropagation(); deleteFlashcardWithConfirmation('${flashcard.id}')" style="
+                    background: var(--accent-red, #ef4444);
+                    color: white;
+                    border: none;
+                    padding: 10px 12px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                ">
+                    <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        // Add hover events for buttons
+        flashcardElement.addEventListener('mouseenter', function() {
+            const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+            if (hoverButtons) {
+                hoverButtons.style.opacity = '1';
+                hoverButtons.style.transform = 'translateY(0)';
+            }
+        });
+
+        flashcardElement.addEventListener('mouseleave', function() {
+            const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+            if (hoverButtons) {
+                hoverButtons.style.opacity = '0';
+                hoverButtons.style.transform = 'translateY(20px)';
+            }
+        });
+        
+        grid.appendChild(flashcardElement);
+    });
+}
+
+function showDashboardWithLoading() {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById('dashboard').classList.add('active');
+    
+    document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+    document.querySelector('[onclick="showPage(\'dashboard\')"]').closest('.sidebar-item').classList.add('active');
+    
+    document.getElementById('loadingContainer').classList.add('show');
+    document.getElementById('scheduleContent').innerHTML = '';
+    
+    const loadingGrid = document.getElementById('loadingGrid');
+    loadingGrid.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+        const loadingCard = document.createElement('div');
+        loadingCard.className = 'loading-card';
+        loadingGrid.appendChild(loadingCard);
+    }
+}
+
+function hideLoading() {
+    document.getElementById('loadingContainer').classList.remove('show');
+}
+
+function createPersonalizedSchedule(scheduleId, scheduleData) {
+    const { subjects, currentGrade, examBoard, examType, daysUntilExam, studyIntensity } = scheduleData;
+    
+    const intensityMultipliers = {
+        'light': 0.6,
+        'moderate': 1.0,
+        'intensive': 1.5,
+        'exam-mode': 2.0
+    };
+    
+    const gradeAdjustments = {
+        'grade-9': { advanced: 0.6, medium: 0.3, easy: 0.1 },
+        'grade-8': { advanced: 0.5, medium: 0.4, easy: 0.1 },
+        'grade-7': { advanced: 0.4, medium: 0.4, easy: 0.2 },
+        'grade-6': { advanced: 0.3, medium: 0.5, easy: 0.2 },
+        'grade-5': { advanced: 0.2, medium: 0.5, easy: 0.3 },
+        'grade-4': { advanced: 0.1, medium: 0.4, easy: 0.5 },
+        'grade-3': { advanced: 0.05, medium: 0.3, easy: 0.65 },
+        'struggling': { advanced: 0.0, medium: 0.2, easy: 0.8 }
+    };
+    
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const weeklySchedule = {};
+    
+    let sessionsPerDay;
+    if (daysUntilExam <= 7) {
+        sessionsPerDay = Math.min(6, Math.max(3, Math.floor(subjects.length * 1.2 * intensityMultipliers[studyIntensity])));
+    } else if (daysUntilExam <= 30) {
+        sessionsPerDay = Math.min(4, Math.max(2, Math.floor(subjects.length * 0.8 * intensityMultipliers[studyIntensity])));
+    } else {
+        sessionsPerDay = Math.min(3, Math.max(1, Math.floor(subjects.length * 0.6 * intensityMultipliers[studyIntensity])));
+    }
+    
+    days.forEach((day, dayIndex) => {
+        weeklySchedule[day] = createDaySchedule(day, subjects, sessionsPerDay, currentGrade, daysUntilExam, gradeAdjustments);
+    });
+    
+    createRevisionScheduleFromData(scheduleId, subjects, weeklySchedule, scheduleData);
+}
+
+function createDaySchedule(day, subjects, sessionsPerDay, currentGrade, daysUntilExam, gradeAdjustments) {
+    const isWeekend = day === 'Saturday' || day === 'Sunday';
+    const adjustedSessions = isWeekend ? Math.max(1, Math.floor(sessionsPerDay * 0.7)) : sessionsPerDay;
+    
+    const schedule = [];
+    const gradeProfile = gradeAdjustments[currentGrade] || gradeAdjustments['grade-5'];
+    
+    const topicsByUrgency = getTopicsByUrgency(subjects, daysUntilExam);
+    
+    for (let i = 0; i < adjustedSessions; i++) {
+        const subject = subjects[i % subjects.length];
+        const topics = topicsByUrgency[subject] || [`${subject} Review`];
+        const topic = topics[Math.floor(Math.random() * topics.length)];
+        
+        let difficulty;
+        const random = Math.random();
+        if (random < gradeProfile.easy) {
+            difficulty = 'Easy';
+        } else if (random < gradeProfile.easy + gradeProfile.medium) {
+            difficulty = 'Medium';
+        } else {
+            difficulty = 'Hard';
+        }
+        
+        const baseHour = isWeekend ? 10 : 16;
+        const startHour = baseHour + i;
+        const time = `${startHour.toString().padStart(2, '0')}:00-${(startHour + 1).toString().padStart(2, '0')}:00`;
+        
+        schedule.push({
+            subject: subject,
+            topic: topic,
+            time: time,
+            difficulty: difficulty,
+            urgency: daysUntilExam <= 14 ? 'High' : daysUntilExam <= 30 ? 'Medium' : 'Low'
+        });
+    }
+    
+    return schedule;
+}
+
+function getTopicsByUrgency(subjects, daysUntilExam) {
+    const urgentTopics = {
+        'Mathematics': ['Past Paper Practice', 'Exam Technique', 'Formula Review', 'Common Mistakes'],
+        'English Literature': ['Quote Memorization', 'Essay Structure', 'Key Themes', 'Character Analysis'],
+        'Biology': ['Key Diagrams', 'Practical Skills', 'Exam Questions', 'Core Concepts'],
+        'Chemistry': ['Equations Practice', 'Practical Methods', 'Calculations', 'Key Reactions'],
+        'Physics': ['Formula Application', 'Graph Analysis', 'Practical Skills', 'Problem Solving'],
+        'History': ['Timeline Review', 'Key Dates', 'Source Analysis', 'Essay Practice'],
+        'Geography': ['Case Studies', 'Map Skills', 'Key Terms', 'Diagram Practice'],
+        'Computer Science': ['Algorithm Practice', 'Code Debugging', 'Theory Review', 'Past Papers'],
+        'Art': ['Portfolio Review', 'Technique Practice', 'Artist Analysis', 'Final Pieces']
+    };
+    
+    const standardTopics = {
+        'Mathematics': ['Algebra', 'Geometry', 'Statistics', 'Trigonometry', 'Number'],
+        'English Literature': ['Context', 'Language Analysis', 'Structure', 'Writer\'s Methods'],
+        'Biology': ['Cell Biology', 'Genetics', 'Ecology', 'Human Biology'],
+        'Chemistry': ['Atomic Structure', 'Bonding', 'Rates', 'Organic Chemistry'],
+        'Physics': ['Forces', 'Energy', 'Waves', 'Electricity', 'Magnetism'],
+        'History': ['Medieval', 'Modern', 'Social History', 'Political Changes'],
+        'Geography': ['Physical Geography', 'Human Geography', 'Environmental Issues', 'Development'],
+        'Computer Science': ['Programming', 'Data Structures', 'Computer Systems', 'Algorithms'],
+        'Art': ['Drawing', 'Painting', 'Sculpture', 'Digital Art']
+    };
+    
+    const topics = {};
+    subjects.forEach(subject => {
+        if (daysUntilExam <= 14) {
+            topics[subject] = urgentTopics[subject] || [`${subject} Exam Practice`];
+        } else {
+            topics[subject] = standardTopics[subject] || [`${subject} Study`];
+        }
+    });
+    
+    return topics;
+}
+
+function createRevisionScheduleFromData(scheduleId, subjects, scheduleData, additionalInfo = {}) {
+    const schedule = {
+        id: scheduleId,
+        name: subjects.join(', '),
+        subjects: subjects,
+        weeklySchedule: scheduleData,
+        created: new Date().toISOString(),
+        completedTasks: {},
+        scheduleInfo: additionalInfo
+    };
+    
+    appState.schedules[scheduleId] = schedule;
+    appState.activeSchedule = scheduleId;
+    appState.currentTabIndex = 0;
+    saveAppState();
+    updateDashboard();
+}
+
+// ===== DASHBOARD AND SCHEDULE MANAGEMENT =====
+function ensureMostRecentScheduleActive() {
+    const scheduleEntries = Object.entries(appState.schedules);
+    
+    if (scheduleEntries.length === 0) return;
+    
+    scheduleEntries.sort(([,a], [,b]) => new Date(b.created) - new Date(a.created));
+    
+    if (!appState.activeSchedule || !appState.schedules[appState.activeSchedule]) {
+        appState.activeSchedule = scheduleEntries[0][0];
+        appState.currentTabIndex = 0;
+        saveAppState();
+    }
+}
+
+function updateDashboard() {
+    ensureMostRecentScheduleActive();
+    updateScheduleTabs();
+    updateScheduleContent();
+    updateCenteredCarousel();
+    
+    setTimeout(() => {
+        updateCenteredCarousel();
+    }, 50);
+}
+
+function updateScheduleTabs() {
+    const carousel = document.getElementById('scheduleTabsCarousel');
+    
+    if (Object.keys(appState.schedules).length === 0) {
+        carousel.innerHTML = '';
+        return;
+    }
+    
+    const allTabs = [];
+    const scheduleEntries = Object.entries(appState.schedules);
+    
+    scheduleEntries.forEach(([scheduleId, schedule], scheduleIndex) => {
+        const colorIndex = (scheduleIndex % 4) + 1;
+        
+        allTabs.push({
+            type: 'schedule',
+            name: schedule.name.length > 25 ? schedule.name.substring(0, 25) + '...' : schedule.name,
+            fullName: schedule.name,
+            scheduleId: scheduleId,
+            index: scheduleIndex,
+            colorClass: `color-${colorIndex}`,
+            isActive: scheduleId === appState.activeSchedule
+        });
+    });
+    
+    let html = `
+        <button class="carousel-nav prev" onclick="previousScheduleSmooth()">
+            <svg class="icon" viewBox="0 0 24 24">
+                <polyline points="15,18 9,12 15,6"/>
+            </svg>
+        </button>
+        <div class="tab-viewport">
+            <div class="tab-container" id="tabContainer">
+    `;
+    
+    allTabs.forEach((tab, index) => {
+        const isActive = tab.isActive;
+        
+        html += `
+            <div class="tab ${tab.colorClass} ${isActive ? 'active' : ''}" 
+                 onclick="selectScheduleDirectly('${tab.scheduleId}', ${index})" 
+                 data-tab-type="${tab.type}" 
+                 data-tab-name="${tab.fullName}"
+                 data-schedule-id="${tab.scheduleId}"
+                 data-tab-index="${index}"
+                 title="${tab.fullName}"
+                 onmouseenter="showTabMenu('${tab.scheduleId}')"
+                 onmouseleave="hideTabMenu('${tab.scheduleId}')">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                ${tab.name}
+                <div class="tab-menu" id="tabMenu_${tab.scheduleId}" onclick="event.stopPropagation();">
+                    <div class="tab-menu-dots" onclick="toggleTabDropdown('${tab.scheduleId}', event)">
+                        <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                            <circle cx="12" cy="12" r="1"/>
+                            <circle cx="12" cy="5" r="1"/>
+                            <circle cx="12" cy="19" r="1"/>
+                        </svg>
+                    </div>
+                    <div class="tab-dropdown" id="tabDropdown_${tab.scheduleId}">
+                        <div class="tab-dropdown-item" onclick="deleteScheduleWithConfirmation('${tab.scheduleId}')">
+                            <svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                                <polyline points="3,6 5,6 21,6"/>
+                                <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                            </svg>
+                            Delete Schedule
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+        <button class="carousel-nav next" onclick="nextScheduleSmooth()">
+            <svg class="icon" viewBox="0 0 24 24">
+                <polyline points="9,18 15,12 9,6"/>
+            </svg>
+        </button>
+    `;
+    
+    carousel.innerHTML = html;
+    updateCenteredCarousel();
+    
+    setTimeout(initializeScrollWheelNavigation, 100);
+}
+
+function showTabMenu(scheduleId) {
+    const menu = document.getElementById(`tabMenu_${scheduleId}`);
+    if (menu) {
+        menu.style.opacity = '1';
+    }
+}
+
+function hideTabMenu(scheduleId) {
+    const menu = document.getElementById(`tabMenu_${scheduleId}`);
+    const dropdown = document.getElementById(`tabDropdown_${scheduleId}`);
+    if (menu && !dropdown?.classList.contains('show')) {
+        menu.style.opacity = '0';
+    }
+}
+
+function toggleTabDropdown(scheduleId, event) {
+    event.stopPropagation();
+    
+    document.querySelectorAll('.tab-dropdown-overlay').forEach(overlay => {
+        overlay.remove();
+    });
+    
+    const dropdownOverlay = document.createElement('div');
+    dropdownOverlay.className = 'tab-dropdown-overlay';
+    dropdownOverlay.innerHTML = `
+        <div class="tab-dropdown-content">
+            <div class="tab-dropdown-item" onclick="deleteScheduleWithConfirmation('${scheduleId}')">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                </svg>
+                Delete Schedule
+            </div>
+        </div>
+    `;
+    
+    const tabElement = event.target.closest('.tab');
+    const rect = tabElement.getBoundingClientRect();
+    
+    dropdownOverlay.style.position = 'fixed';
+    dropdownOverlay.style.left = `${rect.left + 50}px`;
+    dropdownOverlay.style.top = `${rect.bottom + 8}px`;
+    dropdownOverlay.style.zIndex = '10000';
+    
+    const dropdownWidth = 180;
+    const viewportWidth = window.innerWidth;
+    
+    if (rect.left + 50 + dropdownWidth > viewportWidth) {
+        dropdownOverlay.style.left = `${rect.right - dropdownWidth}px`;
+    }
+    
+    document.body.appendChild(dropdownOverlay);
+    
+    setTimeout(() => {
+        dropdownOverlay.classList.add('show');
+    }, 10);
+    
+    const closeHandler = (e) => {
+        if (!dropdownOverlay.contains(e.target)) {
+            dropdownOverlay.classList.remove('show');
+            setTimeout(() => {
+                if (dropdownOverlay.parentNode) {
+                    dropdownOverlay.remove();
+                }
+            }, 300);
+            document.removeEventListener('click', closeHandler);
+        }
+    };
+    
+    setTimeout(() => {
+        document.addEventListener('click', closeHandler);
+    }, 100);
+}
+
+function deleteScheduleWithConfirmation(scheduleId) {
+    document.querySelectorAll('.tab-dropdown-overlay').forEach(overlay => {
+        overlay.remove();
+    });
+    
+    const schedule = appState.schedules[scheduleId];
+    if (!schedule) return;
+    
+    const confirmMessage = `Are you sure you want to delete "${schedule.name}"? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+        deleteScheduleWithAnimation(scheduleId);
+    }
+}
+
+function deleteScheduleWithAnimation(scheduleId) {
+    const tabElement = document.querySelector(`[data-schedule-id="${scheduleId}"]`);
+    
+    if (tabElement) {
+        tabElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        tabElement.style.transform = 'scale(0.8) translateY(-20px)';
+        tabElement.style.opacity = '0';
+    }
+    
+    setTimeout(() => {
+        delete appState.schedules[scheduleId];
+        
+        const remainingSchedules = Object.keys(appState.schedules);
+        if (appState.activeSchedule === scheduleId) {
+            appState.activeSchedule = remainingSchedules.length > 0 ? remainingSchedules[0] : null;
+            appState.currentTabIndex = 0;
+        }
+        
+        saveAppState();
+        updateDashboard();
+        updateProgress();
+        
+        showAlert('Schedule deleted successfully', 'success');
+    }, 500);
+}
+
+function initializeScrollWheelNavigation() {
+    const carousel = document.getElementById('scheduleTabsCarousel');
+    if (!carousel) return;
+    
+    let isScrolling = false;
+    
+    carousel.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        
+        if (isScrolling) return;
+        isScrolling = true;
+        
+        const delta = e.deltaY;
+        
+        if (delta > 0) {
+            nextScheduleSmooth();
+        } else {
+            previousScheduleSmooth();
+        }
+        
+        setTimeout(() => {
+            isScrolling = false;
+        }, 800);
+    }, { passive: false });
+}
+
+function previousScheduleSmooth() {
+    if (isNavigating) return;
+    isNavigating = true;
+    
+    const schedules = Object.keys(appState.schedules);
+    if (schedules.length <= 1) {
+        isNavigating = false;
+        return;
+    }
+    
+    const currentIndex = schedules.indexOf(appState.activeSchedule);
+    const newIndex = currentIndex === 0 ? schedules.length - 1 : currentIndex - 1;
+    const newScheduleId = schedules[newIndex];
+    
+    selectScheduleDirectly(newScheduleId, newIndex);
+}
+
+function nextScheduleSmooth() {
+    if (isNavigating) return;
+    isNavigating = true;
+    
+    const schedules = Object.keys(appState.schedules);
+    if (schedules.length <= 1) {
+        isNavigating = false;
+        return;
+    }
+    
+    const currentIndex = schedules.indexOf(appState.activeSchedule);
+    const newIndex = currentIndex === schedules.length - 1 ? 0 : currentIndex + 1;
+    const newScheduleId = schedules[newIndex];
+    
+    selectScheduleDirectly(newScheduleId, newIndex);
+}
+
+function selectScheduleDirectly(scheduleId, index) {
+    if (scheduleId === appState.activeSchedule) {
+        isNavigating = false;
+        return;
+    }
+    
+    const contentContainer = document.querySelector('.schedule-grid-container');
+    if (contentContainer) {
+        contentContainer.classList.add('transitioning');
+    }
+    
+    appState.activeSchedule = scheduleId;
+    appState.currentTabIndex = index;
+    saveAppState();
+    
+    updateTabStates();
+    updateCenteredCarousel();
+    
+    setTimeout(() => {
+        updateScheduleContent();
+        
+        setTimeout(() => {
+            if (contentContainer) {
+                contentContainer.classList.remove('transitioning');
+            }
+            isNavigating = false;
+        }, 100);
+    }, 400);
+}
+
+function updateTabStates() {
+    const tabs = document.querySelectorAll('.tab');
+    const schedules = Object.keys(appState.schedules);
+    const currentIndex = schedules.indexOf(appState.activeSchedule);
+    
+    tabs.forEach((tab, index) => {
+        tab.classList.remove('active', 'prev-tab', 'next-tab');
+        
+        if (index === currentIndex) {
+            tab.classList.add('active');
+        } else if (index === currentIndex - 1 || (currentIndex === 0 && index === tabs.length - 1)) {
+            tab.classList.add('prev-tab');
+        } else if (index === currentIndex + 1 || (currentIndex === tabs.length - 1 && index === 0)) {
+            tab.classList.add('next-tab');
+        }
+    });
+}
+
+function updateCenteredCarousel() {
+    const container = document.getElementById('tabContainer');
+    const viewport = container?.parentElement;
+    if (!container || !viewport) return;
+    
+    const tabs = container.querySelectorAll('.tab');
+    const schedules = Object.keys(appState.schedules);
+    const currentIndex = schedules.indexOf(appState.activeSchedule);
+    
+    if (tabs.length === 0 || currentIndex === -1) return;
+    
+    const tabWidth = 320;
+    const viewportCenter = viewport.offsetWidth / 2;
+    const activeTabPosition = (currentIndex * tabWidth) + (280 / 2);
+    const offset = activeTabPosition - viewportCenter;
+    
+    container.style.transform = `translateX(-${Math.max(0, offset)}px)`;
+}
+
+function updateScheduleContent() {
+    const content = document.getElementById('scheduleContent');
+    
+    if (!appState.activeSchedule || !appState.schedules[appState.activeSchedule]) {
+        content.innerHTML = `
+            <div class="empty-state">
+                <h3>No schedules created yet</h3>
+                <p>Go to the Home page to create your first revision schedule</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const schedule = appState.schedules[appState.activeSchedule];
+    
+    let totalTasks = 0;
+    let completedTasks = 0;
+    const subjects = schedule.subjects.length;
+    
+    Object.values(schedule.weeklySchedule).forEach(dayTasks => {
+        totalTasks += dayTasks.length;
+    });
+    
+    completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
+    const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    const today = new Date();
+    const currentDay = today.getDay();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    document.documentElement.style.setProperty('--subject-count', schedule.subjects.length);
+    
+    let html = `
+        <div class="dashboard-container">
+            <div class="dashboard-stats">
+                <div class="dashboard-stat">
+                    <div class="dashboard-stat-number">${subjects}</div>
+                    <div class="dashboard-stat-label">Subject${subjects !== 1 ? 's' : ''}</div>
+                </div>
+                <div class="dashboard-stat">
+                    <div class="dashboard-stat-number">${totalTasks}</div>
+                    <div class="dashboard-stat-label">Total Tasks</div>
+                </div>
+                <div class="dashboard-stat">
+                    <div class="dashboard-stat-number">${completedTasks}</div>
+                    <div class="dashboard-stat-label">Completed</div>
+                </div>
+                <div class="dashboard-stat">
+                    <div class="dashboard-stat-number">${progressPercentage}%</div>
+                    <div class="dashboard-stat-label">Progress</div>
+                </div>
+            </div>
+        `;
+
+  const isMobile = window.innerWidth <= 768;
+    
+    
+if (isMobile) {
+    html += `<div class="schedule-grid-container mobile-layout" id="scheduleGrid">`;
+        
+        dayOrder.forEach(day => {
+            const isToday = days[currentDay] === day;
+            const dayTasks = schedule.weeklySchedule[day] || [];
+            
+            if (dayTasks.length === 0) return;
+            
+            html += `
+                <div class="mobile-day-section">
+                    <div class="mobile-day-header ${isToday ? 'today' : ''}">${day}</div>
+            `;
+            
+            const tasksBySubject = {};
+            dayTasks.forEach((task, taskIndex) => {
+                if (!tasksBySubject[task.subject]) {
+                    tasksBySubject[task.subject] = [];
+                }
+                const taskId = `${schedule.id}_${day}_${taskIndex}`;
+                const isCompleted = schedule.completedTasks[taskId] || false;
+                
+                tasksBySubject[task.subject].push({
+                    ...task,
+                    taskId,
+                    isCompleted,
+                    originalIndex: taskIndex
+                });
+            });
+            
+            Object.entries(tasksBySubject).forEach(([subject, tasks]) => {
+                html += `
+                    <div class="mobile-subject-group">
+                        <div class="mobile-subject-title">${subject}</div>
+                        <div class="mobile-tasks-container">
+                `;
+                
+                tasks.forEach(task => {
+                    html += `
+                        <div class="revision-card-mini swipeable-task ${task.isCompleted ? 'completed' : ''}" 
+                             data-task-id="${task.taskId}" 
+                             data-completed="${task.isCompleted}"
+                             ontouchstart="handleTaskTouchStart(event)"
+                             ontouchmove="handleTaskTouchMove(event)"
+                             ontouchend="handleTaskTouchEnd(event)">
+                            <div class="task-content">
+                                <div class="revision-card-mini-content">
+                                    <div class="revision-card-mini-title">${task.subject}</div>
+                                    <div class="revision-card-mini-topic">${task.topic}</div>
+                                    <div class="revision-card-mini-meta">
+                                        <span>${task.time}</span>
+                                        <span>${task.difficulty}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-action-complete">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                                Complete
+                            </div>
+                            <div class="task-action-delete">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6"/>
+                                </svg>
+                                Delete
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        });
+        
+        html += `</div>`;
+    } else {
+        html += `
+            <div class="schedule-grid-container desktop-layout" id="scheduleGrid">
+                <div class="schedule-grid">
+                    <div class="grid-header"></div>
+        `;
+        
+        dayOrder.forEach(day => {
+            const isToday = days[currentDay] === day;
+            html += `<div class="grid-header ${isToday ? 'today' : ''}">${day}</div>`;
+        });
+        
+        schedule.subjects.forEach(subject => {
+            html += `<div class="subject-label">${subject}</div>`;
+            
+            dayOrder.forEach(day => {
+                const isToday = days[currentDay] === day;
+                const dayTasks = schedule.weeklySchedule[day] || [];
+                
+                let filteredTasks = dayTasks.filter(task => task.subject === subject);
+                
+                html += `<div class="schedule-cell ${isToday ? 'today' : ''}" data-subject="${subject}" data-day="${day}">`;
+                
+                filteredTasks.forEach((task, taskIndex) => {
+                    const originalIndex = dayTasks.findIndex(t => 
+                        t.subject === task.subject && 
+                        t.topic === task.topic && 
+                        t.time === task.time
+                    );
+                    const taskId = `${schedule.id}_${day}_${originalIndex}`;
+                    const isCompleted = schedule.completedTasks[taskId] || false;
+                    
+                    html += `
+                        <div class="revision-card-mini ${isCompleted ? 'completed' : ''}" 
+                             data-task-id="${taskId}" 
+                             data-completed="${isCompleted}"
+                             onclick="event.stopPropagation();">
+                            <div class="revision-card-mini-content">
+                                <div class="revision-card-mini-title">${task.subject}</div>
+                                <div class="revision-card-mini-topic">${task.topic}</div>
+                                <div class="revision-card-mini-meta">
+                                    <span>${task.time}</span>
+                                    <span>${task.difficulty}</span>
+                                </div>
+                            </div>
+                            <div class="revision-card-mini-menu" onclick="event.stopPropagation(); toggleDropdown(event, '${taskId}', ${isCompleted})">
+                                <svg class="icon" viewBox="0 0 24 24" style="width: 10px; height: 10px;">
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    content.innerHTML = html;
+    
+    if (appState.showingCompleted) {
+        filterCompletedTasks(false);
+    }
+    // Add this at the very end of updateScheduleContent() function
+setTimeout(() => {
+    addRemindersToSchedule();
+}, 100);
+}
+
+function switchToSchedule(scheduleId) {
+    appState.activeSchedule = scheduleId;
+    appState.currentTabIndex = 0;
+    saveAppState();
+    updateDashboard();
+    updateProgress();
+}
+
+// ===== TASK MANAGEMENT =====
+function toggleTaskComplete(taskId) {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) return;
+    
+    const wasCompleted = schedule.completedTasks[taskId];
+    schedule.completedTasks[taskId] = !wasCompleted;
+    
+    const hasCompletedTasks = Object.values(schedule.completedTasks).some(completed => completed);
+    const hadCompletedTasks = document.getElementById('completedTab') !== null;
+    
+    saveAppState();
+    
+    if (hasCompletedTasks && !hadCompletedTasks) {
+        updateScheduleContent();
+    } else if (!hasCompletedTasks && hadCompletedTasks) {
+        appState.showingCompleted = false;
+        updateScheduleContent();
+    } else {
+        const card = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (card) {
+            card.classList.toggle('completed', !wasCompleted);
+            card.dataset.completed = !wasCompleted;
+            
+            if (appState.showingCompleted) {
+                filterCompletedTasks(true);
+            }
+        }
+    }
+    
+    closeAllDropdowns();
+    updateProgress();
+}
+
+function toggleDropdown(event, taskId, isCompleted) {
+    event.stopPropagation();
+    
+    closeAllDropdowns();
+    
+    const dropdown = document.createElement('div');
+    dropdown.className = 'dropdown show';
+    dropdown.innerHTML = `
+        <div class="dropdown-item" onclick="toggleTaskComplete('${taskId}')">
+            <svg class="icon" viewBox="0 0 24 24">
+                ${isCompleted ? 
+                    '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 9h6v6H9z"/>' :
+                    '<polyline points="20,6 9,17 4,12"/>'
+                }
+            </svg>
+            ${isCompleted ? 'Mark as Incomplete' : 'Mark as Complete'}
+        </div>
+    `;
+    
+    const rect = event.target.getBoundingClientRect();
+    dropdown.style.left = `${rect.left - 150}px`;
+    dropdown.style.top = `${rect.bottom + 8}px`;
+    
+    document.body.appendChild(dropdown);
+    activeDropdown = dropdown;
+    
+    document.getElementById('dropdownOverlay').style.display = 'block';
+}
+
+function closeAllDropdowns() {
+    if (activeDropdown) {
+        activeDropdown.remove();
+        activeDropdown = null;
+    }
+    document.getElementById('dropdownOverlay').style.display = 'none';
+}
+
+function deleteTask(taskId) {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) return;
+    
+    delete schedule.completedTasks[taskId];
+    
+    Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
+        tasks.forEach((task, index) => {
+            const currentTaskId = `${schedule.id}_${day}_${index}`;
+            if (currentTaskId === taskId) {
+                schedule.weeklySchedule[day].splice(index, 1);
+            }
+        });
+    });
+    
+    saveAppState();
+    updateScheduleContent();
+    updateProgress();
+    showAlert('Task deleted successfully', 'success');
+}
+
+function addHighlightAndModalStyles() {
+    const style = document.createElement('style');
+    style.id = 'highlightModalStyles';
+    style.textContent = `
+        /* Key Term Highlighting */
+        .key-highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: #1e40af;
+            padding: 3px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            border: 2px solid #3b82f6;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 1px 3px;
+            position: relative;
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .key-highlight:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .key-highlight:hover::before {
+            content: "Click for AI explanation";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .key-highlight:hover::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #1f2937;
+            margin-bottom: 2px;
+        }
+        
+        /* Translation Modal */
+        .translation-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100001;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .translation-modal-overlay.show {
+            opacity: 1;
+        }
+        
+        .translation-modal {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .translation-modal-overlay.show .translation-modal {
+            transform: scale(1);
+        }
+        
+        .translation-header {
+            background: var(--accent-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .translation-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .translation-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .translation-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .translation-content {
+            padding: 24px;
+        }
+        
+        .translation-loading {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        .explanation-content h4 {
+            color: var(--accent-blue);
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+        }
+        
+        .explanation-text {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-blue);
+            margin: 16px 0;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+        
+        .explanation-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .copy-btn, .close-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+        
+        .copy-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .close-btn {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .close-btn:hover {
+            background: var(--accent-blue-dark, #2563eb);
+            transform: translateY(-1px);
+        }
+        
+        /* Compact Follow-up Buttons */
+        .compact-follow-btn.maybe-later:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+        
+        .compact-follow-btn.yes-explore:hover {
+            background: var(--accent-blue-dark, #2563eb);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .compact-follow-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ADD THE DRAG NAVIGATION STYLES FUNCTION HERE:
+function addDragNavigationStyles() {
+    const style = document.createElement('style');
+    style.id = 'dragNavigationStyles';
+    style.textContent = `
+        /* Drag Navigation Styles */
+        .drag-navigation-active {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .background-blur {
+            filter: blur(8px);
+            transition: filter 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .top-tab-bar.drag-active {
+            z-index: 10000;
+            position: relative;
+            backdrop-filter: blur(0px);
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--accent-blue);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .top-tab.drag-hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .drag-indicator {
+            position: absolute;
+            bottom: -2px;
+            height: 3px;
+            background: var(--accent-blue);
+            transition: all 0.2s ease;
+            border-radius: 2px;
+        }
+        
+        .drag-navigation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: transparent;
+            cursor: grabbing;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Drag navigation state
+let isDragging = false;
+let dragStartX = 0;
+let dragCurrentTab = null;
+let dragIndicator = null;
+
+function initDragNavigation() {
+    const topTabBar = document.querySelector('.top-tab-bar');
+    if (!topTabBar || window.innerWidth <= 768) return; // Only for desktop with top tabs
+    
+    topTabBar.addEventListener('mousedown', handleDragStart);
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+    
+    // Prevent default drag behavior on tabs
+    topTabBar.addEventListener('dragstart', (e) => e.preventDefault());
+}
+
+function handleDragStart(e) {
+    if (e.button !== 0) return; // Only left mouse button
+    
+    const tab = e.target.closest('.top-tab');
+    if (!tab) return;
+    
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragCurrentTab = tab;
+    
+    // Add drag state classes
+    document.body.classList.add('drag-navigation-active');
+    document.querySelector('.top-tab-bar').classList.add('drag-active');
+    
+    // Blur the background (everything except the tab bar)
+    blurBackground(true);
+    
+    // Create drag indicator
+    createDragIndicator();
+    
+    // Create overlay to capture mouse events
+    const overlay = document.createElement('div');
+    overlay.className = 'drag-navigation-overlay';
+    document.body.appendChild(overlay);
+    
+    // Highlight current tab
+    highlightDragTab(tab);
+    
+    e.preventDefault();
+}
+
+function handleDragMove(e) {
+    if (!isDragging) return;
+    
+    const topTabBar = document.querySelector('.top-tab-bar');
+    const tabs = topTabBar.querySelectorAll('.top-tab');
+    
+    // Find which tab the mouse is over
+    let hoveredTab = null;
+    tabs.forEach(tab => {
+        const rect = tab.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right) {
+            hoveredTab = tab;
+        }
+    });
+    
+    if (hoveredTab && hoveredTab !== dragCurrentTab) {
+        // Clear previous highlights
+        tabs.forEach(tab => tab.classList.remove('drag-hover'));
+        
+        // Highlight new tab
+        highlightDragTab(hoveredTab);
+        dragCurrentTab = hoveredTab;
+        
+        // Update drag indicator
+        updateDragIndicator(hoveredTab);
+    }
+}
+
+function handleDragEnd(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    
+    // Remove drag state classes
+    document.body.classList.remove('drag-navigation-active');
+    document.querySelector('.top-tab-bar').classList.remove('drag-active');
+    
+    // Remove blur effect
+    blurBackground(false);
+    
+    // Remove overlay
+    const overlay = document.querySelector('.drag-navigation-overlay');
+    if (overlay) overlay.remove();
+    
+    // Remove drag indicator
+    if (dragIndicator) {
+        dragIndicator.remove();
+        dragIndicator = null;
+    }
+    
+    // Navigate to the selected tab
+    if (dragCurrentTab) {
+        const tabPage = dragCurrentTab.dataset.page;
+        if (tabPage) {
+            // Clear all drag highlights
+            document.querySelectorAll('.top-tab').forEach(tab => {
+                tab.classList.remove('drag-hover');
+            });
+            
+            // Navigate to the selected page
+            showPage(tabPage);
+            
+            // Show success feedback
+            showDragCompleteEffect(dragCurrentTab);
+        }
+    }
+    
+    dragCurrentTab = null;
+}
+
+function blurBackground(enable) {
+    const elementsToBlur = [
+        '.sidebar',
+        '.main-content',
+        '.bottom-navigation'
+    ];
+    
+    elementsToBlur.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            if (enable) {
+                element.classList.add('background-blur');
+            } else {
+                element.classList.remove('background-blur');
+            }
+        }
+    });
+}
+
+function highlightDragTab(tab) {
+    // Remove previous highlights
+    document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('drag-hover'));
+    
+    // Add highlight to current tab
+    if (tab) {
+        tab.classList.add('drag-hover');
+    }
+}
+
+function createDragIndicator() {
+    if (dragIndicator) return;
+    
+    dragIndicator = document.createElement('div');
+    dragIndicator.className = 'drag-indicator';
+    
+    const topTabBar = document.querySelector('.top-tab-bar');
+    topTabBar.appendChild(dragIndicator);
+    
+    // Position indicator under current tab
+    if (dragCurrentTab) {
+        updateDragIndicator(dragCurrentTab);
+    }
+}
+
+function updateDragIndicator(tab) {
+    if (!dragIndicator || !tab) return;
+    
+    const tabRect = tab.getBoundingClientRect();
+    const barRect = document.querySelector('.top-tab-bar').getBoundingClientRect();
+    
+    const left = tabRect.left - barRect.left;
+    const width = tabRect.width;
+    
+    dragIndicator.style.left = `${left}px`;
+    dragIndicator.style.width = `${width}px`;
+}
+
+function showDragCompleteEffect(tab) {
+    // Create a brief success animation
+    const effect = document.createElement('div');
+    effect.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--accent-blue);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        z-index: 10001;
+        opacity: 0;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    `;
+    effect.textContent = `Navigated to ${tab.textContent}`;
+    
+    tab.style.position = 'relative';
+    tab.appendChild(effect);
+    
+    // Animate in
+    setTimeout(() => {
+        effect.style.opacity = '1';
+        effect.style.transform = 'translate(-50%, -50%) translateY(-10px)';
+    }, 50);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        effect.style.opacity = '0';
+        effect.style.transform = 'translate(-50%, -50%) translateY(-20px)';
+        setTimeout(() => effect.remove(), 300);
+    }, 1500);
+}
+
+function toggleCompletedView() {
+    appState.showingCompleted = !appState.showingCompleted;
+    saveAppState();
+    
+    const completedTab = document.getElementById('completedTab');
+    if (completedTab) {
+        completedTab.innerHTML = `
+            <svg class="icon" viewBox="0 0 24 24">
+                <polyline points="20,6 9,17 4,12"/>
+            </svg>
+            ${appState.showingCompleted ? 'Show All Tasks' : 'Show Completed Only'}
+        `;
+        
+        completedTab.classList.toggle('active', appState.showingCompleted);
+    }
+    
+    filterCompletedTasks(true);
+}
+
+function filterCompletedTasks(animate = true) {
+    const cards = document.querySelectorAll('.revision-card-mini');
+    
+    cards.forEach((card, index) => {
+        const isCompleted = card.dataset.completed === 'true';
+        const shouldShow = appState.showingCompleted ? isCompleted : true;
+        
+        if (animate) {
+            setTimeout(() => {
+                if (shouldShow) {
+                    card.classList.remove('filtering-out');
+                    card.classList.add('filtering-in');
+                    card.style.display = 'flex';
+                } else {
+                    card.classList.remove('filtering-in');
+                    card.classList.add('filtering-out');
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 400);
+                }
+            }, index * 50);
+        } else {
+            if (shouldShow) {
+                card.style.display = 'flex';
+                card.classList.add('filtering-in');
+            } else {
+                card.style.display = 'none';
+            }
+        }
+    });
+}
+
+function viewScheduleFromProgress(scheduleId) {
+    event.target.style.transform = 'translateY(-8px) scale(0.95)';
+    
+    setTimeout(() => {
+        appState.activeSchedule = scheduleId;
+        appState.currentTabIndex = 0;
+        saveAppState();
+        
+        showPage('dashboard');
+        
+        setTimeout(() => {
+            updateDashboard();
+        }, 300);
+        
+        event.target.style.transform = '';
+    }, 150);
+}
+
+// ===== PROGRESS MANAGEMENT =====
+function updateProgress() {
+    const content = document.getElementById('progressContent');
+    
+    if (Object.keys(appState.schedules).length === 0) {
+        content.innerHTML = `
+            <div class="empty-state">
+                <h3>No progress data yet</h3>
+                <p>Complete some revision tasks to see your progress here</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    Object.values(appState.schedules).forEach(schedule => {
+        let totalTasks = 0;
+        let completedTasks = 0;
+        
+        Object.values(schedule.weeklySchedule).forEach(dayTasks => {
+            totalTasks += dayTasks.length;
+        });
+        
+        completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
+        
+        const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+        
+        html += `
+            <div class="progress-card">
+                <button class="progress-view-button" onclick="viewScheduleFromProgress('${schedule.id}')">
+                    <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    View Schedule
+                </button>
+                <h4 style="color: var(--accent-blue); margin-bottom: 16px; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.2rem; padding-right: 140px;">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    ${schedule.name}
+                </h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercentage}%;"></div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600;">
+                    ${completedTasks}/${totalTasks} tasks completed (${progressPercentage}%)
+                </p>
+            </div>
+        `;
+    });
+    
+    content.innerHTML = html;
+}
+
+// ===== SETTINGS FUNCTIONS =====
+function loadSettings() {
+    const saved = localStorage.getItem('gcseRevisionSettings');
+    if (saved) {
+        userSettings = { ...userSettings, ...JSON.parse(saved) };
+        applySettings();
+    }
+}
+
+function saveSettings() {
+    localStorage.setItem('gcseRevisionSettings', JSON.stringify(userSettings));
+}
+
+function applySettings() {
+    const sessionSelect = document.getElementById('sessionLength');
+    const breakSelect = document.getElementById('breakLength');
+    if (sessionSelect) sessionSelect.value = userSettings.sessionLength;
+    if (breakSelect) breakSelect.value = userSettings.breakLength;
+    
+    const studyToggle = document.getElementById('studyNotifications');
+    const breakToggle = document.getElementById('breakNotifications');
+    if (studyToggle) studyToggle.classList.toggle('active', userSettings.studyNotifications);
+    if (breakToggle) breakToggle.classList.toggle('active', userSettings.breakNotifications);
+    
+    const topTabBarToggle = document.getElementById('topTabBarToggle');
+    if (topTabBarToggle) topTabBarToggle.classList.toggle('active', userSettings.useTopTabBar);
+    
+    document.documentElement.setAttribute('data-theme', userSettings.theme);
+    
+    // Apply top tab bar setting on desktop only
+    if (window.innerWidth > 768) {
+        if (userSettings.useTopTabBar) {
+            enableTopTabBar();
+        } else {
+            disableTopTabBar();
+        }
+    }
+    
+    setTimeout(() => {
+        const selectedOption = document.querySelector(`.theme-${userSettings.theme}`);
+        if (selectedOption) {
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            selectedOption.classList.add('active');
+        }
+    }, 100);
+    // Restore Google Calendar button state
+const googleCalendarBtn = document.getElementById('googleCalendarBtn');
+if (googleCalendarBtn && isGoogleCalendarConnected) {
+    googleCalendarBtn.innerHTML = 'Connected ✓';
+    googleCalendarBtn.style.background = 'var(--accent-green)';
+}
+}
+
+function updateSessionLength(value) {
+    userSettings.sessionLength = parseInt(value);
+    saveSettings();
+    showAlert(`Study session length updated to ${value} minutes`, 'success');
+}
+
+function updateBreakLength(value) {
+    userSettings.breakLength = parseInt(value);
+    saveSettings();
+    showAlert(`Break length updated to ${value} minutes`, 'success');
+}
+
+function toggleNotifications(type) {
+    if (type === 'study') {
+        userSettings.studyNotifications = !userSettings.studyNotifications;
+        document.getElementById('studyNotifications').classList.toggle('active', userSettings.studyNotifications);
+        
+        if (userSettings.studyNotifications) {
+            requestNotificationPermission();
+            showAlert('Study reminders enabled', 'success');
+        } else {
+            showAlert('Study reminders disabled', 'success');
+        }
+    } else if (type === 'break') {
+        userSettings.breakNotifications = !userSettings.breakNotifications;
+        document.getElementById('breakNotifications').classList.toggle('active', userSettings.breakNotifications);
+        
+        if (userSettings.breakNotifications) {
+            requestNotificationPermission();
+            showAlert('Break reminders enabled', 'success');
+        } else {
+            showAlert('Break reminders disabled', 'success');
+        }
+    }
+    saveSettings();
+}
+
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification('GCSE Revision Planner', {
+                    body: 'Notifications enabled successfully!',
+                    icon: '/favicon.ico'
+                });
+            }
+        });
+    }
+}
+
+function exportData(format) {
+    const data = {
+        schedules: appState.schedules,
+        settings: userSettings,
+        exportDate: new Date().toISOString()
+    };
+    
+    let content, filename, mimeType;
+    
+    if (format === 'csv') {
+        content = convertToCSV(data);
+        filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.csv`;
+        mimeType = 'text/csv';
+    } else {
+        content = JSON.stringify(data, null, 2);
+        filename = `gcse-revision-data-${new Date().toISOString().split('T')[0]}.json`;
+        mimeType = 'application/json';
+    }
+    
+    downloadFile(content, filename, mimeType);
+    showAlert(`Data exported as ${format.toUpperCase()}`, 'success');
+}
+
+function convertToCSV(data) {
+    let csv = 'Schedule,Subject,Day,Topic,Time,Difficulty,Completed\n';
+    
+    Object.values(data.schedules).forEach(schedule => {
+        Object.entries(schedule.weeklySchedule).forEach(([day, tasks]) => {
+            tasks.forEach((task, index) => {
+                const taskId = `${schedule.id}_${day}_${index}`;
+                const completed = schedule.completedTasks[taskId] || false;
+                csv += `"${schedule.name}","${task.subject}","${day}","${task.topic}","${task.time}","${task.difficulty}","${completed}"\n`;
+            });
+        });
+    });
+    
+    return csv;
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+function changeTheme(theme, save = true) {
+    const overlay = document.createElement('div');
+    overlay.className = 'theme-transition-overlay';
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => {
+        overlay.classList.add('active');
+    }, 50);
+    
+    setTimeout(() => {
+        userSettings.theme = theme;
+        
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        
+        const selectedOption = document.querySelector(`.theme-${theme}`);
+        if (selectedOption) {
+            selectedOption.classList.add('active');
+        }
+        
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        if (save) {
+            saveSettings();
+            showAlert(`Theme changed to ${theme.charAt(0).toUpperCase() + theme.slice(1)}`, 'success');
+        }
+        
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+            }, 600);
+        }, 300);
+        
+    }, 300);
+}
+
+function createBackup() {
+    exportData('json');
+    showAlert('Backup created and downloaded', 'success');
+}
+
+function restoreBackup() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.schedules) {
+                        appState.schedules = data.schedules;
+                        if (data.settings) {
+                            userSettings = { ...userSettings, ...data.settings };
+                            applySettings();
+                        }
+                        saveAppState();
+                        saveSettings();
+                        updateDashboard();
+                        updateProgress();
+                        showAlert('Backup restored successfully', 'success');
+                    } else {
+                        showAlert('Invalid backup file', 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error reading backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+function toggleTopTabBar() {
+    if (window.innerWidth <= 768) {
+        showAlert('Top tab bar is only available on desktop', 'info');
+        return;
+    }
+    
+    userSettings.useTopTabBar = !userSettings.useTopTabBar;
+    document.getElementById('topTabBarToggle').classList.toggle('active', userSettings.useTopTabBar);
+    
+    if (userSettings.useTopTabBar) {
+        enableTopTabBar();
+        showAlert('Top tab bar enabled', 'success');
+    } else {
+        disableTopTabBar();
+        showAlert('Sidebar navigation enabled', 'success');
+    }
+    
+    saveSettings();
+}
+
+function enableTopTabBar() {
+    const sidebarTrigger = document.querySelector('.sidebar-trigger');
+    if (sidebarTrigger) sidebarTrigger.style.display = 'none';
+    
+    document.body.classList.add('top-nav-active');
+    createTopTabBar();
+    showTopTabBar();
+}
+
+function disableTopTabBar() {
+    const sidebarTrigger = document.querySelector('.sidebar-trigger');
+    if (sidebarTrigger) sidebarTrigger.style.display = 'block';
+    
+    document.body.classList.remove('top-nav-active');
+    hideTopTabBar();
+}
+
+// Google Calendar Integration Functions
+function toggleStudyReminders() {
+    userSettings.studyNotifications = !userSettings.studyNotifications;
+    const toggle = document.getElementById('studyNotifications');
+    const reminderOptions = document.getElementById('reminderOptions');
+    
+    toggle.classList.toggle('active', userSettings.studyNotifications);
+    
+    if (userSettings.studyNotifications) {
+        // Show reminder options with smooth animation
+        reminderOptions.style.maxHeight = '400px';
+        reminderOptions.style.opacity = '1';
+        populateSubjectReminders();
+        showAlert('Study reminders enabled', 'success');
+    } else {
+        // Hide reminder options
+        reminderOptions.style.maxHeight = '0';
+        reminderOptions.style.opacity = '0';
+        showAlert('Study reminders disabled', 'success');
+    }
+    
+    saveSettings();
+}
+
+function populateSubjectReminders() {
+    const container = document.getElementById('subjectRemindersList');
+    const activeSchedule = appState.schedules[appState.activeSchedule];
+    
+    if (!activeSchedule) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Create a schedule first to set subject reminders</p>';
+        return;
+    }
+    
+    container.innerHTML = activeSchedule.subjects.map(subject => {
+        const existingReminder = studyReminders.find(r => r.subject === subject);
+        
+        let frequencyText = '';
+        if (existingReminder) {
+            if (existingReminder.type === 'daily') {
+                frequencyText = 'Daily';
+            } else if (existingReminder.type === 'weekly' && existingReminder.selectedDays) {
+                frequencyText = `Weekly (${existingReminder.selectedDays.length} days)`;
+            } else if (existingReminder.type === 'custom' && existingReminder.selectedDays) {
+                frequencyText = `${existingReminder.selectedDays.length} days per week`;
+            } else if (existingReminder.type === 'once') {
+                frequencyText = 'One-time';
+            } else {
+                frequencyText = 'Daily';
+            }
+        }
+        
+        return `
+            <div class="subject-reminder-item" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px;
+                background: var(--bg-tertiary);
+                border-radius: 8px;
+                margin-bottom: 8px;
+            ">
+                <div>
+                    <strong style="color: var(--text-primary);">${subject}</strong>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.8rem;">
+                        ${existingReminder ? `${frequencyText} at ${existingReminder.time}` : 'No reminder set'}
+                    </p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="setSubjectReminder('${subject}')" style="
+                        padding: 8px 16px;
+                        background: ${existingReminder ? 'var(--accent-green)' : 'var(--accent-blue)'};
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">
+                        ${existingReminder ? 'Update' : 'Set Reminder'}
+                    </button>
+                    ${existingReminder ? `
+                        <button onclick="removeSubjectReminder('${subject}')" style="
+                            padding: 8px 12px;
+                            background: var(--accent-red, #ef4444);
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">×</button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function setSubjectReminder(subject) {
+    const modal = document.createElement('div');
+    modal.className = 'auth-overlay';
+    modal.innerHTML = `
+        <div class="auth-modal" style="max-width: 500px;">
+            <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">×</button>
+            <div class="auth-header">
+                <h2>Set ${subject} Reminder</h2>
+                <p>Configure when and how often you'd like to be reminded to study ${subject}</p>
+            </div>
+            <form onsubmit="saveEnhancedSubjectReminder(event, '${subject}')">
+                <div class="auth-input-group">
+                    <label>Reminder Time</label>
+                    <input type="time" id="reminderTime" class="auth-input" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label>Reminder Type</label>
+                    <select id="reminderType" class="auth-input" onchange="toggleRecurringOptions()" required>
+                        <option value="">Choose reminder type...</option>
+                        <option value="once">One-time reminder</option>
+                        <option value="daily">Daily reminder</option>
+                        <option value="weekly">Weekly reminder</option>
+                        <option value="custom">Custom frequency</option>
+                    </select>
+                </div>
+                
+                <div id="recurringOptions" style="display: none; margin-top: 16px;">
+                    <div class="auth-input-group">
+                        <label>Days of the Week</label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-monday" value="monday"> Monday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-tuesday" value="tuesday"> Tuesday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-wednesday" value="wednesday"> Wednesday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-thursday" value="thursday"> Thursday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-friday" value="friday"> Friday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-saturday" value="saturday"> Saturday
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="day-sunday" value="sunday"> Sunday
+                            </label>
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <button type="button" onclick="selectAllDays()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border-color);
+                                border-radius: 6px;
+                                padding: 6px 12px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                                margin-right: 8px;
+                            ">Select All</button>
+                            <button type="button" onclick="selectWeekdays()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border-color);
+                                border-radius: 6px;
+                                padding: 6px 12px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                            ">Weekdays Only</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label>Custom Message (Optional)</label>
+                    <input type="text" id="reminderMessage" class="auth-input" placeholder="Time to study ${subject}!">
+                </div>
+                
+                <button type="submit" class="auth-submit">Save Reminder</button>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+function toggleRecurringOptions() {
+    const type = document.getElementById('reminderType').value;
+    const options = document.getElementById('recurringOptions');
+    
+    if (type === 'weekly' || type === 'custom') {
+        options.style.display = 'block';
+        if (type === 'weekly') {
+            selectWeekdays(); // Auto-select weekdays for weekly reminders
+        }
+    } else {
+        options.style.display = 'none';
+    }
+}
+
+function selectAllDays() {
+    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = true);
+}
+
+function selectWeekdays() {
+    const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
+    
+    checkboxes.forEach(cb => {
+        cb.checked = weekdays.includes(cb.value);
+    });
+}
+
+function saveEnhancedSubjectReminder(event, subject) {
+    event.preventDefault();
+    
+    const time = document.getElementById('reminderTime').value;
+    const type = document.getElementById('reminderType').value;
+    const message = document.getElementById('reminderMessage').value || `Time to study ${subject}!`;
+    
+    let selectedDays = [];
+    if (type === 'weekly' || type === 'custom') {
+        const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]:checked');
+        selectedDays = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (selectedDays.length === 0) {
+            showAlert('Please select at least one day for recurring reminders', 'error');
+            return;
+        }
+    }
+    
+    // Remove existing reminders for this subject
+    studyReminders = studyReminders.filter(r => r.subject !== subject);
+    
+    // Add new reminder(s)
+    const reminderData = {
+        subject: subject,
+        time: time,
+        message: message,
+        type: type,
+        selectedDays: selectedDays,
+        created: new Date().toISOString()
+    };
+    
+    studyReminders.push(reminderData);
+    localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+    
+    // Create calendar events if connected
+    if (isGoogleCalendarConnected) {
+        createEnhancedCalendarReminder(reminderData);
+    }
+    
+    document.querySelector('.auth-overlay').remove();
+    populateSubjectReminders();
+    
+    const frequency = type === 'daily' ? 'daily' : 
+                     type === 'weekly' ? `weekly (${selectedDays.length} days)` :
+                     type === 'custom' ? `${selectedDays.length} days per week` : 'once';
+    
+    showAlert(`${subject} reminder set for ${time} - ${frequency}`, 'success');
+}
+
+async function createEnhancedCalendarReminder(reminderData) {
+    if (!isGoogleCalendarConnected || !accessToken) {
+        console.log('Google Calendar not connected, skipping calendar reminder creation');
+        return;
+    }
+    
+    try {
+        const { subject, time, message, type, selectedDays } = reminderData;
+        const [hours, minutes] = time.split(':');
+        
+        if (type === 'once') {
+            // Create single event for tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(hours, minutes, 0, 0);
+            
+            await createSingleCalendarEvent(subject, message, tomorrow);
+            
+        } else if (type === 'daily') {
+            // Create daily recurring event
+            const startDate = new Date();
+            startDate.setHours(hours, minutes, 0, 0);
+            // If time has passed today, start tomorrow
+            if (startDate.getTime() < Date.now()) {
+                startDate.setDate(startDate.getDate() + 1);
+            }
+            
+            await createRecurringCalendarEvent(subject, message, startDate, 'DAILY');
+            
+        } else if (type === 'weekly' || type === 'custom') {
+            // Create events for selected days
+            const promises = selectedDays.map(async (day) => {
+                const startDate = getNextDateForDay(day);
+                startDate.setHours(hours, minutes, 0, 0);
+                
+                return await createRecurringCalendarEvent(subject, message, startDate, 'WEEKLY');
+            });
+            
+            await Promise.allSettled(promises);
+        }
+        
+        console.log('Enhanced calendar reminder created successfully');
+        
+    } catch (error) {
+        console.error('Failed to create enhanced calendar reminder:', error);
+        // Don't throw the error - just log it so the local reminder still works
+    }
+}
+
+function getNextDateForDay(dayName) {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date();
+    const todayIndex = today.getDay();
+    const targetIndex = days.indexOf(dayName.toLowerCase());
+    
+    let daysUntilTarget = targetIndex - todayIndex;
+    if (daysUntilTarget <= 0) {
+        daysUntilTarget += 7; // Next week
+    }
+    
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + daysUntilTarget);
+    return targetDate;
+}
+
+function saveSubjectReminder(event, subject) {
+    event.preventDefault();
+    const time = document.getElementById('reminderTime').value;
+    const message = document.getElementById('reminderMessage').value || `Time to study ${subject}!`;
+    
+    // Save reminder locally
+    studyReminders = studyReminders.filter(r => r.subject !== subject);
+    studyReminders.push({ subject, time, message });
+    localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+    
+    // Create Google Calendar event if connected
+    if (isGoogleCalendarConnected) {
+        createRecurringCalendarReminder(subject, time, message);
+    }
+    
+    document.querySelector('.auth-overlay').remove();
+    populateSubjectReminders();
+    showAlert(`${subject} reminder set for ${time}`, 'success');
+}
+
+// ADD THE TWO NEW FUNCTIONS RIGHT HERE:
+
+async function createSingleCalendarEvent(subject, message, dateTime) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const endDateTime = new Date(dateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        
+        const event = {
+            summary: `Study Reminder: ${subject}`,
+            description: message,
+            start: {
+                dateTime: dateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            end: {
+                dateTime: endDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    {method: 'popup', minutes: 0},
+                    {method: 'email', minutes: 10}
+                ]
+            }
+        };
+        
+        const response = await gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: event
+        });
+        
+        console.log('Single calendar reminder created for', subject, response);
+        return response;
+        
+    } catch (error) {
+        console.error('Failed to create single calendar reminder:', error);
+        throw error;
+    }
+}
+
+async function createRecurringCalendarEvent(subject, message, startDateTime, frequency) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        
+        const event = {
+            summary: `Study Reminder: ${subject}`,
+            description: message,
+            start: {
+                dateTime: startDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            end: {
+                dateTime: endDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            recurrence: [`RRULE:FREQ=${frequency}`],
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    {method: 'popup', minutes: 0},
+                    {method: 'email', minutes: 10}
+                ]
+            }
+        };
+        
+        const response = await gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: event
+        });
+        
+        console.log('Recurring calendar reminder created for', subject, response);
+        return response;
+        
+    } catch (error) {
+        console.error('Failed to create recurring calendar reminder:', error);
+        throw error;
+    }
+}
+
+function addRemindersToSchedule() {
+    if (!isGoogleCalendarConnected || studyReminders.length === 0) return;
+    
+    const scheduleContent = document.getElementById('scheduleContent');
+    if (!scheduleContent) return;
+    
+    // Add reminder indicator to existing schedule
+    studyReminders.forEach(reminder => {
+        const [hours, minutes] = reminder.time.split(':');
+        const time12 = new Date(0, 0, 0, hours, minutes).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Find cells for this subject
+        const subjectCells = document.querySelectorAll(`[data-subject="${reminder.subject}"]`);
+        subjectCells.forEach(cell => {
+            const reminderDiv = document.createElement('div');
+            reminderDiv.className = 'schedule-reminder';
+            reminderDiv.style.cssText = `
+                background: var(--accent-green);
+                color: white;
+                padding: 8px;
+                border-radius: 6px;
+                margin-top: 8px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-align: center;
+            `;
+            reminderDiv.innerHTML = `🔔 ${time12}<br><span style="font-size: 0.7rem; opacity: 0.9;">Daily Reminder</span>`;
+            cell.appendChild(reminderDiv);
+        });
+    });
+}
+
+async function toggleGoogleCalendarConnection() {
+    const btn = document.getElementById('googleCalendarBtn');
+    
+    if (!isGoogleCalendarConnected) {
+        btn.innerHTML = 'Connecting...';
+        btn.disabled = true;
+        
+        try {
+            await initializeGoogleCalendar();
+            isGoogleCalendarConnected = true;
+            localStorage.setItem('gcseGoogleCalendarConnected', 'true');
+            btn.innerHTML = 'Connected ✓';
+            btn.style.background = 'var(--accent-green)';
+            showAlert('Google Calendar connected successfully!', 'success');
+        } catch (error) {
+            console.error('Google Calendar connection failed:', error);
+            console.error('Error details:', error.message || error.error || error);
+            
+            btn.innerHTML = 'Connect';
+            btn.disabled = false;
+            
+            // Show specific error message
+            let errorMessage = 'Failed to connect Google Calendar. ';
+            if (error.message) {
+                errorMessage += error.message;
+            } else if (error.error) {
+                errorMessage += error.error;
+            } else {
+                errorMessage += 'Please check console for details.';
+            }
+            
+            showAlert(errorMessage, 'error');
+        }
+    } else {
+        isGoogleCalendarConnected = false;
+        localStorage.setItem('gcseGoogleCalendarConnected', 'false');
+        googleCalendarAccessToken = null;
+        btn.innerHTML = 'Connect';
+        btn.style.background = 'var(--accent-blue)';
+        showAlert('Google Calendar disconnected', 'info');
+    }
+}
+
+let tokenClient;
+let accessToken = null;
+
+// Replace the existing initializeGoogleCalendar function
+async function initializeGoogleCalendar() {
+    console.log('Starting Google Calendar initialization...');
+    
+    // Check if API key and client ID are set
+    if (!GOOGLE_API_KEY || GOOGLE_API_KEY === 'your-google-api-key') {
+        throw new Error('Google API Key not configured. Please set GOOGLE_API_KEY.');
+    }
+    
+    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'your-google-client-id') {
+        throw new Error('Google Client ID not configured. Please set GOOGLE_CLIENT_ID.');
+    }
+    
+    try {
+        // Wait for gapi to load
+        await new Promise((resolve, reject) => {
+            if (typeof gapi !== 'undefined') {
+                resolve();
+            } else {
+                const script = document.createElement('script');
+                script.src = 'https://apis.google.com/js/api.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            }
+        });
+
+        // Wait for google identity services
+        await new Promise((resolve, reject) => {
+            if (typeof google !== 'undefined' && google.accounts) {
+                resolve();
+            } else {
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            }
+        });
+        
+        // Initialize gapi client
+        await new Promise((resolve, reject) => {
+            gapi.load('client', {
+                callback: resolve,
+                onerror: () => reject(new Error('Failed to load Google API client'))
+            });
+        });
+        
+        await gapi.client.init({
+            apiKey: GOOGLE_API_KEY,
+            discoveryDocs: [DISCOVERY_DOC],
+        });
+        
+        // Initialize the token client for OAuth
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: SCOPES,
+            callback: (response) => {
+                if (response.error) {
+                    throw new Error(response.error);
+                }
+                accessToken = response.access_token;
+                gapi.client.setToken({access_token: accessToken});
+                console.log('Google Calendar initialized successfully');
+            },
+        });
+        
+        // Request access token
+        return new Promise((resolve, reject) => {
+            tokenClient.callback = (response) => {
+                if (response.error) {
+                    reject(new Error(response.error));
+                    return;
+                }
+                accessToken = response.access_token;
+                gapi.client.setToken({access_token: accessToken});
+                resolve();
+            };
+            
+            // Check if user gesture is required
+            if (typeof tokenClient.requestAccessToken === 'function') {
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                reject(new Error('Token client not properly initialized'));
+            }
+        });
+        
+    } catch (error) {
+        console.error('Detailed initialization error:', error);
+        throw error;
+    }
+}
+
+async function createRecurringCalendarReminder(subject, time, message) {
+    if (!isGoogleCalendarConnected || !accessToken) return;
+    
+    try {
+        const today = new Date();
+        const [hours, minutes] = time.split(':');
+        const startDateTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+        
+        const event = {
+            summary: `Study Reminder: ${subject}`,
+            description: message,
+            start: {
+                dateTime: startDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            end: {
+                dateTime: endDateTime.toISOString(),
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            recurrence: ['RRULE:FREQ=DAILY'],
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    {method: 'popup', minutes: 0},
+                    {method: 'email', minutes: 10}
+                ]
+            }
+        };
+        
+        const response = await gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: event
+        });
+        
+        console.log('Recurring calendar reminder created for', subject, response);
+    } catch (error) {
+        console.error('Failed to create calendar reminder:', error);
+        showAlert('Failed to create calendar reminder: ' + (error.message || error), 'error');
+    }
+}
+
+function addNewReminder() {
+    const activeSchedule = appState.schedules[appState.activeSchedule];
+    
+    if (!activeSchedule) {
+        showAlert('Create a schedule first to add subject reminders', 'error');
+        return;
+    }
+    
+    // Get subjects that don't have reminders yet
+    const availableSubjects = activeSchedule.subjects.filter(subject => 
+        !studyReminders.find(r => r.subject === subject)
+    );
+    
+    if (availableSubjects.length === 0) {
+        showAlert('All subjects already have reminders set', 'info');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'auth-overlay';
+    modal.innerHTML = `
+        <div class="auth-modal">
+            <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">×</button>
+            <div class="auth-header">
+                <h2>Add Subject Reminder</h2>
+                <p>Choose a subject and set a reminder time</p>
+            </div>
+            <form onsubmit="saveNewReminder(event)">
+                <div class="auth-input-group">
+                    <label>Subject</label>
+                    <select id="newReminderSubject" class="auth-input" required>
+                        <option value="">Choose a subject...</option>
+                        ${availableSubjects.map(subject => 
+                            `<option value="${subject}">${subject}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="auth-input-group">
+                    <label>Reminder Time</label>
+                    <input type="time" id="newReminderTime" class="auth-input" required>
+                </div>
+                <div class="auth-input-group">
+                    <label>Message (Optional)</label>
+                    <input type="text" id="newReminderMessage" class="auth-input" placeholder="Time to study [subject]!">
+                </div>
+                <button type="submit" class="auth-submit">Add Reminder</button>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+function saveNewReminder(event) {
+    event.preventDefault();
+    const subject = document.getElementById('newReminderSubject').value;
+    const time = document.getElementById('newReminderTime').value;
+    const message = document.getElementById('newReminderMessage').value || `Time to study ${subject}!`;
+    
+    // Save reminder locally
+    studyReminders.push({ subject, time, message });
+    localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+    
+    // Create notification if connected
+    if (isGoogleCalendarConnected) {
+        createRecurringCalendarReminder(subject, time, message);
+    }
+    
+    document.querySelector('.auth-overlay').remove();
+    populateSubjectReminders();
+    showAlert(`${subject} reminder added for ${time}`, 'success');
+}
+
+function removeSubjectReminder(subject) {
+    if (confirm(`Remove reminder for ${subject}?`)) {
+        studyReminders = studyReminders.filter(r => r.subject !== subject);
+        localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
+        populateSubjectReminders();
+        showAlert(`${subject} reminder removed`, 'success');
+    }
+}
+
+function createTopTabBar() {
+    let existingBar = document.getElementById('topTabBar');
+    if (existingBar) return;
+    
+    // Create blur overlay
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = 'searchBlurOverlay';
+    blurOverlay.className = 'search-blur-overlay';
+    document.body.appendChild(blurOverlay);
+    
+    const tabBar = document.createElement('div');
+    tabBar.id = 'topTabBar';
+    tabBar.className = 'top-tab-bar';
+    tabBar.innerHTML = `
+        <div class="top-tab-content" id="topTabContent">
+            <div class="top-tab-item" onclick="animatePageFromTab(this, 'home')" data-page="home">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                <span>Home</span>
+            </div>
+            <div class="top-tab-item" onclick="animatePageFromTab(this, 'dashboard')" data-page="dashboard">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                </svg>
+                <span>Dashboard</span>
+            </div>
+            <div class="top-tab-item" onclick="animatePageFromTab(this, 'progress')" data-page="progress">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                <span>Progress</span>
+            </div>
+            <div class="top-tab-item" onclick="animatePageFromTab(this, 'settings')" data-page="settings">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
+                </svg>
+                <span>Settings</span>
+            </div>
+            <div class="top-search-btn" onclick="toggleTopSearch()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+            </div>
+        </div>
+        <div class="top-search-content" id="topSearchContent">
+            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted);">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" class="top-search-input" placeholder="Search schedules, flashcards..." id="topSearchInput" onkeyup="handleTopSearch(event)" oninput="handleTopSearch(event)">
+            <div class="top-search-close" onclick="toggleTopSearch()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </div>
+            <div class="search-suggestions" id="topSearchSuggestions">
+                <!-- Search suggestions will be populated here -->
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(tabBar);
+}
+
+function showTopTabBar() {
+    const tabBar = document.getElementById('topTabBar');
+    if (!tabBar) return;
+    
+    tabBar.classList.add('show');
+    
+    // Animate tabs appearing left to right
+    const tabs = tabBar.querySelectorAll('.top-tab-item, .top-search-btn');
+    tabs.forEach((tab, index) => {
+        tab.style.opacity = '0';
+        tab.style.transform = 'translateX(-30px) scale(0.9)';
+        tab.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        setTimeout(() => {
+            tab.style.opacity = '1';
+            tab.style.transform = 'translateX(0) scale(1)';
+        }, index * 120);
+    });
+    
+    updateTopTabActive(); // ADD THIS LINE
+}
+
+function hideTopTabBar() {
+    const tabBar = document.getElementById('topTabBar');
+    
+    if (tabBar) {
+        // Animate tabs disappearing
+        const tabs = tabBar.querySelectorAll('.top-tab-item, .top-search-btn');
+        tabs.forEach((tab, index) => {
+            setTimeout(() => {
+                tab.style.opacity = '0';
+                tab.style.transform = 'translateX(-30px) scale(0.9)';
+            }, index * 50);
+        });
+        
+        setTimeout(() => {
+            tabBar.classList.remove('show');
+            setTimeout(() => {
+                if (tabBar.parentNode) tabBar.remove();
+            }, 300);
+        }, tabs.length * 50 + 200);
+    }
+}
+
+function toggleTopSearch() {
+    const tabBar = document.getElementById('topTabBar');
+    const tabContent = document.getElementById('topTabContent');
+    const searchContent = document.getElementById('topSearchContent');
+    const searchBtn = document.querySelector('.top-search-btn');
+    const blurOverlay = document.getElementById('searchBlurOverlay');
+    
+    if (!tabBar || !tabContent || !searchContent) return;
+    
+    const isSearchMode = tabBar.classList.contains('search-mode');
+    
+    if (!isSearchMode) {
+        // Enable search mode
+        tabBar.classList.add('search-mode');
+        searchBtn.classList.add('active');
+        if (blurOverlay) blurOverlay.classList.add('active');
+        
+        // Smooth slide transition
+        tabContent.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        tabContent.style.transform = 'translateX(-100%)';
+        tabContent.style.opacity = '0';
+        
+        setTimeout(() => {
+            tabContent.style.display = 'none';
+            searchContent.style.display = 'flex';
+            searchContent.style.transform = 'translateX(100%)';
+            searchContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                searchContent.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                searchContent.style.transform = 'translateX(0)';
+                searchContent.style.opacity = '1';
+                
+                setTimeout(() => {
+                    document.getElementById('topSearchInput').focus();
+                }, 300);
+            }, 50);
+        }, 250);
+    } else {
+        // Disable search mode
+        tabBar.classList.remove('search-mode');
+        searchBtn.classList.remove('active');
+        if (blurOverlay) blurOverlay.classList.remove('active');
+        
+        // Hide suggestions
+        hideSearchSuggestions();
+        
+        searchContent.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        searchContent.style.transform = 'translateX(100%)';
+        searchContent.style.opacity = '0';
+        
+        setTimeout(() => {
+            searchContent.style.display = 'none';
+            tabContent.style.display = 'flex';
+            tabContent.style.transform = 'translateX(-100%)';
+            tabContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                tabContent.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                tabContent.style.transform = 'translateX(0)';
+                tabContent.style.opacity = '1';
+            }, 50);
+        }, 250);
+        
+        document.getElementById('topSearchInput').value = '';
+    }
+}
+
+function animatePageFromTab(tabElement, pageId) {
+    const tabRect = tabElement.getBoundingClientRect();
+    const tabCenterX = tabRect.left + tabRect.width / 2;
+    const tabBottom = tabRect.bottom;
+    
+    const currentPage = document.querySelector('.page.active');
+    const targetPage = document.getElementById(pageId);
+    
+    if (!targetPage || currentPage === targetPage) return;
+    
+    // Set custom transform origin for dropdown effect
+    targetPage.style.transformOrigin = `${tabCenterX}px ${tabBottom}px`;
+    targetPage.classList.add('dropdown-enter');
+    
+    // Hide current page
+    if (currentPage) {
+        currentPage.style.transition = 'all 0.3s ease';
+        currentPage.style.opacity = '0';
+        currentPage.style.transform = 'translateY(10px) scale(0.98)';
+    }
+    
+    setTimeout(() => {
+        // Switch pages
+        if (currentPage) {
+            currentPage.classList.remove('active');
+            currentPage.style.transform = '';
+            currentPage.style.opacity = '';
+            currentPage.style.transition = '';
+        }
+        
+        targetPage.classList.add('active');
+        
+        // Animate new page dropping down from tab
+        setTimeout(() => {
+            targetPage.classList.remove('dropdown-enter');
+            targetPage.classList.add('dropdown-enter-active');
+            
+            setTimeout(() => {
+                targetPage.classList.remove('dropdown-enter-active');
+                targetPage.style.transformOrigin = '';
+            }, 600);
+        }, 50);
+    }, 300);
+    
+    // Update app state
+    appState.currentPage = pageId;
+    saveAppState();
+    
+    // Update tab highlighting - ADD THESE LINES:
+    document.querySelectorAll('.top-tab-item').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    tabElement.classList.add('active');
+    // END OF NEW LINES
+    
+    if (pageId === 'dashboard') {
+        setTimeout(() => {
+            updateCenteredCarousel();
+        }, 400);
+    }
+    
+    toggleAIButtonVisibility(pageId);
+}
+
+function hideTopTabBar() {
+    const tabBar = document.getElementById('topTabBar');
+    const blurOverlay = document.getElementById('searchBlurOverlay');
+    
+    if (tabBar) {
+        const tabs = tabBar.querySelectorAll('.top-tab-item, .top-search-btn');
+        tabs.forEach((tab, index) => {
+            setTimeout(() => {
+                tab.style.opacity = '0';
+                tab.style.transform = 'translateX(-30px) scale(0.9)';
+            }, index * 50);
+        });
+        
+        setTimeout(() => {
+            tabBar.classList.remove('show');
+            setTimeout(() => {
+                if (tabBar.parentNode) tabBar.remove();
+                if (blurOverlay && blurOverlay.parentNode) blurOverlay.remove();
+            }, 300);
+        }, tabs.length * 50 + 200);
+    }
+}
+
+function handleTopSearch(event) {
+    const query = event.target.value.toLowerCase().trim();
+    const suggestions = document.getElementById('topSearchSuggestions');
+    
+    if (!suggestions) return;
+    
+    if (query.length === 0) {
+        hideSearchSuggestions();
+        return;
+    }
+    
+    if (query.length < 2) return;
+    
+    // Search through schedules and flashcards
+    const results = [];
+    
+    // Search schedules
+    Object.values(appState.schedules).forEach(schedule => {
+        if (schedule.name.toLowerCase().includes(query) || 
+            schedule.subjects.some(subject => subject.toLowerCase().includes(query))) {
+            results.push({
+                type: 'schedule',
+                title: schedule.name,
+                meta: `${schedule.subjects.length} subjects`,
+                id: schedule.id,
+                action: () => {
+                    toggleTopSearch();
+                    showPage('dashboard');
+                    setTimeout(() => {
+                        switchToSchedule(schedule.id);
+                    }, 300);
+                }
+            });
+        }
+    });
+    
+    // Search flashcards
+    if (typeof flashcards !== 'undefined') {
+        flashcards.forEach(flashcard => {
+            if (flashcard.subject.toLowerCase().includes(query) || 
+                flashcard.topic.toLowerCase().includes(query) ||
+                flashcard.notes.toLowerCase().includes(query)) {
+                results.push({
+                    type: 'flashcard',
+                    title: flashcard.topic,
+                    meta: `${flashcard.subject} flashcard`,
+                    id: flashcard.id,
+                    action: () => {
+                        toggleTopSearch();
+                        showPage('dashboard');
+                        setTimeout(() => {
+                            switchMainTab('flashcards');
+                            setTimeout(() => {
+                                openFlashcardInterface(flashcard.id);
+                            }, 300);
+                        }, 300);
+                    }
+                });
+            }
+        });
+    }
+    
+    // Display results
+    if (results.length > 0) {
+        suggestions.innerHTML = results.slice(0, 6).map(result => `
+            <div class="search-suggestion-item" onclick="executeSearchAction('${result.id}', '${result.type}')">
+                <div class="search-suggestion-type ${result.type}">${result.type}</div>
+                <div class="search-suggestion-content">
+                    <div class="search-suggestion-title">${result.title}</div>
+                    <div class="search-suggestion-meta">${result.meta}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Store actions for execution
+        window.searchActions = {};
+        results.forEach(result => {
+            window.searchActions[result.id] = result.action;
+        });
+        
+        showSearchSuggestions();
+    } else {
+        suggestions.innerHTML = `
+            <div class="search-suggestion-item">
+                <div class="search-suggestion-content">
+                    <div class="search-suggestion-title">No results found</div>
+                    <div class="search-suggestion-meta">Try searching for schedule names or flashcard topics</div>
+                </div>
+            </div>
+        `;
+        showSearchSuggestions();
+    }
+}
+
+function executeSearchAction(id, type) {
+    if (window.searchActions && window.searchActions[id]) {
+        window.searchActions[id]();
+    }
+}
+
+function showSearchSuggestions() {
+    const suggestions = document.getElementById('topSearchSuggestions');
+    if (suggestions) {
+        suggestions.classList.add('show');
+    }
+}
+
+function hideSearchSuggestions() {
+    const suggestions = document.getElementById('topSearchSuggestions');
+    if (suggestions) {
+        suggestions.classList.remove('show');
+    }
+}
+
+// ADD THIS NEW FUNCTION HERE:
+function updateTopTabActive() {
+    const topTabItems = document.querySelectorAll('.top-tab-item');
+    const currentPage = appState.currentPage;
+    
+    topTabItems.forEach(item => {
+        item.classList.remove('active');
+        const itemPage = item.dataset.page;
+        if (itemPage === currentPage) {
+            item.classList.add('active');
+        }
+    });
+}
+
+function loadUserData() {
+    const savedUser = localStorage.getItem('gcseRevisionUser');
+    const passwordChanged = localStorage.getItem('gcsePasswordChanged');
+    
+    if (savedUser && !passwordChanged) {
+        currentUser = JSON.parse(savedUser);
+        updateSettingsWithUserInfo();
+    } else if (savedUser && passwordChanged) {
+        // Password was changed, require re-login for security
+        localStorage.removeItem('gcseRevisionUser');
+        localStorage.removeItem('gcsePasswordChanged');
+        
+        setTimeout(() => {
+            showAuthModal();
+            showAlert('Please log in again for security after password change', 'info');
+        }, 1000);
+    } else {
+        setTimeout(() => {
+            showAuthModal();
+        }, 1000);
+    }
+}
+
+// Enhanced authentication system - ALWAYS show on page load for security
+function initAuthenticationSystem() {
+    // ALWAYS show auth modal for security, even if user exists
+    setTimeout(() => {
+        showFullPageAuthModal();
+    }, 300);
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const loginBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = loginBtn.innerHTML;
+    
+    // Start loading state
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Signing in...
+        </div>
+    `;
+    
+    // Get form values and normalize email
+    const email = document.getElementById('loginEmail').value.toLowerCase().trim(); // Convert to lowercase and trim
+    const password = document.getElementById('loginPassword').value;
+    
+    // Simulate authentication delay (1.5 seconds)
+    setTimeout(() => {
+        const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+        const user = savedUsers[email]; // Now checking with lowercase email
+        
+        if (user && user.password === btoa(password)) {
+            // Success - show success state briefly
+            loginBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Success! Redirecting...
+                </div>
+            `;
+            
+            // Set user and redirect after brief delay
+            setTimeout(() => {
+                currentUser = user;
+                localStorage.setItem('gcseRevisionUser', JSON.stringify(user));
+                
+                // Actually close the auth modal now
+const overlay = document.getElementById('authOverlay');
+if (overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }, 500);
+}
+                
+                updateSettingsWithUserInfo();
+                showAlert('Welcome back, ' + user.name + '!', 'success');
+                
+                // Reset button
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalContent;
+            }, 800);
+            
+        } else {
+            // Error state
+            loginBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Invalid credentials
+                </div>
+            `;
+            
+            // Reset after error display
+            setTimeout(() => {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalContent;
+                
+                if (!user) {
+                    showAlert('Account does not exist. Please create a new account.', 'error');
+                } else {
+                    showAlert('Invalid email or password', 'error');
+                }
+            }, 1500);
+        }
+    }, 1500);
+}
+
+function handleSignup(event) {
+    event.preventDefault();
+    
+    const signupBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = signupBtn.innerHTML;
+    
+    // Start loading state
+    signupBtn.disabled = true;
+    signupBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Creating account...
+        </div>
+    `;
+    
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value.toLowerCase().trim(); // Convert to lowercase and trim
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Simulate account creation delay (1.5 seconds)
+    setTimeout(() => {
+        if (password !== confirmPassword) {
+            signupBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Passwords don't match
+                </div>
+            `;
+            
+            setTimeout(() => {
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = originalContent;
+                showAlert('Passwords do not match', 'error');
+            }, 1500);
+            return;
+        }
+        
+        const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+        if (savedUsers[email]) {
+            signupBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Email already exists
+                </div>
+            `;
+            
+            setTimeout(() => {
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = originalContent;
+                showAlert('Account with this email already exists', 'error');
+            }, 1500);
+            return;
+        }
+        
+        // Success
+        signupBtn.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"/>
+                </svg>
+                Account created! Redirecting...
+            </div>
+        `;
+        
+        const newUser = {
+            name: name,
+            email: email, // This is now lowercase
+            password: btoa(password),
+            joinDate: new Date().toISOString(),
+            id: 'user_' + Date.now()
+        };
+        
+        savedUsers[email] = newUser; // Store with lowercase email as key
+        localStorage.setItem('gcseRevisionUsers', JSON.stringify(savedUsers));
+        
+        setTimeout(() => {
+            currentUser = newUser;
+            localStorage.setItem('gcseRevisionUser', JSON.stringify(newUser));
+            
+            // Actually close the auth modal now
+const overlay = document.getElementById('authOverlay');
+if (overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }, 500);
+}
+            
+            updateSettingsWithUserInfo();
+            showAlert('Account created successfully! Welcome, ' + name + '!', 'success');
+            
+            // Reset button
+            signupBtn.disabled = false;
+            signupBtn.innerHTML = originalContent;
+        }, 800);
+        
+    }, 1500);
+}
+
+function logout() {
+    // Clear user data
+    currentUser = null;
+    localStorage.removeItem('gcseRevisionUser');
+    
+    // Disconnect Google Calendar if connected
+    if (isGoogleCalendarConnected) {
+        isGoogleCalendarConnected = false;
+        googleCalendarAccessToken = null;
+    }
+    
+    // Show auth modal again
+    setTimeout(() => {
+        showFullPageAuthModal();
+    }, 500);
+    
+    showAlert('Signed out successfully', 'success');
+}
+
+// ADD THE NORMALIZE EMAIL FUNCTION HERE:
+function normalizeEmailInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.addEventListener('blur', function() {
+            this.value = this.value.toLowerCase().trim();
+        });
+    }
+}
+
+// ADD THE MIGRATION FUNCTION HERE:
+function migrateExistingEmails() {
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    const migratedUsers = {};
+    let hasMigration = false;
+    
+    // Convert all existing email keys to lowercase
+    for (const [email, userData] of Object.entries(savedUsers)) {
+        const lowercaseEmail = email.toLowerCase().trim();
+        
+        // Update the email field in user data too
+        userData.email = lowercaseEmail;
+        
+        // Store with lowercase key
+        migratedUsers[lowercaseEmail] = userData;
+        
+        if (email !== lowercaseEmail) {
+            hasMigration = true;
+            console.log(`Migrated email: ${email} → ${lowercaseEmail}`);
+        }
+    }
+    
+    // Save the migrated users if there were changes
+    if (hasMigration) {
+        localStorage.setItem('gcseRevisionUsers', JSON.stringify(migratedUsers));
+        console.log('Email migration completed');
+    }
+    
+    return migratedUsers;
+}
+
+// EmailJS Configuration
+        const EMAILJS_CONFIG = {
+            serviceID: 'service_qpxfn0h',
+            templateID: 'template_fgzy3dv', 
+            publicKey: 'waYmChwv7LiRd1geI'
+        };
+
+        // Initialize EmailJS
+function initEmailJS() {
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
+}
+
+function handleResetCode(event) {
+    event.preventDefault();
+    
+    const enteredCode = document.getElementById('resetCodeInput').value;
+    const storedCode = sessionStorage.getItem('resetCode');
+    const expiry = sessionStorage.getItem('resetExpiry');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    
+    // Check if code has expired
+    if (Date.now() > parseInt(expiry)) {
+        showAlert('Reset code has expired. Please request a new one.', 'error');
+        cancelForgotPassword();
+        return;
+    }
+    
+    // Show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Verifying...
+        </div>
+    `;
+    
+    setTimeout(() => {
+        if (enteredCode === storedCode) {
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Code verified!
+                </div>
+            `;
+            
+            setTimeout(() => {
+                showNewPasswordForm();
+            }, 1000);
+        } else {
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Invalid code
+                </div>
+            `;
+            
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                showAlert('Invalid reset code. Please try again.', 'error');
+            }, 1500);
+        }
+    }, 1500);
+}
+
+async function sendResetEmail(email, resetCode, userName) {
+    try {
+        // EmailJS parameters with better formatting
+        const templateParams = {
+            to_email: email,
+            to_name: userName || 'User', // Fallback if no name
+            reset_code: resetCode,
+            expiry_time: '5 minutes',
+            from_name: 'GCSE Revision Planner'
+        };
+        
+        // Send email using EmailJS
+        const response = await emailjs.send(
+            EMAILJS_CONFIG.serviceID,
+            EMAILJS_CONFIG.templateID,
+            templateParams
+        );
+        
+        if (response.status === 200) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject(new Error('Email service error'));
+        }
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+function resendResetCode() {
+    const resetEmail = sessionStorage.getItem('resetEmail'); // This is already lowercase from handleForgotPassword
+    if (!resetEmail) {
+        showAlert('Session expired. Please start over.', 'error');
+        cancelForgotPassword();
+        return;
+    }
+    
+    // Generate new code and resend
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    sessionStorage.setItem('resetCode', resetCode);
+    sessionStorage.setItem('resetExpiry', Date.now() + 300000);
+    
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    
+    sendResetEmail(resetEmail, resetCode, savedUsers[resetEmail].name)
+        .then(() => {
+            showAlert('New reset code sent to your email', 'success');
+        })
+        .catch((error) => {
+            console.error('Resend failed:', error);
+            showAlert('Failed to resend code. Please try again.', 'error');
+        });
+}
+
+function showNewPasswordForm() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    authModal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 1.5rem; font-weight: 800;">Set New Password</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Choose a strong password for your account</p>
+        </div>
+        
+        <form id="newPasswordForm" onsubmit="handleNewPassword(event)">
+            <div class="auth-input-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">New Password</label>
+                <input type="password" id="newPassword" required minlength="6" style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Enter new password">
+            </div>
+            
+            <div class="auth-input-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" required minlength="6" style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Confirm new password">
+            </div>
+            
+            <button type="submit" style="
+                width: 100%;
+                padding: 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">Update Password</button>
+        </form>
+    `;
+}
+
+function handleNewPassword(event) {
+    event.preventDefault();
+    
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+    const resetEmail = sessionStorage.getItem('resetEmail');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    
+    if (newPassword !== confirmPassword) {
+        showAlert('Passwords do not match', 'error');
+        return;
+    }
+    
+    // Show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Updating password...
+        </div>
+    `;
+    
+    setTimeout(() => {
+        // Update password in storage
+        const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+        if (savedUsers[resetEmail]) {
+            savedUsers[resetEmail].password = btoa(newPassword);
+            localStorage.setItem('gcseRevisionUsers', JSON.stringify(savedUsers));
+            
+            // Clear reset data
+            sessionStorage.removeItem('resetCode');
+            sessionStorage.removeItem('resetEmail');
+            sessionStorage.removeItem('resetExpiry');
+            
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Password updated!
+                </div>
+            `;
+            
+            setTimeout(() => {
+                showAlert('Password updated successfully! Please sign in with your new password.', 'success');
+                cancelForgotPassword();
+            }, 1500);
+        }
+    }, 1500);
+}
+
+function cancelForgotPassword() {
+    // Clear any reset data
+    sessionStorage.removeItem('resetCode');
+    sessionStorage.removeItem('resetEmail');
+    sessionStorage.removeItem('resetExpiry');
+    
+    // Show fresh auth modal
+    showFullPageAuthModal();
+}
+
+// Real forgot password functionality with EmailJS
+function showForgotPassword() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    // Hide current content and show forgot password form
+    const currentContent = authModal.innerHTML;
+    authModal.dataset.originalContent = currentContent;
+    
+    authModal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 1.5rem; font-weight: 800;">Reset Password</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Enter your email to receive a reset code</p>
+        </div>
+        
+        <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+            <div class="auth-input-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Email Address</label>
+                <input type="email" id="forgotEmail" required style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Enter your registered email">
+            </div>
+            
+            <button type="submit" style="
+                width: 100%;
+                padding: 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 16px;
+            ">Send Reset Code</button>
+            
+            <button type="button" onclick="cancelForgotPassword()" style="
+                width: 100%;
+                padding: 12px;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                border: 2px solid var(--border-color);
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">Back to Sign In</button>
+        </form>
+    `;
+}
+
+function showFullPageAuthModal() {
+    // Create full-page auth overlay if it doesn't exist
+    let overlay = document.getElementById('authOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'authOverlay';
+        overlay.className = 'auth-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    // Make it full page and non-closable
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-primary);
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.5s ease;
+    `;
+    
+    // Check if user exists for welcome message
+    const savedUser = localStorage.getItem('gcseRevisionUser');
+    const isReturningUser = !!savedUser;
+    
+    overlay.innerHTML = `
+        <div class="auth-modal" style="
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        ">
+            <!-- No close button for security -->
+            
+            <div class="auth-welcome" style="
+                text-align: center;
+                margin-bottom: 32px;
+                padding: 24px;
+                background: var(--glass-bg);
+                border-radius: 16px;
+                border: 2px solid var(--accent-blue);
+            ">
+                <h1 style="margin: 0 0 12px 0; color: var(--accent-blue); font-size: 2rem; font-weight: 900;">
+                    ${isReturningUser ? 'Welcome Back!' : 'Welcome to GCSE Revision Planner'}
+                </h1>
+                <p style="margin: 0; color: var(--text-muted); font-size: 1rem;">
+                    ${isReturningUser ? 'Please verify your identity to continue' : 'Please create an account or sign in to continue'}
+                </p>
+            </div>
+            
+            <div class="auth-header" style="margin-bottom: 24px;">
+                <div class="auth-tabs" style="display: flex; border-radius: 12px; background: var(--bg-primary); padding: 4px;">
+                    <div class="auth-tab active" onclick="switchAuthTab('login')" style="
+                        flex: 1;
+                        padding: 12px 20px;
+                        text-align: center;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        background: var(--accent-blue);
+                        color: white;
+                    ">Sign In</div>
+                    <div class="auth-tab" onclick="switchAuthTab('signup')" style="
+                        flex: 1;
+                        padding: 12px 20px;
+                        text-align: center;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        color: var(--text-secondary);
+                    ">Create Account</div>
+                </div>
+            </div>
+            
+            <!-- Login Form -->
+<form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)" style="display: block;">
+    <div class="auth-input-group" style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Email</label>
+        <input type="email" id="loginEmail" required style="
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        " placeholder="Enter your email">
+    </div>
+    <div class="auth-input-group" style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Password</label>
+        <input type="password" id="loginPassword" required style="
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        " placeholder="Enter your password">
+    </div>
+    
+    <!-- Forgot Password Link -->
+    <div style="text-align: right; margin-bottom: 24px;">
+        <button type="button" onclick="showForgotPassword()" style="
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        " onmouseover="this.style.color='var(--accent-blue-dark, #2563eb)'" onmouseout="this.style.color='var(--accent-blue)'">
+            Forgot Password?
+        </button>
+    </div>
+    
+    <button type="submit" style="
+        width: 100%;
+        padding: 16px;
+        background: var(--accent-blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    ">Sign In</button>
+</form>
+            
+            <!-- Signup Form -->
+            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)" style="display: none;">
+                <div class="auth-input-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Full Name</label>
+                    <input type="text" id="signupName" required style="
+                        width: 100%;
+                        padding: 14px 16px;
+                        border: 2px solid var(--border-color);
+                        border-radius: 12px;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                    " placeholder="Enter your full name">
+                </div>
+                <div class="auth-input-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Email</label>
+                    <input type="email" id="signupEmail" required style="
+                        width: 100%;
+                        padding: 14px 16px;
+                        border: 2px solid var(--border-color);
+                        border-radius: 12px;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                    " placeholder="Enter your email">
+                </div>
+                <div class="auth-input-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Password</label>
+                    <input type="password" id="signupPassword" required style="
+                        width: 100%;
+                        padding: 14px 16px;
+                        border: 2px solid var(--border-color);
+                        border-radius: 12px;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                    " placeholder="Create a password" minlength="6">
+                </div>
+                <div class="auth-input-group" style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required style="
+                        width: 100%;
+                        padding: 14px 16px;
+                        border: 2px solid var(--border-color);
+                        border-radius: 12px;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                    " placeholder="Confirm your password" minlength="6">
+                </div>
+                <button type="submit" style="
+                    width: 100%;
+                    padding: 16px;
+                    background: var(--accent-blue);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">Create Account</button>
+            </form>
+        </div>
+    `;
+    
+    overlay.classList.add('show');
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+    }, 100);
+    
+    // Add enhanced tab switching styles
+    addAuthTabStyles();
+
+    // ADD THE EMAIL NORMALIZATION CODE HERE - AT THE VERY END:
+    setTimeout(() => {
+        normalizeEmailInput('loginEmail');
+        normalizeEmailInput('signupEmail');
+        normalizeEmailInput('forgotEmail');
+    }, 100);
+}
+
+// Enhanced tab switching with better styling
+function switchAuthTab(tab) {
+    // Update tab appearance
+    document.querySelectorAll('.auth-tab').forEach(t => {
+        t.classList.remove('active');
+        t.style.background = 'transparent';
+        t.style.color = 'var(--text-secondary)';
+    });
+    
+    event.target.classList.add('active');
+    event.target.style.background = 'var(--accent-blue)';
+    event.target.style.color = 'white';
+    
+    // Update form visibility
+    document.querySelectorAll('.auth-form').forEach(f => {
+        f.classList.remove('active');
+        f.style.display = 'none';
+    });
+    
+    const targetForm = document.getElementById(tab + 'Form');
+    if (targetForm) {
+        targetForm.classList.add('active');
+        targetForm.style.display = 'block';
+    }
+}
+
+// Add enhanced styles for auth system
+function addAuthTabStyles() {
+    const style = document.createElement('style');
+    style.id = 'authEnhancedStyles';
+    style.textContent = `
+        .auth-tab:hover {
+            background: var(--accent-blue-light, rgba(59, 130, 246, 0.1)) !important;
+            color: var(--accent-blue) !important;
+        }
+        
+        .auth-tab.active:hover {
+            background: var(--accent-blue-dark, #2563eb) !important;
+            color: white !important;
+        }
+        
+        .auth-form input:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+            outline: none !important;
+        }
+        
+        .auth-form button:hover {
+            background: var(--accent-blue-dark, #2563eb) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+        }
+        
+        .auth-form button:disabled {
+            opacity: 0.7 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Override closeAuthModal to do nothing (for security)
+function closeAuthModal() {
+    // Do nothing - auth modal cannot be closed for security
+    console.log('Authentication required - modal cannot be closed');
+}
+
+// Add this to your authentication functions section
+
+// Forgot password functionality (simulated)
+function showForgotPassword() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    // Hide current content and show forgot password form
+    const currentContent = authModal.innerHTML;
+    authModal.dataset.originalContent = currentContent;
+    
+    authModal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 1.5rem; font-weight: 800;">Reset Password</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Enter your email to receive a reset code</p>
+        </div>
+        
+        <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+            <div class="auth-input-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Email Address</label>
+                <input type="email" id="forgotEmail" required style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Enter your registered email">
+            </div>
+            
+            <button type="submit" style="
+                width: 100%;
+                padding: 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 16px;
+            ">Send Reset Code</button>
+            
+            <button type="button" onclick="cancelForgotPassword()" style="
+                width: 100%;
+                padding: 12px;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                border: 2px solid var(--border-color);
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">Back to Sign In</button>
+        </form>
+    `;
+}
+
+function handleForgotPassword(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('forgotEmail').value.toLowerCase().trim(); // Convert to lowercase and trim
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    
+    // Check if email exists
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    if (!savedUsers[email]) { // Now checking with lowercase email
+        showAlert('No account found with this email address', 'error');
+        return;
+    }
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Sending code...
+        </div>
+    `;
+    
+    // Generate random 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiryTime = new Date(Date.now() + 300000); // 5 minutes from now
+    
+    // Store reset code temporarily (in real app, this would be server-side)
+    sessionStorage.setItem('resetCode', resetCode);
+    sessionStorage.setItem('resetEmail', email); // Store lowercase email
+    sessionStorage.setItem('resetExpiry', Date.now() + 300000); // 5 minutes
+    
+    // Send real email using EmailJS with better formatting
+    sendResetEmail(email, resetCode, savedUsers[email].name)
+        .then(() => {
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Code sent!
+                </div>
+            `;
+            
+            // Show simple success alert instead of notification with code
+            showAlert('Reset code sent to your email. Check your inbox.', 'success');
+            
+            setTimeout(() => {
+                showResetCodeForm();
+            }, 1500);
+        })
+        .catch((error) => {
+            console.error('Email sending failed:', error);
+            
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Failed to send
+                </div>
+            `;
+            
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                showAlert('Failed to send email. Please try again or contact support.', 'error');
+            }, 2000);
+        });
+}
+
+function showSimulatedEmail(email, code) {
+    // Create a simulated email notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--accent-blue);
+        border-radius: 16px;
+        padding: 20px;
+        max-width: 350px;
+        z-index: 1000000;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.4s ease;
+    `;
+    
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <svg style="width: 24px; height: 24px; color: var(--accent-blue);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <div>
+                <h4 style="margin: 0; color: var(--text-primary); font-size: 0.9rem; font-weight: 700;">Simulated Email</h4>
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">To: ${email}</p>
+            </div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: 12px; margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">Password Reset Code</h4>
+            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 0.9rem;">Your reset code is:</p>
+            <div style="
+                background: var(--accent-blue); 
+                color: white; 
+                padding: 12px; 
+                border-radius: 8px; 
+                text-align: center; 
+                font-size: 1.2rem; 
+                font-weight: 800; 
+                letter-spacing: 2px;
+            ">${code}</div>
+            <p style="margin: 12px 0 0 0; color: var(--text-muted); font-size: 0.8rem;">Code expires in 5 minutes</p>
+        </div>
+        <button onclick="this.parentElement.remove()" style="
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+        ">Close</button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Auto-remove after 15 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
+            setTimeout(() => notification.remove(), 400);
+        }
+    }, 15000);
+}
+
+function showResetCodeForm() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    authModal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 1.5rem; font-weight: 800;">Enter Reset Code</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Check the simulated email above for your code</p>
+        </div>
+        
+        <form id="resetCodeForm" onsubmit="handleResetCode(event)">
+            <div class="auth-input-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Reset Code</label>
+                <input type="text" id="resetCodeInput" required maxlength="6" style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1.2rem;
+                    text-align: center;
+                    letter-spacing: 2px;
+                    font-weight: 700;
+                    transition: all 0.3s ease;
+                " placeholder="000000">
+            </div>
+            
+            <button type="submit" style="
+                width: 100%;
+                padding: 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-bottom: 16px;
+            ">Verify Code</button>
+            
+            <button type="button" onclick="cancelForgotPassword()" style="
+                width: 100%;
+                padding: 12px;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                border: 2px solid var(--border-color);
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">Back to Sign In</button>
+        </form>
+    `;
+}
+
+function handleResetCode(event) {
+    event.preventDefault();
+    
+    const enteredCode = document.getElementById('resetCodeInput').value;
+    const storedCode = sessionStorage.getItem('resetCode');
+    const expiry = sessionStorage.getItem('resetExpiry');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    
+    // Check if code has expired
+    if (Date.now() > parseInt(expiry)) {
+        showAlert('Reset code has expired. Please request a new one.', 'error');
+        cancelForgotPassword();
+        return;
+    }
+    
+    // Show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Verifying...
+        </div>
+    `;
+    
+    setTimeout(() => {
+        if (enteredCode === storedCode) {
+            // Code is correct
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Code verified!
+                </div>
+            `;
+            
+            setTimeout(() => {
+                showNewPasswordForm();
+            }, 1000);
+        } else {
+            // Code is incorrect
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    Invalid code
+                </div>
+            `;
+            
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                showAlert('Invalid reset code. Please try again.', 'error');
+            }, 1500);
+        }
+    }, 1500);
+}
+
+function showNewPasswordForm() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    authModal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 8px 0; color: var(--accent-blue); font-size: 1.5rem; font-weight: 800;">Set New Password</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Choose a strong password for your account</p>
+        </div>
+        
+        <form id="newPasswordForm" onsubmit="handleNewPassword(event)">
+            <div class="auth-input-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">New Password</label>
+                <input type="password" id="newPassword" required minlength="6" style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Enter new password">
+            </div>
+            
+            <div class="auth-input-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" required minlength="6" style="
+                    width: 100%;
+                    padding: 14px 16px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+                " placeholder="Confirm new password">
+            </div>
+            
+            <button type="submit" style="
+                width: 100%;
+                padding: 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">Update Password</button>
+        </form>
+    `;
+}
+
+function handleNewPassword(event) {
+    event.preventDefault();
+    
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+    const resetEmail = sessionStorage.getItem('resetEmail');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    
+    if (newPassword !== confirmPassword) {
+        showAlert('Passwords do not match', 'error');
+        return;
+    }
+    
+    // Show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Updating password...
+        </div>
+    `;
+    
+    setTimeout(() => {
+        // Update password in storage
+        const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+        if (savedUsers[resetEmail]) {
+            savedUsers[resetEmail].password = btoa(newPassword);
+            localStorage.setItem('gcseRevisionUsers', JSON.stringify(savedUsers));
+            
+            // Clear reset data
+            sessionStorage.removeItem('resetCode');
+            sessionStorage.removeItem('resetEmail');
+            sessionStorage.removeItem('resetExpiry');
+            
+            submitBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    Password updated!
+                </div>
+            `;
+            
+            setTimeout(() => {
+                showAlert('Password updated successfully! Please sign in with your new password.', 'success');
+                cancelForgotPassword();
+            }, 1500);
+        }
+    }, 1500);
+}
+
+function cancelForgotPassword() {
+    const authModal = document.querySelector('.auth-modal');
+    if (!authModal) return;
+    
+    // Clear any reset data
+    sessionStorage.removeItem('resetCode');
+    sessionStorage.removeItem('resetEmail');
+    sessionStorage.removeItem('resetExpiry');
+    
+    // Restore original content or show fresh auth modal
+    const originalContent = authModal.dataset.originalContent;
+    if (originalContent) {
+        authModal.innerHTML = originalContent;
+    } else {
+        showFullPageAuthModal();
+    }
+}
+
+// Add the password change functions here:
+function changePassword() {
+    const modal = document.createElement('div');
+    modal.className = 'auth-overlay';
+    modal.innerHTML = `
+        <div class="auth-modal">
+            <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+loadUserData(            
+            <div class="auth-header">
+                <h2>Change Password</h2>
+                <p>Enter your current password and choose a new one</p>
+            </div>
+            
+            <form onsubmit="handlePasswordChange(event)">
+                <div class="auth-input-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" class="auth-input" required placeholder="Enter current password">
+                </div>
+                <div class="auth-input-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="auth-input" required placeholder="Enter new password" minlength="6">
+                </div>
+                <div class="auth-input-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" class="auth-input" required placeholder="Confirm new password" minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">Change Password</button>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+function handlePasswordChange(event) {
+    event.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+    
+    // Verify current password
+    if (btoa(currentPassword) !== currentUser.password) {
+        showAlert('Current password is incorrect', 'error');
+        return;
+    }
+    
+    // Check new passwords match
+    if (newPassword !== confirmNewPassword) {
+        showAlert('New passwords do not match', 'error');
+        return;
+    }
+    
+    // Check new password is different
+    if (newPassword === currentPassword) {
+        showAlert('New password must be different from current password', 'error');
+        return;
+    }
+    
+    // Update password
+    const savedUsers = JSON.parse(localStorage.getItem('gcseRevisionUsers') || '{}');
+    savedUsers[currentUser.email].password = btoa(newPassword);
+    currentUser.password = btoa(newPassword);
+    
+    localStorage.setItem('gcseRevisionUsers', JSON.stringify(savedUsers));
+    localStorage.setItem('gcseRevisionUser', JSON.stringify(currentUser));
+    
+    // Set flag for security re-login
+    localStorage.setItem('gcsePasswordChanged', 'true');
+    
+    // Close modal
+    document.querySelector('.auth-overlay').remove();
+    
+    showAlert('Password changed successfully! You will need to log in again on next visit for security.', 'success');
+}
+
+function updateSettingsWithUserInfo() {
+    const accountCard = document.querySelector('.settings-card:last-child');
+    if (!accountCard) return;
+    
+    if (currentUser) {
+        const settingsPage = document.getElementById('settings');
+        if (settingsPage) {
+            const cardContent = settingsPage.querySelector('.card');
+            if (cardContent) {
+                cardContent.innerHTML = `
+                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Settings & Preferences</h2>
+                    
+                    <div class="settings-main-grid">
+
+                        <div class="settings-card">
+    <h4>
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        Study Reminders
+    </h4>
+    <p>Set up intelligent study reminders for your subjects</p>
+    <div class="settings-control">
+        <label style="color: var(--text-secondary); font-weight: 600;">Enable Study Reminders:</label>
+        <div class="settings-toggle" id="studyNotifications" onclick="toggleStudyReminders()"></div>
+    </div>
+    
+    <!-- Reminder Options (Initially Hidden) -->
+    <div id="reminderOptions" style="
+        margin-top: 20px; 
+        opacity: 0; 
+        max-height: 0; 
+        overflow: hidden; 
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    ">
+        <div style="padding: 20px; background: var(--bg-primary); border-radius: 12px; border: 2px solid var(--border-color);">
+            <h5 style="margin: 0 0 16px 0; color: var(--text-primary); font-weight: 700;">Subject Reminders</h5>
+            <div id="subjectRemindersList">
+                <!-- Subject reminders will be populated here -->
+            </div>
+            <button onclick="addNewReminder()" style="
+                width: 100%;
+                margin-top: 16px;
+                padding: 12px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">+ Add Subject Reminder</button>
+        </div>
+    </div>
+</div>
+
+<div class="settings-card">
+    <h4>
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9l-5 4.87L18.18 22 12 18.77 5.82 22 7 13.87 2 9l6.91-.74L12 2z"/>
+        </svg>
+        Connected Services
+    </h4>
+    <p>Connect external services for enhanced functionality</p>
+    
+    <div class="connected-service" style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        margin-top: 16px;
+    ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="
+                width: 40px;
+                height: 40px;
+                background: #4285f4;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M15.5,12L14,10.5V9H13V10.5H12V9H11V10.5L9.5,12L11,13.5V15H12V13.5H13V15H14V13.5L15.5,12Z"/>
+                </svg>
+            </div>
+            <div>
+                <h6 style="margin: 0; color: var(--text-primary); font-weight: 700;">Google Calendar</h6>
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">Sync study reminders with your calendar</p>
+            </div>
+        </div>
+        
+        <button id="googleCalendarBtn" onclick="toggleGoogleCalendarConnection()" style="
+            padding: 10px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">
+            Connect
+        </button>
+    </div>
+</div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="M1 12h6m6 0h6"/>
+                                </svg>
+                                Theme Options
+                            </h4>
+                            <p>Choose between Light or Dark theme</p>
+                            <div class="theme-selector">
+                                <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; color: #374151; font-weight: 800; font-size: 10px;">Light</div>
+                                </div>
+                                <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #0f172a 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #f1f5f9; font-weight: 800; font-size: 10px;">Dark</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9,22 9,12 15,12 15,22"/>
+                                </svg>
+                                Navigation Style
+                            </h4>
+                            <p>Choose between sidebar or top tab bar navigation</p>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Use Top Tab Bar:</label>
+                                <div class="settings-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()"></div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+                                Note: This feature is disabled on mobile devices
+                            </p>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <polyline points="1 20 1 14 7 14"/>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                </svg>
+                                Backup & Sync
+                            </h4>
+                            <p>Sync your data across devices and create automatic backups</p>
+                            <div class="settings-control">
+                                <button class="btn-secondary" onclick="createBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    Create Backup
+                                </button>
+                                <button class="btn-secondary" onclick="restoreBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Restore Backup
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Account Management
+                            </h4>
+                            <div class="user-info">
+                                <div class="user-avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
+                                <div class="user-details">
+                                    <h4>${currentUser.name}</h4>
+                                    <p>${currentUser.email}</p>
+                                    <p style="font-size: 0.75rem; color: var(--text-muted);">
+                                        Member since ${new Date(currentUser.joinDate).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="settings-control" style="gap: 8px;">
+                                <button class="btn-secondary" onclick="changePassword()" style="flex: 1;">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <circle cx="12" cy="16" r="1"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                    Change Password
+                                </button>
+                                <button class="btn-secondary" onclick="logout()" style="flex: 1;">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                        <polyline points="16,17 21,12 16,7"/>
+                                        <line x1="21" y1="12" x2="9" y2="12"/>
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    applySettings();
+                }, 100);
+            }
+        }
+    }
+}
+
+function checkForBackupOnLogin(email) {
+    const backupKey = `gcse_backup_${email}`;
+    return localStorage.getItem(backupKey);
+}
+
+function showSyncBackupModal(email) {
+    // Backup modal implementation
+    console.log('Checking for backup for:', email);
+}
+
+// ===== MOBILE AND TOUCH FUNCTIONS =====
+function handleTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}
+
+function handleTouchMove(e) {
+    if (!touchStartX || !touchStartY) return;
+    
+    touchEndX = e.touches[0].clientX;
+    touchEndY = e.touches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    
+    if (touchStartX < 50 && deltaX > 100 && !isSidebarOpen) {
+        e.preventDefault();
+        toggleSidebarMobile();
+    }
+    
+    if (isSidebarOpen && deltaX < -100) {
+        e.preventDefault();
+        toggleSidebarMobile();
+    }
+}
+
+function handleTouchEnd() {
+    touchStartX = 0;
+    touchStartY = 0;
+    touchEndX = 0;
+    touchEndY = 0;
+}
+
+// Task swipe handling
+function handleTaskTouchStart(e) {
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    activeSwipeElement = e.currentTarget;
+    isSwipeActive = true;
+    e.preventDefault();
+}
+
+function handleTaskTouchMove(e) {
+    if (!isSwipeActive || !activeSwipeElement) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const deltaY = touch.clientY - swipeStartY;
+    
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        resetSwipe();
+        return;
+    }
+    
+    e.preventDefault();
+    
+    const progress = Math.min(Math.abs(deltaX) / 120, 1);
+    const content = activeSwipeElement.querySelector('.task-content');
+    
+    if (deltaX > 30) {
+        activeSwipeElement.style.background = `linear-gradient(90deg, #ef4444 ${progress * 100}%, var(--bg-secondary) ${progress * 100}%)`;
+        content.style.transform = `translateX(${Math.min(deltaX, 120)}px)`;
+        
+        if (progress > 0.3) {
+            showSwipeIndicator(activeSwipeElement, 'delete', progress);
+        }
+    } else if (deltaX < -30) {
+        activeSwipeElement.style.background = `linear-gradient(270deg, #10b981 ${progress * 100}%, var(--bg-secondary) ${progress * 100}%)`;
+        content.style.transform = `translateX(${Math.max(deltaX, -120)}px)`;
+        
+        if (progress > 0.3) {
+            showSwipeIndicator(activeSwipeElement, 'complete', progress);
+        }
+    }
+}
+
+function handleTaskTouchEnd(e) {
+    if (!isSwipeActive || !activeSwipeElement) return;
+    
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const progress = Math.abs(deltaX) / 120;
+    
+    if (progress > 0.6) {
+        const taskId = activeSwipeElement.dataset.taskId;
+        
+        if (deltaX > 0) {
+            showDeleteConfirmation(taskId, activeSwipeElement);
+        } else {
+            completeTaskWithAnimation(taskId, activeSwipeElement);
+        }
+    } else {
+        resetSwipeAnimation(activeSwipeElement);
+    }
+    
+    resetSwipe();
+}
+
+function showSwipeIndicator(element, action, progress) {
+    let indicator = element.querySelector('.swipe-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'swipe-indicator';
+        element.appendChild(indicator);
+    }
+    
+    const icon = action === 'delete' ? 
+        '<svg viewBox="0 0 24 24" fill="white" style="width:24px;height:24px;"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6"/></svg>' :
+        '<svg viewBox="0 0 24 24" fill="white" style="width:24px;height:24px;"><polyline points="20,6 9,17 4,12"/></svg>';
+    
+    indicator.innerHTML = `
+        <div style="
+            position: absolute;
+            ${action === 'delete' ? 'right: 16px;' : 'left: 16px;'}
+            top: 50%;
+            transform: translateY(-50%) scale(${progress});
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: ${progress};
+            pointer-events: none;
+        ">
+            ${icon}
+            ${action === 'delete' ? 'Delete' : 'Complete'}
+        </div>
+    `;
+}
+
+function showDeleteConfirmation(taskId, element) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]);
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'duplicate-modal-overlay';
+    modal.style.zIndex = '20000';
+    modal.innerHTML = `
+        <div class="duplicate-modal" style="max-width: 320px;">
+            <h3 style="color: var(--accent-red);">Delete Task?</h3>
+            <p>Are you sure you want to delete this revision task? This action cannot be undone.</p>
+            <div class="duplicate-modal-buttons">
+                <button class="duplicate-modal-button add-new" onclick="cancelDelete('${taskId}', this.closest('.duplicate-modal-overlay'))">
+                    Cancel
+                </button>
+                <button class="duplicate-modal-button replace" onclick="confirmDelete('${taskId}', this.closest('.duplicate-modal-overlay'))">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+    
+    element.deleteModal = modal;
+}
+
+function cancelDelete(taskId, modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+    
+    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        resetSwipeAnimation(taskElement);
+    }
+}
+
+function confirmDelete(taskId, modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+    
+    deleteTask(taskId);
+    
+    if ('vibrate' in navigator) {
+        navigator.vibrate(200);
+    }
+    
+    showAlert('Task deleted', 'success');
+}
+
+function completeTaskWithAnimation(taskId, element) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+    }
+    
+    toggleTaskComplete(taskId);
+    resetSwipeAnimation(element);
+}
+
+function resetSwipeAnimation(element) {
+    const content = element.querySelector('.task-content');
+    const indicator = element.querySelector('.swipe-indicator');
+    
+    element.style.background = '';
+    content.style.transform = '';
+    
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function resetSwipe() {
+    isSwipeActive = false;
+    swipeStartX = 0;
+    swipeStartY = 0;
+    activeSwipeElement = null;
+}
+
+function navigateToPage(pageId) {
+    showPage(pageId);
+    updateBottomNavigation(pageId);
+}
+
+function updateBottomNavigation(activePage) {
+    document.querySelectorAll('.bottom-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const navItems = document.querySelectorAll('.bottom-nav-item');
+    const pageIndex = ['home', 'dashboard', 'progress', 'settings'].indexOf(activePage);
+    if (pageIndex >= 0 && navItems[pageIndex]) {
+        navItems[pageIndex].classList.add('active');
+    }
+}
+
+function triggerHaptic(element) {
+    element.classList.add('haptic');
+    
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+    }
+    
+    setTimeout(() => {
+        element.classList.remove('haptic');
+    }, 300);
+}
+
+// ===== AI CHATBOT FUNCTIONS =====
+function toggleAIChatbot() {
+    aiChatbotOpen = !aiChatbotOpen;
+    const sidebar = document.getElementById('aiChatbotSidebar');
+    const overlay = document.getElementById('aiChatbotOverlay');
+    const container = document.querySelector('.container');
+    
+    if (aiChatbotOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        container.classList.add('ai-open');
+        
+        updateAISubjectContext();
+        updateAISuggestedPrompts();
+        
+        setTimeout(() => {
+            document.getElementById('aiChatInput').focus();
+        }, 500);
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        container.classList.remove('ai-open');
+    }
+}
+
+function updateAISubjectContext() {
+    let detectedSubject = 'General';
+    
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) {
+        const tabText = activeTab.textContent.trim();
+        const tabName = activeTab.dataset.tabName || tabText;
+        detectedSubject = tabName.replace(/schedule:/i, '').trim();
+        
+        if (detectedSubject === 'General' || detectedSubject.length === 0) {
+            const activeSchedule = appState.schedules[appState.activeSchedule];
+            if (activeSchedule && activeSchedule.subjects && activeSchedule.subjects.length > 0) {
+                detectedSubject = activeSchedule.subjects[0];
+            }
+        }
+    } else {
+        const activeSchedule = appState.schedules[appState.activeSchedule];
+        if (activeSchedule && activeSchedule.subjects && activeSchedule.subjects.length > 0) {
+            detectedSubject = activeSchedule.subjects[0];
+        }
+    }
+    
+    currentAISubject = detectedSubject;
+    
+    const contextElement = document.getElementById('aiSubjectContext');
+    const contextSubjectElement = document.getElementById('contextSubject');
+    
+    if (contextElement) contextElement.textContent = currentAISubject;
+    if (contextSubjectElement) contextSubjectElement.textContent = currentAISubject;
+    
+    updateWelcomeMessage();
+    updateAISuggestedPrompts();
+}
+
+function updateWelcomeMessage() {
+    const welcomeContent = document.getElementById('subjectSpecificWelcome');
+    if (!welcomeContent) return;
+    
+    const subjectWelcomes = {
+        'Mathematics': `
+            <ul>
+                <li>Solving equations and working with formulas</li>
+                <li>Understanding graphs and data interpretation</li>
+                <li>Practicing exam-style calculations</li>
+                <li>Reviewing algebra, geometry, and statistics</li>
+            </ul>`,
+        'English Literature': `
+            <ul>
+                <li>Analyzing quotes and literary techniques</li>
+                <li>Understanding themes and character development</li>
+                <li>Structuring essays and written responses</li>
+                <li>Exploring context and historical background</li>
+            </ul>`,
+        'Biology': `
+            <ul>
+                <li>Understanding cell biology and life processes</li>
+                <li>Learning about human body systems</li>
+                <li>Studying ecosystems and environmental science</li>
+                <li>Practicing diagram labeling and scientific method</li>
+            </ul>`,
+        'Chemistry': `
+            <ul>
+                <li>Balancing chemical equations</li>
+                <li>Understanding atomic structure and bonding</li>
+                <li>Learning about chemical reactions and processes</li>
+                <li>Practicing calculations and data analysis</li>
+            </ul>`,
+        'Physics': `
+            <ul>
+                <li>Understanding forces, motion, and energy</li>
+                <li>Learning about electricity and magnetism</li>
+                <li>Studying waves, radiation, and space</li>
+                <li>Practicing problem-solving with equations</li>
+            </ul>`,
+        'Computing': `
+            <ul>
+                <li>Programming concepts and algorithm design</li>
+                <li>Understanding computer systems and networks</li>
+                <li>Learning about data representation and security</li>
+                <li>Practicing computational thinking skills</li>
+            </ul>`,
+        'History': `
+            <ul>
+                <li>Analyzing historical sources and evidence</li>
+                <li>Understanding cause and effect relationships</li>
+                <li>Learning about different time periods and events</li>
+                <li>Developing essay writing and evaluation skills</li>
+            </ul>`,
+        'Geography': `
+            <ul>
+                <li>Understanding physical and human geography</li>
+                <li>Learning about climate, ecosystems, and development</li>
+                <li>Practicing map skills and data interpretation</li>
+                <li>Studying case studies and fieldwork techniques</li>
+            </ul>`
+    };
+    
+    const defaultWelcome = `
+        <ul>
+            <li>Explaining key concepts and topics</li>
+            <li>Creating practice questions and quizzes</li>
+            <li>Providing study strategies and tips</li>
+            <li>Managing your revision schedule</li>
+        </ul>`;
+    
+    welcomeContent.innerHTML = subjectWelcomes[currentAISubject] || defaultWelcome;
+}
+
+function updateAISuggestedPrompts() {
+    const promptsContainer = document.getElementById('aiSuggestedPrompts');
+    if (!promptsContainer) return;
+    
+    const subjectPrompts = {
+        'Mathematics': [
+            'Explain quadratic equations',
+            'Help with algebra problems', 
+            'Create a trigonometry quiz',
+            'Show me geometry formulas',
+            'Practice probability questions'
+        ],
+        'English Literature': [
+            'Analyze character development',
+            'Explain essay structure',
+            'Help with quote analysis',
+            'Create comprehension questions',
+            'Discuss themes and context'
+        ],
+        'Biology': [
+            'Explain cell division',
+            'Help with photosynthesis',
+            'Create anatomy quiz',
+            'Show me plant biology',
+            'Practice genetics problems'
+        ],
+        'Chemistry': [
+            'Balance chemical equations',
+            'Explain atomic structure',
+            'Help with calculations',
+            'Show periodic trends',
+            'Create reaction quiz'
+        ],
+        'Physics': [
+            'Explain forces and motion',
+            'Help with electricity',
+            'Show wave properties',
+            'Create energy quiz',
+            'Practice calculations'
+        ],
+        'Computing': [
+            'Explain algorithms',
+            'Help with programming',
+            'Show data structures',
+            'Create logic quiz',
+            'Practice pseudocode'
+        ],
+        'History': [
+            'Analyze historical sources',
+            'Explain cause and effect',
+            'Help with timelines',
+            'Create period quiz',
+            'Practice essay questions'
+        ],
+        'Geography': [
+            'Explain climate patterns',
+            'Help with map skills',
+            'Show case studies',
+            'Create location quiz',
+            'Practice data analysis'
+        ]
+    };
+    
+    const prompts = subjectPrompts[currentAISubject] || [
+        'Help me study better',
+        'Create a quiz for me',
+        'Explain key concepts',
+        'Add study tasks',
+        'Review my progress'
+    ];
+    
+    promptsContainer.innerHTML = prompts.map(prompt => 
+        `<div class="ai-suggested-prompt" onclick="sendSuggestedPrompt('${prompt}')">${prompt}</div>`
+    ).join('');
+}
+
+function handleAIChatKeypress(event) {
+    if (event.key === 'Enter') {
+        sendAIMessage();
+    }
+}
+
+function sendAIMessage() {
+    const input = document.getElementById('aiChatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    addAIMessage(message, 'user');
+    input.value = '';
+    
+    showAITypingIndicator();
+    
+    setTimeout(() => {
+        hideAITypingIndicator();
+        processAIResponse(message);
+    }, 1500);
+}
+
+function sendSuggestedPrompt(prompt) {
+    document.getElementById('aiChatInput').value = prompt;
+    sendAIMessage();
+}
+
+function aiQuickAction(action) {
+    const actions = {
+        'explain-topic': `Explain a key topic in ${currentAISubject} that I should focus on`,
+        'create-quiz': `Create a quick quiz for ${currentAISubject} based on my current progress`,
+        'study-tips': `Give me study tips specifically for ${currentAISubject}`
+    };
+    
+    const prompt = actions[action];
+    if (prompt) {
+        document.getElementById('aiChatInput').value = prompt;
+        sendAIMessage();
+    }
+}
+
+function addAIMessage(content, sender, actions = []) {
+    const chatContainer = document.getElementById('aiChatContainer');
+    const isUser = sender === 'user';
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-message ${isUser ? 'ai-user' : 'ai-assistant'}`;
+    
+    const avatar = isUser ? 
+        (currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U') : 
+        'AI';
+    
+    let actionButtonsHTML = '';
+    if (actions.length > 0) {
+        actionButtonsHTML = `
+            <div class="ai-action-buttons">
+                ${actions.map(action => 
+                    `<button class="ai-action-button" onclick="executeAIAction('${action.type}', '${action.data}')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            ${getActionIcon(action.type)}
+                        </svg>
+                        ${action.label}
+                    </button>`
+                ).join('')}
+            </div>
+        `;
+    }
+    
+    messageDiv.innerHTML = `
+        <div class="ai-message-avatar">${avatar}</div>
+        <div class="ai-message-content">
+            <div>${formatAIMessage(content)}</div>
+            ${actionButtonsHTML}
+        </div>
+    `;
+    
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    aiChatHistory.push({ content, sender, timestamp: new Date(), actions });
+}
+
+function formatAIMessage(content) {
+    return content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+}
+
+function showAITypingIndicator() {
+    const chatContainer = document.getElementById('aiChatContainer');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-typing-indicator';
+    typingDiv.id = 'aiTypingIndicator';
+    typingDiv.innerHTML = `
+        <div class="ai-message-avatar">AI</div>
+        <div>
+            AI is thinking
+            <div class="ai-typing-dots">
+                <div class="ai-typing-dot"></div>
+                <div class="ai-typing-dot"></div>
+                <div class="ai-typing-dot"></div>
+            </div>
+        </div>
+    `;
+    
+    chatContainer.appendChild(typingDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function hideAITypingIndicator() {
+    const indicator = document.getElementById('aiTypingIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+async function processAIResponse(userMessage) {
+    try {
+        const commandResult = processNaturalLanguageCommands(userMessage);
+        if (commandResult.handled) {
+            addAIMessage(commandResult.response, 'assistant', commandResult.actions);
+            return;
+        }
+        
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GOOGLE_GEMINI_API_KEY_HERE') {
+            const mockResponse = getMockResponse(userMessage);
+            addAIMessage(mockResponse.content, 'assistant', mockResponse.actions);
+            return;
+        }
+
+        const context = {
+            currentSubject: currentAISubject,
+            userProgress: getCurrentUserProgress(),
+            currentSchedule: appState.schedules[appState.activeSchedule]
+        };
+        
+        const response = await callGeminiAPI(userMessage, context);
+        addAIMessage(response.content, 'assistant', response.actions);
+    } catch (error) {
+        console.error('AI Response Error:', error);
+        const mockResponse = getMockResponse(userMessage);
+        addAIMessage(mockResponse.content, 'assistant', mockResponse.actions);
+    }
+}
+
+async function callGeminiAPI(userMessage, context) {
+    // Fix this check - remove the wrong API key
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GOOGLE_GEMINI_API_KEY_HERE' || GEMINI_API_KEY.length < 30) {
+        console.log('Using mock response - API key not configured');
+        throw new Error('API key not configured');
+    }
+
+    // Updated API URL with correct model
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent';
+    
+    // Rest of the function...
+    
+    // Rest of the function stays the same...
+    const systemPrompt = createSystemPrompt(context);
+    const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`;
+    
+    const requestBody = {
+        contents: [{
+            parts: [{
+                text: fullPrompt
+            }]
+        }],
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+        }
+    };
+
+    try {
+        const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error Details:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errorText
+            });
+            throw new Error(`API request failed: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            console.error('Invalid API response structure:', data);
+            throw new Error('Invalid response format from Gemini API');
+        }
+
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        
+        return parseGeminiResponse(aiResponse, context);
+        
+    } catch (error) {
+        console.error('Gemini API Error:', error);
+        throw error;
+    }
+}
+
+// Remove the GEMINI_API_KEY constant and update functions to use /api/gemini
+async function analyzeImageWithGemini(imageData, subject) {
+    try {
+        const base64Data = imageData.split(',')[1];
+        const mimeType = imageData.split(';')[0].split(':')[1];
+        
+        const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'image',
+                prompt: `Analyze this educational image and create comprehensive study content for a GCSE ${subject} student...`,
+                imageData: {
+                    mimeType: mimeType,
+                    data: base64Data
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            throw new Error('No analysis content received');
+        }
+        
+    } catch (error) {
+        console.error('Image Analysis Error:', error);
+        throw error;
+    }
+}
+
+// Create system prompt with context
+function createSystemPrompt(context) {
+    let prompt = `You are an AI study assistant for GCSE students. You provide helpful, structured responses focused on education.
+
+Current Context:
+- Subject Focus: ${context.currentSubject}
+- Student Progress: ${context.userProgress ? context.userProgress.progressPercentage : 0}% complete`;
+
+    if (context.userProgress) {
+        prompt += `
+- Total Tasks: ${context.userProgress.totalTasks}
+- Completed Tasks: ${context.userProgress.completedTasks}
+- Subjects: ${context.userProgress.subjects ? context.userProgress.subjects.join(', ') : 'None'}`;
+    }
+
+    prompt += `
+
+Guidelines:
+1. Focus responses on the current subject: ${context.currentSubject}
+2. Provide structured, educational content
+3. Suggest actionable study strategies
+4. Keep responses concise but helpful
+5. Use markdown formatting for better readability
+6. If suggesting actions, end with [ACTION: action_type:data] format
+
+Available Actions:
+- [ACTION: create-task:task_description] - Adds a task to schedule
+- [ACTION: generate-quiz:subject] - Creates quiz questions
+- [ACTION: explain-concept:topic] - Provides detailed explanation
+- [ACTION: update-schedule:subject] - Suggests schedule changes
+
+Respond helpfully and educationally.`;
+
+    return prompt;
+}
+
+// Parse Gemini response for actions
+function parseGeminiResponse(response, context) {
+    let content = response;
+    let actions = [];
+
+    // Extract actions from response
+    const actionRegex = /\[ACTION:\s*(\w+):([^\]]+)\]/g;
+    let match;
+
+    while ((match = actionRegex.exec(content)) !== null) {
+        const [fullMatch, actionType, actionData] = match;
+        
+        actions.push({
+            type: actionType,
+            data: actionData.trim(),
+            label: getActionLabel(actionType, actionData.trim())
+        });
+
+        // Remove action from content
+        content = content.replace(fullMatch, '');
+    }
+
+    // Clean up content
+    content = content.trim();
+
+    return {
+        content: content,
+        actions: actions
+    };
+}
+
+// Get action labels
+function getActionLabel(actionType, actionData) {
+    const labels = {
+        'create-task': `Add "${actionData}" Task`,
+        'generate-quiz': `Create ${actionData} Quiz`,
+        'explain-concept': `Explain ${actionData}`,
+        'update-schedule': `Update ${actionData} Schedule`
+    };
+    return labels[actionType] || `Execute ${actionType}`;
+}
+
+function processNaturalLanguageCommands(userMessage) {
+    const message = userMessage.toLowerCase().trim();
+    
+    if (message.includes('change') && (message.includes('schedule') || message.includes('timetable'))) {
+        return {
+            handled: true,
+            response: `I'll help you modify your **${currentAISubject}** schedule. Here are some options:`,
+            actions: [
+                { type: 'add-more-tasks', data: currentAISubject, label: `Add More ${currentAISubject} Tasks` },
+                { type: 'reschedule-tasks', data: currentAISubject, label: `Reschedule ${currentAISubject}` },
+                { type: 'adjust-difficulty', data: currentAISubject, label: 'Adjust Task Difficulty' }
+            ]
+        };
+    }
+    
+    if ((message.includes('add') || message.includes('more')) && (message.includes('task') || message.includes('work') || message.includes('study'))) {
+        executeAIAction('add-more-tasks', currentAISubject);
+        return {
+            handled: true,
+            response: `✅ I've added more **${currentAISubject}** study tasks to your schedule! Check your dashboard to see the new tasks.`,
+            actions: [
+                { type: 'view-schedule', data: currentAISubject, label: 'View Updated Schedule' }
+            ]
+        };
+    }
+    
+    if (message.includes('help') || message.includes('explain') || message.includes('teach')) {
+        return {
+            handled: true,
+            response: `I'm here to help with **${currentAISubject}**! What specific topic would you like me to explain?`,
+            actions: [
+                { type: 'explain-concept', data: 'key-topics', label: `Explain Key ${currentAISubject} Topics` },
+                { type: 'create-study-guide', data: currentAISubject, label: 'Create Study Guide' }
+            ]
+        };
+    }
+    
+    if (message.includes('quiz') || message.includes('test') || message.includes('practice')) {
+        return {
+            handled: true,
+            response: `I'll create a **${currentAISubject}** quiz based on your current progress!`,
+            actions: [
+                { type: 'generate-quiz', data: currentAISubject, label: `Create ${currentAISubject} Quiz` },
+                { type: 'practice-questions', data: currentAISubject, label: 'Practice Questions' }
+            ]
+        };
+    }
+    
+    return { handled: false };
+}
+
+function getCurrentUserProgress() {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) return null;
+    
+    let totalTasks = 0;
+    let completedTasks = 0;
+    
+    Object.values(schedule.weeklySchedule).forEach(dayTasks => {
+        totalTasks += dayTasks.length;
+    });
+    
+    completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
+    
+    return {
+        totalTasks,
+        completedTasks,
+        progressPercentage: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
+        subjects: schedule.subjects,
+        currentSubject: currentAISubject
+    };
+}
+
+function getMockResponse(userMessage) {
+    const lowerMessage = userMessage.toLowerCase();
+    const subject = currentAISubject.toLowerCase();
+    
+    const subjectResponses = {
+        'mathematics': {
+            content: `**Mathematics Study Help**\n\nFor your **${currentAISubject}** studies, I can help with:\n\n**Key Topics:**\n• Algebra - Solving equations, graphs, sequences\n• Geometry - Area, volume, trigonometry\n• Statistics - Data analysis, probability\n• Number - Fractions, decimals, percentages\n\n**Study Strategies:**\n• Practice past papers regularly\n• Work through exam-style questions\n• Focus on showing working clearly\n• Learn key formulas by heart\n\nWhat specific maths topic would you like help with?`,
+            actions: [
+                { type: 'create-task', data: 'algebra-practice', label: 'Add Algebra Practice' },
+                { type: 'create-task', data: 'geometry-revision', label: 'Add Geometry Revision' },
+                { type: 'generate-quiz', data: 'mathematics', label: 'Create Maths Quiz' }
+            ]
+        }
+    };
+    
+    const response = subjectResponses[subject] || {
+        content: `**${currentAISubject} Study Assistant**\n\nI'm here to help with your **${currentAISubject}** studies!\n\nI can assist with:\n• Explaining key concepts\n• Creating practice questions\n• Planning study sessions\n• Providing revision strategies\n• Organizing your schedule\n\nWhat specific aspect of ${currentAISubject} would you like to work on?`,
+        actions: [
+            { type: 'explain-concept', data: currentAISubject, label: `Explain ${currentAISubject} Concepts` },
+            { type: 'create-schedule', data: currentAISubject, label: `Update ${currentAISubject} Schedule` }
+        ]
+    };
+    
+    return response;
+}
+
+function executeAIAction(actionType, actionData) {
+    switch (actionType) {
+        case 'create-task':
+            createAITask(actionData);
+            break;
+        case 'add-more-tasks':
+            addMoreTasksWithAnimation(actionData);
+            break;
+        case 'reschedule-tasks':
+            rescheduleSubjectTasks(actionData);
+            break;
+        case 'adjust-difficulty':
+            adjustTaskDifficulty(actionData);
+            break;
+        case 'generate-quiz':
+            generateAIQuiz(actionData);
+            break;
+        case 'explain-concept':
+            explainAIConcept(actionData);
+            break;
+        case 'create-schedule':
+            updateAISchedule(actionData);
+            break;
+        case 'view-schedule':
+            viewSubjectSchedule(actionData);
+            break;
+        case 'create-study-guide':
+            createStudyGuide(actionData);
+            break;
+        case 'practice-questions':
+            createPracticeQuestions(actionData);
+            break;
+        default:
+            showAlert('Action not implemented yet', 'error');
+    }
+}
+
+function createAITask(actionData) {
+    showAlert(`Creating ${actionData} task...`, 'info');
+}
+
+function addMoreTasksWithAnimation(subject) {
+    const schedule = appState.schedules[appState.activeSchedule];
+    if (!schedule) {
+        showAlert('No active schedule found', 'error');
+        return;
+    }
+    
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = days[today.getDay()];
+    const tomorrowName = days[tomorrow.getDay()];
+    
+    const newTasks = [
+        {
+            subject: subject,
+            topic: `${subject} Deep Review`,
+            time: '19:00-20:00',
+            difficulty: 'Medium',
+            urgency: 'High'
+        },
+        {
+            subject: subject,
+            topic: `${subject} Practice Problems`,
+            time: '20:00-21:00',
+            difficulty: 'Hard',
+            urgency: 'High'
+        }
+    ];
+    
+    if (!schedule.weeklySchedule[todayName]) {
+        schedule.weeklySchedule[todayName] = [];
+    }
+    schedule.weeklySchedule[todayName].push(newTasks[0]);
+    
+    if (!schedule.weeklySchedule[tomorrowName]) {
+        schedule.weeklySchedule[tomorrowName] = [];
+    }
+    schedule.weeklySchedule[tomorrowName].push(newTasks[1]);
+    
+    saveAppState();
+    
+    const scheduleContainer = document.querySelector('.schedule-grid-container');
+    if (scheduleContainer) {
+        scheduleContainer.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        scheduleContainer.style.transform = 'scale(0.98)';
+        scheduleContainer.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            updateScheduleContent();
+            scheduleContainer.style.transform = 'scale(1)';
+            scheduleContainer.style.opacity = '1';
+        }, 200);
+    } else {
+        updateScheduleContent();
+    }
+    
+    showAlert(`Added 2 new ${subject} tasks to your schedule`, 'success');
+}
+
+function viewSubjectSchedule(subject) {
+    const taskCards = document.querySelectorAll(`[data-subject="${subject}"] .revision-card-mini`);
+    taskCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.transition = 'all 0.3s ease';
+            card.style.transform = 'scale(1.05)';
+            card.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+            card.style.borderColor = 'var(--accent-blue)';
+            
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+                card.style.boxShadow = '';
+                card.style.borderColor = '';
+            }, 800);
+        }, index * 100);
+    });
+    
+    addAIMessage(`Highlighted all **${subject}** tasks in your schedule! 📅`, 'assistant');
+}
+
+function rescheduleSubjectTasks(subject) {
+    addAIMessage(`I can help you reschedule your **${subject}** tasks. What changes would you like to make?`, 'assistant', [
+        { type: 'add-more-tasks', data: subject, label: 'Add More Study Time' },
+        { type: 'adjust-difficulty', data: subject, label: 'Change Difficulty Level' }
+    ]);
+}
+
+function adjustTaskDifficulty(subject) {
+    addAIMessage(`I'll help you adjust the difficulty of your **${subject}** tasks based on your progress.`, 'assistant', [
+        { type: 'create-task', data: 'easy-review', label: 'Add Easy Review' },
+        { type: 'create-task', data: 'challenging-problems', label: 'Add Challenging Work' }
+    ]);
+}
+
+function generateAIQuiz(subject) {
+    addAIMessage(`📝 Generating practice questions for **${subject}**. These would be tailored to your current level and recent study topics.`, 'assistant');
+}
+
+function explainAIConcept(data) {
+    addAIMessage(`📖 I'll explain key concepts for **${currentAISubject}**. What specific topic would you like me to focus on?`, 'assistant');
+}
+
+function updateAISchedule(subject) {
+    addAIMessage(`📅 I can help update your **${subject}** schedule. What changes would you like to make?`, 'assistant');
+}
+
+function createStudyGuide(subject) {
+    addAIMessage(`📖 I'll create a comprehensive study guide for **${subject}**. This would include key concepts, important formulas, and exam tips.`, 'assistant');
+}
+
+function createPracticeQuestions(subject) {
+    addAIMessage(`📝 Generating practice questions for **${subject}**. These would be tailored to your current level and recent study topics.`, 'assistant');
+}
+
+function getActionIcon(actionType) {
+    const icons = {
+        'create-task': '<path d="M12 2l3.09 6.26L22 9l-5 4.87L18.18 22 12 18.77 5.82 22 7 13.87 2 9l6.91-.74L12 2z"/>',
+        'generate-quiz': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/>',
+        'explain-concept': '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>',
+        'create-schedule': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>'
+    };
+    return icons[actionType] || '<circle cx="12" cy="12" r="10"/>';
+}
+
+// Replace the existing toggleAIButtonVisibility function
+function toggleAIButtonVisibility(pageId) {
+    const aiTrigger = document.getElementById('aiTriggerArea');
+    const aiButton = document.getElementById('aiAssistantBtn');
+    
+    // Hide the old button
+    if (aiButton) {
+        aiButton.style.display = 'none';
+    }
+    
+    if (aiTrigger) {
+        if (pageId === 'dashboard') {
+            aiTrigger.classList.add('dashboard-active');
+            // Show glow effect once when first visiting dashboard
+            if (!sessionStorage.getItem('aiGlowShown')) {
+                setTimeout(() => {
+                    showAIGlowEffect();
+                    sessionStorage.setItem('aiGlowShown', 'true');
+                }, 1000);
+            } else {
+                // Keep subtle glow for returning users
+                aiTrigger.classList.add('glowing');
+            }
+        } else {
+            aiTrigger.classList.remove('dashboard-active', 'glowing');
+            if (aiChatbotOpen) {
+                toggleAIChatbot();
+            }
+        }
+    }
+}
+
+// Add these new functions
+function showAIGlowEffect() {
+    const aiTrigger = document.getElementById('aiTriggerArea');
+    if (!aiTrigger) return;
+    
+    // Create elegant introduction glow
+    aiTrigger.style.background = 'linear-gradient(270deg, rgba(139, 92, 246, 0.2) 0%, transparent 100%)';
+    aiTrigger.style.width = '60px';
+    aiTrigger.classList.add('glowing');
+    
+    // Create a temporary tooltip
+    const tooltip = document.createElement('div');
+    tooltip.style.cssText = `
+        position: fixed;
+        right: 70px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--glass-bg);
+        border: 2px solid var(--accent-blue);
+        border-radius: 16px;
+        padding: 12px 16px;
+        color: var(--accent-blue);
+        font-weight: 600;
+        font-size: 0.9rem;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-xl);
+        z-index: 1600;
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+    `;
+    tooltip.textContent = 'AI Assistant Available - Hover here';
+    document.body.appendChild(tooltip);
+    
+    setTimeout(() => {
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(-50%) translateX(-10px)';
+    }, 500);
+    
+    setTimeout(() => {
+        tooltip.style.opacity = '0';
+        setTimeout(() => tooltip.remove(), 400);
+    }, 4000);
+    
+    setTimeout(() => {
+        aiTrigger.style.background = '';
+        aiTrigger.style.width = '';
+    }, 5000);
+}
+
+function showAIPreview() {
+    if (!document.getElementById('aiTriggerArea').classList.contains('dashboard-active')) return;
+    
+    clearTimeout(window.aiPreviewTimeout);
+    window.aiPreviewTimeout = setTimeout(() => {
+        toggleAIChatbot();
+    }, 300);
+}
+
+function hideAIPreview() {
+    clearTimeout(window.aiPreviewTimeout);
+}
+
+// Update the toggleAIChatbot function to handle outside clicks
+function toggleAIChatbot() {
+    aiChatbotOpen = !aiChatbotOpen;
+    const sidebar = document.getElementById('aiChatbotSidebar');
+    const overlay = document.getElementById('aiChatbotOverlay');
+    const container = document.querySelector('.container');
+    
+    if (aiChatbotOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        container.classList.add('ai-open');
+        
+        updateAISubjectContext();
+        updateAISuggestedPrompts();
+        
+        // Add click outside handler
+        setTimeout(() => {
+            document.addEventListener('click', handleAIOutsideClick);
+        }, 100);
+        
+        setTimeout(() => {
+            document.getElementById('aiChatInput').focus();
+        }, 500);
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        container.classList.remove('ai-open');
+        
+        // Remove click outside handler
+        document.removeEventListener('click', handleAIOutsideClick);
+    }
+}
+
+function handleAIOutsideClick(event) {
+    const sidebar = document.getElementById('aiChatbotSidebar');
+    const trigger = document.getElementById('aiTriggerArea');
+    
+    if (!sidebar.contains(event.target) && !trigger.contains(event.target)) {
+        toggleAIChatbot();
+    }
+}
+
+// ===== ALERT SYSTEM =====
+function showAlert(message, type = 'success') {
+    let container = document.getElementById('notificationContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notificationContainer';
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <svg class="icon" viewBox="0 0 24 24">
+            ${type === 'error' ? 
+                '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
+                '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>'
+            }
+        </svg>
+        ${message}
+        <div class="notification-progress"></div>
+    `;
+    
+    container.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 400);
+    }, 4000);
+}
+
+// ===== DATA MANAGEMENT =====
+function saveAppState() {
+    try {
+        localStorage.setItem('gcseRevisionPlannerState', JSON.stringify(appState));
+    } catch (error) {
+        console.error('Failed to save app state:', error);
+    }
+}
+
+function loadAppState() {
+    try {
+        const savedState = localStorage.getItem('gcseRevisionPlannerState');
+        if (savedState) {
+            const parsed = JSON.parse(savedState);
+            appState = { ...appState, ...parsed };
+        }
+    } catch (error) {
+        console.error('Failed to load app state:', error);
+    }
+}
+
+// ===== SUBSCRIPTION MANAGEMENT =====
+let currentPlan = localStorage.getItem('gcsePlan') || 'free';
+
+function updateSidebarStats() {
+    const uploadCount = uploadedFiles.length;
+    const flashcardCount = flashcards.length;
+    const uploadLimit = limits.uploads;
+    const flashcardLimit = limits.flashcards;
+    
+    const valueElement = document.getElementById('uploadStatsValue');
+    const fillElement = document.getElementById('uploadStatsFill');
+    const planElement = document.getElementById('currentPlanDisplay');
+    const flashcardElement = document.getElementById('flashcardStatsValue');
+    const flashcardFillElement = document.getElementById('flashcardStatsFill');
+    
+    if (valueElement) valueElement.textContent = `${uploadCount}/${uploadLimit}`;
+    if (fillElement) {
+        const percentage = (uploadCount / uploadLimit) * 100;
+        fillElement.style.width = `${Math.min(percentage, 100)}%`;
+    }
+    
+    if (flashcardElement) flashcardElement.textContent = `${flashcardCount}/${flashcardLimit}`;
+    if (flashcardFillElement) {
+        const flashcardPercentage = (flashcardCount / flashcardLimit) * 100;
+        flashcardFillElement.style.width = `${Math.min(flashcardPercentage, 100)}%`;
+    }
+    
+    if (planElement) planElement.textContent = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
+}
+
+// ===== FLASHCARD MANAGEMENT =====
+let flashcards = JSON.parse(localStorage.getItem('gcseFlashcards') || '[]');
+let currentMainTab = 'schedule';
+
+function switchMainTab(tab) {
+    currentMainTab = tab;
+    
+    // Update button states
+    document.querySelectorAll('.main-tab-switch').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[onclick="switchMainTab('${tab}')"]`).classList.add('active');
+    
+    const scheduleContainer = document.getElementById('scheduleContainer');
+    const flashcardContainer = document.getElementById('flashcardContainer');
+    
+    if (tab === 'schedule') {
+        flashcardContainer.classList.remove('active');
+        scheduleContainer.classList.add('active');
+    } else {
+        scheduleContainer.classList.remove('active');
+        flashcardContainer.classList.add('active');
+        displayFlashcards(); // This will now properly bind events
+    }
+}
+
+function createFlashcard() {
+    // Get subjects from active schedule
+    const activeSchedule = appState.schedules[appState.activeSchedule];
+    const availableSubjects = activeSchedule ? activeSchedule.subjects : [];
+    
+    if (availableSubjects.length === 0) {
+        showAlert('Please create a schedule first to add flashcards', 'error');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'auth-overlay';
+    modal.innerHTML = `
+        <div class="auth-modal">
+            <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            
+            <div class="auth-header">
+                <h2>Create New Flashcard</h2>
+                <p>Choose a subject and add your study topic</p>
+            </div>
+            
+            <form onsubmit="handleFlashcardCreation(event)">
+                <div class="auth-input-group">
+                    <label for="flashcardSubject">Subject</label>
+                    <select id="flashcardSubject" class="auth-input" required style="cursor: pointer;" onchange="updateTopicPlaceholder()">
+                        <option value="">Choose a subject...</option>
+                        ${availableSubjects.map(subject => 
+                            `<option value="${subject}">${subject}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="auth-input-group">
+                    <label for="flashcardTopic">Topic</label>
+                    <input type="text" id="flashcardTopic" class="auth-input" required 
+                           placeholder="Select a subject first...">
+                </div>
+                <button type="submit" class="auth-submit">Create Flashcard</button>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+// Add this new function for dynamic placeholders
+function updateTopicPlaceholder() {
+    const subjectSelect = document.getElementById('flashcardSubject');
+    const topicInput = document.getElementById('flashcardTopic');
+    
+    if (!subjectSelect || !topicInput) return;
+    
+    const subject = subjectSelect.value;
+    const placeholders = {
+        'Mathematics': 'e.g., Quadratic Equations, Trigonometry, Algebra',
+        'English Literature': 'e.g., Macbeth Themes, Poetry Analysis, Character Study',
+        'Biology': 'e.g., Cell Structure, Photosynthesis, Human Body Systems',
+        'Chemistry': 'e.g., Atomic Structure, Chemical Reactions, Periodic Table',
+        'Physics': 'e.g., Forces and Motion, Electricity, Wave Properties',
+        'Geography': 'e.g., Climate Change, River Systems, Population Geography',
+        'History': 'e.g., World War Timeline, Medieval Period, Industrial Revolution',
+        'Computer Science': 'e.g., Algorithms, Data Structures, Programming Concepts',
+        'Business Studies': 'e.g., Marketing Mix, Financial Planning, Business Operations',
+        'French': 'e.g., Vocabulary Set, Grammar Rules, Cultural Topics',
+        'German': 'e.g., Vocabulary Set, Grammar Rules, Cultural Topics',
+        'Art': 'e.g., Drawing Techniques, Artist Study, Art History',
+        'Music': 'e.g., Music Theory, Composer Study, Musical Periods',
+        'Drama': 'e.g., Acting Techniques, Play Analysis, Theatre History'
+    };
+    
+    if (subject && placeholders[subject]) {
+        topicInput.placeholder = placeholders[subject];
+        topicInput.focus();
+    } else if (subject) {
+        topicInput.placeholder = `e.g., Key ${subject} concepts, formulas, or topics`;
+        topicInput.focus();
+    } else {
+        topicInput.placeholder = 'Select a subject first...';
+    }
+}
+
+function handleFlashcardCreation(event) {
+    event.preventDefault();
+    
+    const subject = document.getElementById('flashcardSubject').value;
+    const topic = document.getElementById('flashcardTopic').value;
+    
+    // Find matching uploaded content with improved matching
+    const matchingContent = findBestMatchingFile(subject, topic);
+    
+    const flashcard = {
+        id: Date.now() + Math.random(),
+        subject: subject,
+        topic: topic,
+        notes: '',
+        contentFile: matchingContent ? matchingContent.id : null,
+        created: new Date().toISOString()
+    };
+    
+    flashcards.push(flashcard);
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    
+    // Close modal
+    document.querySelector('.auth-overlay').remove();
+    
+    // Immediately update the display with animation
+    addFlashcardWithAnimation(flashcard);
+    
+    // Update sidebar stats
+    updateSidebarStats();
+    
+    // Show success message with file match info
+    if (matchingContent) {
+        showAlert(`Flashcard created and linked to "${matchingContent.name}"!`, 'success');
+    } else {
+        showAlert('Flashcard created successfully!', 'success');
+    }
+}
+
+async function processUploadedImagesForFlashcards(subjects) {
+    const imageFiles = uploadedFiles.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) return;
+    
+    for (let i = 0; i < imageFiles.length; i++) {
+        const imageFile = imageFiles[i];
+        const primarySubject = subjects[0] || 'General Studies';
+        const topicName = extractTopicFromFilename(imageFile.name) || `Visual Study Material ${i + 1}`;
+        
+        let analysisContent;
+        try {
+            analysisContent = await analyzeImageWithGemini(imageFile.data, primarySubject);
+        } catch (error) {
+            console.error('Failed to analyze image with AI:', error);
+            analysisContent = `**Visual Study Material - ${primarySubject}**
+
+This image contains important educational content for ${primarySubject}. Please review the visual elements and consider:
+
+- What are the main concepts shown?
+- How do these relate to your studies?
+- What key information can you extract?
+- How can you use this for revision?`;
+        }
+        
+        const flashcard = {
+            id: Date.now() + Math.random() + i,
+            subject: primarySubject,
+            topic: topicName,
+            notes: analysisContent,
+            contentFile: imageFile.id,
+            // Remove this line to avoid storing large image data:
+            // imageData: imageFile.data,
+            created: new Date().toISOString(),
+            isFromImage: true
+        };
+        
+        flashcards.push(flashcard);
+    }
+    
+    // Save flashcards without image data
+    try {
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        updateSidebarStats();
+        showAlert(`Created ${imageFiles.length} flashcard(s) from uploaded images!`, 'success');
+    } catch (error) {
+        console.error('Storage error:', error);
+        showAlert('Storage limit reached. Some flashcards may not be saved.', 'error');
+    }
+}
+
+// Helper function to extract topic from filename
+function extractTopicFromFilename(filename) {
+    // Remove file extension
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+    
+    // Clean up the name
+    const cleanName = nameWithoutExt
+        .replace(/[_-]/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    
+    return cleanName.length > 3 ? cleanName : null;
+}
+
+function viewImageFullscreen(imageData) {
+    const modal = document.createElement('div');
+    modal.id = 'imageFullscreenModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    modal.innerHTML = `
+        <img src="${imageData}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;">
+        <button onclick="closeImageFullscreen()" style="
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">×</button>
+        <div style="
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+        ">Press ESC to close</div>
+    `;
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeImageFullscreen();
+        }
+    });
+    
+    // Add ESC key listener for image only
+    function handleImageEscape(event) {
+        if (event.key === 'Escape') {
+            event.stopPropagation();
+            closeImageFullscreen();
+        }
+    }
+    
+    document.addEventListener('keydown', handleImageEscape);
+    modal.imageEscapeHandler = handleImageEscape; // Store reference for cleanup
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.style.opacity = '1', 100);
+}
+
+function closeImageFullscreen() {
+    const modal = document.getElementById('imageFullscreenModal');
+    if (modal) {
+        // Remove the ESC listener
+        if (modal.imageEscapeHandler) {
+            document.removeEventListener('keydown', modal.imageEscapeHandler);
+        }
+        
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// ADD THE FUNCTION HERE:
+function findBestMatchingFile(subject, topic) {
+    if (uploadedFiles.length === 0) return null;
+    
+    // Create subject variations for better matching
+    const subjectVariations = getSubjectVariations(subject.toLowerCase().trim());
+    const topicLower = topic.toLowerCase().trim();
+    
+    let bestMatch = null;
+    let bestScore = 0;
+    
+    uploadedFiles.forEach(file => {
+        const fileName = file.name.toLowerCase();
+        let score = 0;
+        
+        // Check subject variations against filename
+        subjectVariations.forEach(variation => {
+            if (fileName.includes(variation)) {
+                score += variation.length; // Longer matches get higher scores
+            }
+        });
+        
+        // Check topic against filename
+        if (topicLower && fileName.includes(topicLower)) {
+            score += topicLower.length;
+        }
+        
+        // Bonus points for exact word matches
+        const fileWords = fileName.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/);
+        subjectVariations.forEach(variation => {
+            if (fileWords.includes(variation)) {
+                score += 10; // Bonus for exact word match
+            }
+        });
+        
+        if (topicLower && fileWords.includes(topicLower)) {
+            score += 10;
+        }
+        
+        if (score > bestScore) {
+            bestScore = score;
+            bestMatch = file;
+        }
+    });
+    
+    // Only return match if score is meaningful (at least 3 characters matched)
+    return bestScore >= 3 ? bestMatch : null;
+}
+
+// AND ADD THE HELPER FUNCTION RIGHT AFTER:
+function getSubjectVariations(subject) {
+    const variations = [subject];
+    
+    // Common subject abbreviations and alternatives
+    const subjectMappings = {
+        'mathematics': ['math', 'maths', 'mathematics'],
+        'math': ['mathematics', 'maths', 'math'],
+        'maths': ['mathematics', 'math', 'maths'],
+        'biology': ['bio', 'biology', 'life science'],
+        'bio': ['biology', 'life science', 'bio'],
+        'chemistry': ['chem', 'chemistry'],
+        'chem': ['chemistry', 'chem'],
+        'physics': ['physics', 'phy'],
+        'phy': ['physics', 'phy'],
+        'english literature': ['english lit', 'literature', 'english', 'lit'],
+        'english language': ['english lang', 'english', 'language'],
+        'english': ['english language', 'english literature', 'english lit', 'english lang'],
+        'literature': ['english literature', 'english lit', 'lit'],
+        'computer science': ['computing', 'comp sci', 'cs', 'computer', 'ict'],
+        'computing': ['computer science', 'comp sci', 'cs', 'computer', 'ict'],
+        'ict': ['computer science', 'computing', 'information technology'],
+        'geography': ['geo', 'geography'],
+        'geo': ['geography', 'geo'],
+        'history': ['hist', 'history'],
+        'hist': ['history', 'hist'],
+        'business studies': ['business', 'business studies'],
+        'business': ['business studies', 'business'],
+        'french': ['french', 'français'],
+        'german': ['german', 'deutsch'],
+        'spanish': ['spanish', 'español'],
+        'art': ['art', 'fine art', 'visual art'],
+        'music': ['music', 'musical'],
+        'drama': ['drama', 'theatre', 'theater'],
+        'pe': ['physical education', 'sport', 'pe'],
+        'physical education': ['pe', 'sport', 'physical education']
+    };
+    
+    // Get variations for the subject
+    if (subjectMappings[subject]) {
+        variations.push(...subjectMappings[subject]);
+    }
+    
+    // Add partial matches (first few characters)
+    if (subject.length > 4) {
+        variations.push(subject.substring(0, 4));
+    }
+    if (subject.length > 3) {
+        variations.push(subject.substring(0, 3));
+    }
+    
+    // Remove duplicates and return
+    return [...new Set(variations)];
+}
+
+function addFlashcardWithAnimation(flashcard) {
+    const grid = document.getElementById('flashcardsGrid');
+    if (!grid) return;
+    
+    // If this is the first flashcard, clear the empty state
+    if (flashcards.length === 1) {
+        grid.innerHTML = '';
+    }
+    
+    // Get color index based on total flashcards
+    const colorIndex = ((flashcards.length - 1) % 4) + 1;
+    
+    // Create new flashcard element
+    const flashcardElement = document.createElement('div');
+    flashcardElement.className = `flashcard color-${colorIndex} flashcard-hoverable`;
+    flashcardElement.dataset.flashcardId = flashcard.id;
+    flashcardElement.style.opacity = '0';
+    flashcardElement.style.transform = 'scale(0.8) translateY(20px)';
+    flashcardElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    flashcardElement.innerHTML = `
+        <div class="flashcard-content">
+            <div class="flashcard-subject">${flashcard.subject}</div>
+            <div class="flashcard-topic">${flashcard.topic}</div>
+            <div class="flashcard-preview">${flashcard.notes ? flashcard.notes.substring(0, 100) + (flashcard.notes.length > 100 ? '...' : '') : 'Click to add notes...'}</div>
+        </div>
+        <button class="flashcard-delete-btn" onclick="event.stopPropagation(); deleteFlashcardWithConfirmation('${flashcard.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3,6 5,6 21,6"/>
+                <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+            </svg>
+        </button>
+    `;
+    
+    // Add click event listener to open notes interface directly
+    flashcardElement.addEventListener('click', function(event) {
+        if (!event.target.closest('.flashcard-delete-btn')) {
+            openFlashcardInterface(flashcard.id, event);
+        }
+    });
+    
+    grid.appendChild(flashcardElement);
+    
+    // Animate in
+    setTimeout(() => {
+        flashcardElement.style.opacity = '1';
+        flashcardElement.style.transform = 'scale(1) translateY(0)';
+    }, 100);
+}
+
+function showFlashcardLoading(flashcardElement, flashcardId, event) {
+    // Check if already loading
+    if (flashcardElement.classList.contains('flashcard-loading-active')) return;
+    flashcardElement.classList.add('flashcard-loading-active');
+    
+    // Store original content
+    const originalContent = flashcardElement.innerHTML;
+    
+    // Add loading state to the clicked card
+    flashcardElement.style.transform = 'scale(1.02)';
+    flashcardElement.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
+    flashcardElement.style.borderColor = 'var(--accent-blue)';
+    flashcardElement.style.cursor = 'wait';
+    
+    // Show loading content
+    flashcardElement.innerHTML = `
+        <div class="flashcard-loading" style="
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100%; 
+            min-height: 200px;
+            color: var(--accent-blue);
+        ">
+            <div style="
+                width: 40px; 
+                height: 40px; 
+                border: 3px solid var(--accent-blue-light); 
+                border-top: 3px solid var(--accent-blue); 
+                border-radius: 50%; 
+                animation: spin 1s linear infinite;
+                margin-bottom: 16px;
+            "></div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Loading notes...</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Preparing your study space</div>
+        </div>
+    `;
+    
+    // Disable other flashcards during loading
+    const allFlashcards = document.querySelectorAll('.flashcard');
+    allFlashcards.forEach(card => {
+        if (card !== flashcardElement) {
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+        }
+    });
+    
+    // After 2 seconds, open the interface
+    setTimeout(() => {
+        // Reset all flashcards
+        allFlashcards.forEach(card => {
+            card.style.opacity = '';
+            card.style.pointerEvents = '';
+            card.classList.remove('loading', 'flashcard-loading-active');
+        });
+        
+        // Reset the clicked card
+        flashcardElement.style.transform = '';
+        flashcardElement.style.boxShadow = '';
+        flashcardElement.style.borderColor = '';
+        flashcardElement.style.cursor = '';
+        flashcardElement.innerHTML = originalContent;
+        flashcardElement.classList.remove('loading', 'flashcard-loading-active');
+        
+        // Close any existing fullpage interface first
+        const existingFullpage = document.getElementById('flashcardFullpage');
+        if (existingFullpage) {
+            existingFullpage.remove();
+        }
+        
+        // Open the flashcard interface
+        openFlashcardInterface(flashcardId, event);
+    }, 2000);
+}
+
+function openFlashcardInterface(flashcardId, event) {
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (!flashcard) {
+        showAlert('Flashcard not found', 'error');
+        return;
+    }
+    
+    // Remove any existing fullpage interface
+    const existingFullpage = document.getElementById('flashcardFullpage');
+    if (existingFullpage) {
+        existingFullpage.remove();
+    }
+    
+    // Store flashcard ID for auto-save and ESC handling
+    window.currentFlashcardId = flashcardId;
+    
+    // Create full page interface (no backdrop)
+    const fullpage = document.createElement('div');
+    fullpage.id = 'flashcardFullpage';
+    fullpage.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-primary);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    `;
+    
+    fullpage.innerHTML = `
+    <!-- Header with Tabs -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-bottom: 1px solid var(--border-color); background: var(--bg-primary);">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="background: var(--accent-blue); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">${flashcard.subject}</span>
+            <h1 style="margin: 0; color: var(--text-primary); font-size: 1.8rem; font-weight: 800;">${flashcard.topic}</h1>
+        </div>
+        <button onclick="closeFlashcardInterface()" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.2s ease;">
+            <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div style="display: flex; align-items: center; padding: 16px 32px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
+        <div class="flashcard-tabs" style="display: flex; gap: 8px;">
+            <div class="flashcard-tab active" onclick="switchFlashcardTab('notes')" data-tab="notes" style="
+                padding: 12px 20px;
+                background: var(--accent-blue);
+                color: white;
+                border: 2px solid var(--accent-blue);
+                border-radius: 12px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                Notes
+            </div>
+            <div class="flashcard-tab" onclick="switchFlashcardTab('questions')" data-tab="questions" style="
+                padding: 12px 20px;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                border: 2px solid var(--border-color);
+                border-radius: 12px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <path d="M12 17h.01"/>
+                </svg>
+                Questions
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tab Content -->
+    <div style="flex: 1; position: relative;">
+        <!-- Notes Tab -->
+        <div class="flashcard-tab-content active" id="notesTabContent" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 32px;
+            background: var(--bg-primary);
+            display: flex;
+            gap: 24px;
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        ">
+            ${flashcard.imageData ? `
+                <div style="flex: 0 0 300px;">
+                    <div style="position: sticky; top: 20px;">
+                        <h3 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 700;">Reference Image</h3>
+                        <div style="border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; background: var(--bg-secondary); margin-bottom: 16px;">
+                            <img src="${flashcard.imageData}" alt="Study material" style="width: 100%; height: auto; display: block; cursor: pointer;" onclick="viewImageFullscreen('${flashcard.imageData}')">
+                        </div>
+                        <div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                            Click image to view fullscreen
+                        </div>
+                        <button onclick="openQuestionsFromImage()" style="
+                            width: 100%;
+                            padding: 12px 16px;
+                            background: var(--accent-green, #10b981);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                        " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='var(--accent-green, #10b981)'">
+                            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <path d="M12 17h.01"/>
+                            </svg>
+                            Do Questions
+                        </button>
+                    </div>
+                </div>
+            ` : ''}
+            <div style="flex: 1;">
+                <textarea 
+                    id="flashcardNotesTextarea"
+                    placeholder="Start writing your study notes here..."
+                    style="width: 100%; height: 100%; padding: 24px; border: 2px solid var(--border-color); border-radius: 16px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; line-height: 1.8; resize: none; outline: none; transition: all 0.2s ease; font-family: inherit;" 
+                    oninput="autoSaveNotes()"
+                    onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                    onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
+                >${flashcard.notes || ''}</textarea>
+
+            </div>
+        </div>
+        
+        <!-- Questions Tab -->
+        <div class="flashcard-tab-content" id="questionsTabContent" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 32px;
+            background: var(--bg-primary);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        ">
+            <div id="questionsContainer">
+                <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                    <h3 style="color: var(--text-primary); margin-bottom: 12px;">Interactive Questions</h3>
+                    <p>Questions will be extracted from your notes when you click "Do Questions"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="padding: 16px 32px; border-top: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Last saved: <span id="lastSavedTime">Just now</span>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Word count: <span id="wordCount">0</span> words
+        </div>
+    </div>
+`;
+    
+    document.body.appendChild(fullpage);
+    
+    // Animate in
+    setTimeout(() => {
+        fullpage.style.transform = 'scale(1)';
+        fullpage.style.opacity = '1';
+    }, 50);
+    
+    // Add ESC key listener
+    document.addEventListener('keydown', handleFlashcardEscape);
+    
+    // Focus textarea and setup auto-save
+    setTimeout(() => {
+        const textarea = document.getElementById('flashcardNotesTextarea');
+        if (textarea) {
+            textarea.focus();
+            updateWordCount();
+            
+            // Set up auto-save timer
+            setupAutoSave();
+        }
+    }, 400);
+}
+
+function closeFlashcardInterface() {
+    const fullpage = document.getElementById('flashcardFullpage');
+    const backdrop = document.getElementById('flashcardBackdrop');
+    
+    if (fullpage) {
+        // Animate out
+        fullpage.style.transform = 'translate(-50%, -50%) scale(0.1)';
+        fullpage.style.opacity = '0';
+        
+        if (backdrop) {
+            backdrop.style.background = 'rgba(0, 0, 0, 0)';
+        }
+        
+        setTimeout(() => {
+            if (fullpage.parentNode) fullpage.remove();
+            if (backdrop && backdrop.parentNode) backdrop.remove();
+        }, 500);
+    }
+}
+
+// Add these functions to your JavaScript section
+
+function openSubjectFlashcards(subject) {
+    // Filter flashcards for this subject
+    const subjectFlashcards = flashcards.filter(f => f.subject.toLowerCase() === subject.toLowerCase());
+    
+    // Create the subject view interface
+    const subjectView = document.createElement('div');
+    subjectView.className = 'subject-flashcards-view';
+    subjectView.id = 'subjectFlashcardsView';
+    
+    subjectView.innerHTML = `
+        <div class="subject-view-header">
+            <div class="subject-view-title">
+                <h2>${subject}</h2>
+                <div class="subject-view-count">${subjectFlashcards.length} flashcard${subjectFlashcards.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="subject-view-actions">
+                <button class="create-subject-flashcard-btn" onclick="createSubjectFlashcard('${subject}')">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Create Flashcard
+                </button>
+                <button class="close-subject-view-btn" onclick="closeSubjectView()">
+                    <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="subject-flashcards-grid" id="subjectFlashcardsGrid">
+            ${subjectFlashcards.length === 0 ? `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                    <h3 style="color: var(--text-primary); margin-bottom: 12px;">No ${subject} flashcards yet</h3>
+                    <p>Create your first ${subject} flashcard to start studying!</p>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    document.body.appendChild(subjectView);
+    
+    // Add flashcards with proper event listeners
+    if (subjectFlashcards.length > 0) {
+        const grid = subjectView.querySelector('#subjectFlashcardsGrid');
+        subjectFlashcards.forEach(flashcard => {
+            const flashcardElement = document.createElement('div');
+            flashcardElement.className = 'flashcard';
+            flashcardElement.dataset.flashcardId = flashcard.id;
+            flashcardElement.innerHTML = `
+                <div class="flashcard-subject">${flashcard.subject}</div>
+                <div class="flashcard-topic">${flashcard.topic}</div>
+                <div class="flashcard-preview">${flashcard.notes.substring(0, 100)}${flashcard.notes.length > 100 ? '...' : ''}</div>
+            `;
+            
+            // Add click event listener properly
+            flashcardElement.addEventListener('click', function(event) {
+                openFlashcardInterface(flashcard.id, event);
+            });
+            
+            grid.appendChild(flashcardElement);
+        });
+    }
+    
+    // Animate in
+    setTimeout(() => {
+        subjectView.classList.add('show');
+    }, 50);
+    
+    // Add ESC key listener
+    document.addEventListener('keydown', handleSubjectViewEscape);
+}
+
+// Add this helper function for ESC key handling
+function handleSubjectViewEscape(event) {
+    if (event.key === 'Escape') {
+        const subjectView = document.getElementById('subjectFlashcardsView');
+        if (subjectView) {
+            closeSubjectView();
+        }
+    }
+}
+
+function closeSubjectView() {
+    const subjectView = document.getElementById('subjectFlashcardsView');
+    if (!subjectView) return;
+    
+    // Remove ESC listener
+    document.removeEventListener('keydown', handleSubjectViewEscape);
+    
+    // Animate out
+    subjectView.classList.remove('show');
+    
+    setTimeout(() => {
+        if (subjectView.parentNode) {
+            subjectView.remove();
+        }
+    }, 400);
+}
+
+function createSubjectFlashcard(subject) {
+    const modal = document.createElement('div');
+    modal.className = 'auth-overlay';
+    modal.innerHTML = `
+        <div class="auth-modal">
+            <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            
+            <div class="auth-header">
+                <h2>Create ${subject} Flashcard</h2>
+                <p>Add a new flashcard for ${subject}</p>
+            </div>
+            
+            <form onsubmit="handleSubjectFlashcardCreation(event, '${subject}')">
+                <div class="auth-input-group">
+                    <label for="flashcardTopic">Topic</label>
+                    <input type="text" id="flashcardTopic" class="auth-input" required placeholder="e.g., Cell Structure, Algebra">
+                </div>
+                <button type="submit" class="auth-submit">Create Flashcard</button>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+function handleSubjectFlashcardCreation(event, subject) {
+    event.preventDefault();
+    
+    const topic = document.getElementById('flashcardTopic').value;
+    
+    // Find matching uploaded content
+    const matchingContent = findBestMatchingFile(subject, topic);
+    
+    const flashcard = {
+        id: Date.now() + Math.random(),
+        subject: subject,
+        topic: topic,
+        notes: '',
+        contentFile: matchingContent ? matchingContent.id : null,
+        created: new Date().toISOString()
+    };
+    
+    flashcards.push(flashcard);
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    
+    // Close modal
+    document.querySelector('.auth-overlay').remove();
+    
+    // Refresh the subject view
+    const subjectGrid = document.getElementById('subjectFlashcardsGrid');
+    if (subjectGrid) {
+        const subjectFlashcards = flashcards.filter(f => f.subject.toLowerCase() === subject.toLowerCase());
+        
+        // Update count in header
+        const countElement = document.querySelector('.subject-view-count');
+        if (countElement) {
+            countElement.textContent = `${subjectFlashcards.length} flashcard${subjectFlashcards.length !== 1 ? 's' : ''}`;
+        }
+        
+        // Add new flashcard with animation
+        const newCard = document.createElement('div');
+        newCard.className = 'flashcard';
+        newCard.dataset.flashcardId = flashcard.id;
+        newCard.style.opacity = '0';
+        newCard.style.transform = 'scale(0.8) translateY(20px)';
+        newCard.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        newCard.onclick = function(event) { openFlashcardInterface(flashcard.id, event); };
+        
+        newCard.innerHTML = `
+            <div class="flashcard-subject">${flashcard.subject}</div>
+            <div class="flashcard-topic">${flashcard.topic}</div>
+            <div class="flashcard-preview">${flashcard.notes.substring(0, 100)}${flashcard.notes.length > 100 ? '...' : ''}</div>
+        `;
+        
+        // Remove empty state if present
+        const emptyState = subjectGrid.querySelector('[style*="grid-column: 1 / -1"]');
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        subjectGrid.appendChild(newCard);
+        
+        // Animate in
+        setTimeout(() => {
+            newCard.style.opacity = '1';
+            newCard.style.transform = 'scale(1) translateY(0)';
+        }, 100);
+    }
+    
+    // Update sidebar stats
+    updateSidebarStats();
+    
+    // Show success message
+    if (matchingContent) {
+        showAlert(`${subject} flashcard created and linked to "${matchingContent.name}"!`, 'success');
+    } else {
+        showAlert(`${subject} flashcard created successfully!`, 'success');
+    }
+}
+
+// Add these missing functions to your JavaScript:
+
+function handleFlashcardEscape(event) {
+    if (event.key === 'Escape') {
+        const fullpage = document.getElementById('flashcardFullpage');
+        if (fullpage) {
+            closeFlashcardInterface();
+        }
+    }
+}
+
+// Structure dropdown functionality
+function toggleStructureDropdown() {
+    const dropdown = document.getElementById('structureDropdown');
+    const isVisible = dropdown.style.opacity === '1';
+    
+    if (isVisible) {
+        hideStructureDropdown();
+    } else {
+        showStructureDropdown();
+    }
+}
+
+function showStructureDropdown() {
+    const dropdown = document.getElementById('structureDropdown');
+    dropdown.style.opacity = '1';
+    dropdown.style.transform = 'translateY(0)';
+    dropdown.style.pointerEvents = 'auto';
+    
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', handleStructureOutsideClick);
+    }, 100);
+}
+
+function hideStructureDropdown() {
+    const dropdown = document.getElementById('structureDropdown');
+    dropdown.style.opacity = '0';
+    dropdown.style.transform = 'translateY(-10px)';
+    dropdown.style.pointerEvents = 'none';
+    
+    document.removeEventListener('click', handleStructureOutsideClick);
+}
+
+function handleStructureOutsideClick(event) {
+    const dropdown = document.getElementById('structureDropdown');
+    const button = document.getElementById('structureBtn');
+    
+    if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+        hideStructureDropdown();
+    }
+}
+
+// Enhanced AI Structure functionality
+function applyAIStructure(type) {
+    hideStructureDropdown();
+    
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea || !textarea.value.trim()) {
+        showAlert('Please add some notes first before applying AI structure', 'error');
+        return;
+    }
+    
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (!flashcard) return;
+    
+    // Show enhanced wave animation with structure type
+    showEnhancedAIAnimation(type);
+    
+    // Call Gemini API to restructure content
+    callGeminiForStructure(textarea.value, type, flashcard.subject);
+}
+
+function showEnhancedAIAnimation(structureType) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    // Store original content and make textarea read-only during processing
+    window.originalTextContent = textarea.value;
+    textarea.readOnly = true;
+    textarea.style.cursor = 'wait';
+    
+    const structureLabels = {
+        'bullet': 'Bullet Points',
+        'outline': 'Outline Format', 
+        'qa': 'Q&A Format',
+        'summary': 'Summary Format'
+    };
+    
+    // Create enhanced overlay
+    const enhancedOverlay = document.createElement('div');
+    enhancedOverlay.id = 'aiEnhancedOverlay';
+    enhancedOverlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--bg-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        border-radius: 16px;
+        border: 2px solid var(--accent-blue);
+    `;
+    
+    enhancedOverlay.innerHTML = `
+        <div style="text-align: center; color: var(--accent-blue); width: 100%; max-width: 400px;">
+            <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--text-primary);">
+                Applying ${structureLabels[structureType]}
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 32px;">
+                AI is restructuring your notes...
+            </div>
+            
+            <!-- Wave Container -->
+            <div style="
+                width: 300px;
+                height: 8px;
+                margin: 0 auto;
+                position: relative;
+                overflow: hidden;
+                border-radius: 4px;
+                background: rgba(59, 130, 246, 0.1);
+            ">
+                <div id="waveEffect" style="
+                    position: absolute;
+                    width: 100px;
+                    height: 100%;
+                    background: linear-gradient(90deg, 
+                        transparent 0%, 
+                        rgba(255, 255, 255, 0.8) 20%,
+                        rgba(59, 130, 246, 0.9) 50%, 
+                        rgba(255, 255, 255, 0.8) 80%,
+                        transparent 100%);
+                    animation: enhancedWaveSlide 1.5s infinite ease-in-out;
+                    border-radius: 4px;
+                "></div>
+            </div>
+            
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; opacity: 0.7;">
+                This will take a few seconds
+            </div>
+        </div>
+    `;
+    
+    // Add enhanced CSS animations
+    const style = document.createElement('style');
+    style.id = 'aiEnhancedAnimationStyles';
+    style.textContent = `
+        @keyframes enhancedWaveSlide {
+            0% { transform: translateX(-120px); }
+            100% { transform: translateX(320px); }
+        }
+        @keyframes wordGlowReveal {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.8);
+                text-shadow: 0 0 0 rgba(59, 130, 246, 0);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.05);
+                text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1);
+                text-shadow: 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { 
+                box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Position overlay relative to textarea
+    const textareaParent = textarea.parentElement;
+    textareaParent.style.position = 'relative';
+    textareaParent.appendChild(enhancedOverlay);
+    
+    // Add pulsing glow to textarea border
+    textarea.style.transition = 'all 0.3s ease';
+    textarea.style.animation = 'pulseGlow 2s infinite ease-in-out';
+}
+
+function hideEnhancedAIAnimation() {
+    const enhancedOverlay = document.getElementById('aiEnhancedOverlay');
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    const style = document.getElementById('aiEnhancedAnimationStyles');
+    
+    if (enhancedOverlay && enhancedOverlay.parentNode) {
+        enhancedOverlay.style.transition = 'all 0.5s ease-out';
+        enhancedOverlay.style.opacity = '0';
+        enhancedOverlay.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            if (enhancedOverlay.parentNode) {
+                enhancedOverlay.remove();
+            }
+        }, 500);
+    }
+    
+    if (textarea) {
+        textarea.readOnly = false;
+        textarea.style.cursor = 'text';
+        textarea.style.transition = '';
+    }
+    
+    if (style && style.parentNode) {
+        style.remove();
+    }
+}
+
+function processHighlightedContent(content, subject) {
+    if (!content) return content;
+    
+    // Debug logging
+    console.log('Processing content for highlights...');
+    console.log('Input content:', content.substring(0, 200) + '...');
+    
+    // Convert [HIGHLIGHT]...[/HIGHLIGHT] tags to clickable spans
+    const processedContent = content.replace(
+        /\[HIGHLIGHT\](.*?)\[\/HIGHLIGHT\]/g, 
+        (match, term) => {
+            console.log('Found highlight term:', term);
+            return `<span class="key-highlight" onclick="translateKeyTerm('${term.replace(/'/g, "&#39;")}', '${subject}')" title="Click for AI explanation">${term}</span>`;
+        }
+    );
+    
+    console.log('Processed content contains highlights:', processedContent.includes('<span class="key-highlight"'));
+    return processedContent;
+}
+
+async function translateKeyTerm(term, subject) {
+    // Get subject from current flashcard if not provided
+    if (!subject) {
+        const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+        subject = flashcard ? flashcard.subject : 'General';
+    }
+    
+    // Create translation modal
+    const translationModal = document.createElement('div');
+    translationModal.id = 'translationModal';
+    translationModal.className = 'translation-modal-overlay';
+    translationModal.innerHTML = `
+        <div class="translation-modal">
+            <div class="translation-header">
+                <h3>AI Explanation: "${term}"</h3>
+                <button onclick="closeTranslationModal()" class="translation-close">×</button>
+            </div>
+            <div class="translation-content">
+                <div class="translation-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Getting AI explanation...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(translationModal);
+    setTimeout(() => translationModal.classList.add('show'), 100);
+    
+    try {
+        // Call AI for explanation
+        const explanation = await getAIExplanation(term, subject);
+        
+        const contentDiv = translationModal.querySelector('.translation-content');
+        contentDiv.innerHTML = `
+            <div class="explanation-content">
+                <h4>📚 Subject: ${subject}</h4>
+                <h4>🔍 Term: "${term}"</h4>
+                <div class="explanation-text">${explanation}</div>
+                <div class="explanation-actions">
+                    <button onclick="copyExplanation('${explanation.replace(/'/g, "&#39;")}')" class="copy-btn">📋 Copy</button>
+                    <button onclick="closeTranslationModal()" class="close-btn">Got it!</button>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Translation error:', error);
+        const contentDiv = translationModal.querySelector('.translation-content');
+        contentDiv.innerHTML = `
+            <div class="explanation-error">
+                <h4>❌ Failed to get explanation</h4>
+                <p>Sorry, couldn't fetch AI explanation for "${term}". Please try again.</p>
+                <button onclick="closeTranslationModal()" class="close-btn">Close</button>
+            </div>
+        `;
+    }
+}
+
+async function getAIExplanation(term, subject) {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: `Provide a clear, concise explanation of the term "${term}" in the context of ${subject}...` }] }],
+            generationConfig: {
+                temperature: 0.3,
+                topP: 0.8,
+                maxOutputTokens: 300,
+            }
+        })
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      return res.status(response.status).json({ error: errorText });
+        const errorText = await response.text();
+        throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    return res.status(200).json(data);
-    
-  } catch (error) {
-    console.error('API Error:', error);
-    return res.status(500).json({ error: error.message });
-  }
+    return data.candidates[0].content.parts[0].text;
 }
+
+function closeTranslationModal() {
+    const modal = document.getElementById('translationModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+function copyExplanation(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showAlert('Explanation copied to clipboard!', 'success');
+    });
+}
+
+function revealContentWithWordGlow(content) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    // Hide the enhanced AI animation
+    hideEnhancedAIAnimation();
+    
+    // Start the word-by-word reveal with highlighting support
+    startWordGlowReveal(textarea, content);
+}
+
+async function callGeminiForStructure(content, structureType, subject) {
+    try {
+        const enhancedPrompts = {
+            // ... your existing prompts ...
+        };
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: enhancedPrompts[structureType] }] }],
+                generationConfig: {
+                    temperature: 0.3,
+                    topP: 0.8,
+                    maxOutputTokens: 1500,
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API request failed: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const structuredContent = data.candidates[0].content.parts[0].text;
+            
+            if (structureType === 'qa') {
+                aiGeneratedQuestions = extractQuestionsFromAIContent(structuredContent);
+            }
+            
+            const highlightedContent = processHighlightedContent(structuredContent, subject);
+            revealContentWithWordGlow(highlightedContent);
+            showAlert('Notes structured successfully!', 'success');
+        }
+        
+    } catch (error) {
+        console.error('AI Structure Error:', error);
+        hideEnhancedAIAnimation();
+        throw error;
+    }
+}
+        
+// Add this function after the callGeminiForStructure function
+function extractQuestionsFromAIContent(aiContent) {
+    const questions = [];
+    const lines = aiContent.split('\n');
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // Look for Q: pattern
+        if (line.startsWith('Q:') && line.includes('?')) {
+            const questionText = line.replace('Q:', '').trim();
+            
+            // Look for corresponding A: in next few lines
+            let answerText = '';
+            for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                const nextLine = lines[j].trim();
+                if (nextLine.startsWith('A:')) {
+                    answerText = nextLine.replace('A:', '').trim();
+                    // Remove highlight tags from answer for comparison
+                    answerText = answerText.replace(/\[HIGHLIGHT\]|\[\/HIGHLIGHT\]/g, '');
+                    break;
+                }
+            }
+            
+            if (answerText) {
+                // Determine question type
+                const questionType = questionText.includes('_____') || questionText.includes('___') ? 'fill_blank' : 'short_answer';
+                
+                questions.push({
+                    type: questionType,
+                    question: questionText,
+                    answer: answerText,
+                    source: 'ai_generated'
+                });
+            }
+        }
+    }
+    
+    console.log('Extracted AI questions:', questions);
+    return questions.slice(0, 8); // Limit to 8 questions
+}
+
+function startWordGlowReveal(textarea, content) {
+    if (!textarea) return;
+    
+    console.log('Starting word reveal with content:', content.substring(0, 100) + '...');
+    console.log('Content has highlighting:', content.includes('<span class="key-highlight"'));
+    
+    textarea.value = '';
+    textarea.innerHTML = '';
+    textarea.readOnly = false;
+    textarea.style.cursor = 'text';
+    textarea.style.background = 'var(--bg-secondary)';
+    
+    // Check if content has HTML highlighting
+    const hasHighlighting = content.includes('<span class="key-highlight"');
+    
+    if (hasHighlighting) {
+        console.log('Revealing content with highlighting...');
+        // For highlighted content, show word by word but apply highlighting at the end
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        const plainText = tempDiv.textContent || tempDiv.innerText;
+        
+        // Reveal plain text first
+        revealPlainText(textarea, plainText, () => {
+            console.log('Plain text reveal complete, applying highlights...');
+            // After plain text is revealed, apply highlighting
+            textarea.innerHTML = content;
+            console.log('Highlights applied, found elements:', textarea.querySelectorAll('.key-highlight').length);
+            completeReveal(textarea);
+        });
+    } else {
+        console.log('No highlighting detected, using plain text reveal...');
+        // For plain text content
+        revealPlainText(textarea, content, () => {
+            completeReveal(textarea);
+        });
+    }
+}
+
+function revealPlainText(textarea, content, onComplete) {
+    const words = content.split(/(\s+)/);
+    const totalWords = words.filter(word => word.trim().length > 0).length;
+    const wordDelay = Math.max(15, 800 / totalWords);
+    
+    let currentWordIndex = 0;
+    let currentContent = '';
+    
+    function revealNextWord() {
+        if (currentWordIndex < words.length) {
+            const word = words[currentWordIndex];
+            currentContent += word;
+            
+            // Use innerHTML if it's empty, otherwise use value for plain text
+            if (textarea.innerHTML === '') {
+                textarea.value = currentContent;
+            } else {
+                textarea.innerHTML = currentContent.replace(/\n/g, '<br>');
+            }
+            
+            currentWordIndex++;
+            textarea.scrollTop = textarea.scrollHeight;
+            setTimeout(revealNextWord, wordDelay);
+        } else {
+            // Animation complete
+            if (onComplete) onComplete();
+        }
+    }
+    
+    revealNextWord();
+}
+
+function completeReveal(textarea) {
+    textarea.focus();
+    autoSaveNotes();
+    
+    // Add smooth highlighting animation after 0.4 seconds
+    setTimeout(() => {
+        animateKeyHighlights();
+    }, 400);
+    
+    setTimeout(() => {
+        showFollowUpPrompt();
+    }, 1000);
+}
+
+function animateKeyHighlights() {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) {
+        console.log('No textarea found for highlighting');
+        return;
+    }
+    
+    const highlights = textarea.querySelectorAll('.key-highlight');
+    console.log('Found highlights to animate:', highlights.length);
+    
+    if (highlights.length === 0) {
+        console.log('No highlights found - checking innerHTML:', textarea.innerHTML.includes('key-highlight'));
+        return;
+    }
+    
+    console.log('Starting highlight animation for', highlights.length, 'elements');
+    
+    // Initially hide all highlights
+    highlights.forEach((highlight, index) => {
+        console.log(`Setting up highlight ${index}:`, highlight.textContent);
+        highlight.style.opacity = '0';
+        highlight.style.transform = 'scale(0.8)';
+        highlight.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+    
+    // Animate each highlight with a staggered delay
+    highlights.forEach((highlight, index) => {
+        setTimeout(() => {
+            console.log(`Animating highlight ${index}:`, highlight.textContent);
+            highlight.style.opacity = '1';
+            highlight.style.transform = 'scale(1)';
+            
+            // Add a subtle pulse effect
+            setTimeout(() => {
+                highlight.style.boxShadow = '0 0 8px rgba(59, 130, 246, 0.4)';
+                setTimeout(() => {
+                    highlight.style.boxShadow = '0 0 4px rgba(59, 130, 246, 0.2)';
+                }, 300);
+            }, 100);
+        }, index * 150); // Stagger each highlight by 150ms
+    });
+}
+
+// Helper function to get partial HTML content
+function getPartialHTML(fullHTML, revealedText) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = fullHTML;
+    
+    let textLength = 0;
+    let result = '';
+    
+    function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const nodeText = node.textContent;
+            const remainingLength = revealedText.length - textLength;
+            
+            if (remainingLength > 0) {
+                const visibleText = nodeText.substring(0, Math.min(nodeText.length, remainingLength));
+                result += visibleText;
+                textLength += visibleText.length;
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const elementTextLength = node.textContent.length;
+            
+            if (textLength + elementTextLength <= revealedText.length) {
+                // Show entire element
+                result += node.outerHTML;
+                textLength += elementTextLength;
+            } else if (textLength < revealedText.length) {
+                // Partially show element
+                const remainingLength = revealedText.length - textLength;
+                if (remainingLength > 0) {
+                    // For highlighted spans, show opening tag + partial text + closing tag
+                    if (node.classList && node.classList.contains('key-highlight')) {
+                        const partialText = node.textContent.substring(0, remainingLength);
+                        result += `<span class="key-highlight" onclick="translateKeyTerm('${node.textContent}', '${getCurrentSubject()}')" title="Click for AI translation">${partialText}</span>`;
+                        textLength += partialText.length;
+                    } else {
+                        // For other elements, process children
+                        result += `<${node.tagName.toLowerCase()}`;
+                        // Add attributes
+                        for (let attr of node.attributes) {
+                            result += ` ${attr.name}="${attr.value}"`;
+                        }
+                        result += '>';
+                        
+                        for (let child of node.childNodes) {
+                            processNode(child);
+                        }
+                        result += `</${node.tagName.toLowerCase()}>`;
+                    }
+                }
+            }
+        }
+    }
+    
+    for (let child of tempDiv.childNodes) {
+        processNode(child);
+        if (textLength >= revealedText.length) break;
+    }
+    
+    return result;
+}
+
+// Helper function to get current subject
+function getCurrentSubject() {
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    return flashcard ? flashcard.subject : 'General';
+}
+
+// Complete the reveal process
+function completeReveal(textarea) {
+    textarea.focus();
+    autoSaveNotes();
+    
+    setTimeout(() => {
+        showFollowUpPrompt();
+    }, 1000);
+}
+
+// ADD THE ANIMATE HIGHLIGHTS FUNCTION HERE:
+function animateKeyHighlights() {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    const highlights = textarea.querySelectorAll('.key-highlight');
+    if (highlights.length === 0) return;
+    
+    // Initially hide all highlights
+    highlights.forEach(highlight => {
+        highlight.style.opacity = '0';
+        highlight.style.transform = 'scale(0.8)';
+        highlight.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+    
+    // Animate each highlight with a staggered delay
+    highlights.forEach((highlight, index) => {
+        setTimeout(() => {
+            highlight.style.opacity = '1';
+            highlight.style.transform = 'scale(1)';
+            
+            // Add a subtle pulse effect
+            setTimeout(() => {
+                highlight.style.boxShadow = '0 0 8px rgba(59, 130, 246, 0.4)';
+                setTimeout(() => {
+                    highlight.style.boxShadow = '0 0 4px rgba(59, 130, 246, 0.2)';
+                }, 300);
+            }, 100);
+        }, index * 150); // Stagger each highlight by 150ms
+    });
+}
+
+// ADD THIS FUNCTION HERE:
+function createStyledDropdown(selectElement) {
+    // Prevent duplicate styling
+    if (selectElement.style.display === 'none') return;
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'styled-dropdown-wrapper';
+    
+    const selected = document.createElement('div');
+    selected.className = 'styled-dropdown-selected';
+    selected.innerHTML = `
+        <span class="dropdown-text">${selectElement.options[selectElement.selectedIndex]?.text || 'Select an option'}</span>
+        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"/>
+        </svg>
+    `;
+    
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'styled-dropdown-options';
+    
+    Array.from(selectElement.options).forEach((option, index) => {
+        if (option.value) { // Skip empty options
+            const optionElement = document.createElement('div');
+            optionElement.className = 'styled-dropdown-option';
+            optionElement.textContent = option.text;
+            optionElement.dataset.value = option.value;
+            
+            optionElement.addEventListener('click', () => {
+                selectElement.selectedIndex = index;
+                selected.querySelector('.dropdown-text').textContent = option.text;
+                optionsContainer.classList.remove('show');
+                selected.classList.remove('active');
+                
+                // Trigger change event
+                selectElement.dispatchEvent(new Event('change'));
+            });
+            
+            optionsContainer.appendChild(optionElement);
+        }
+    });
+    
+    selected.addEventListener('click', () => {
+        const isOpen = optionsContainer.classList.contains('show');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.styled-dropdown-options.show').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+        document.querySelectorAll('.styled-dropdown-selected.active').forEach(sel => {
+            sel.classList.remove('active');
+        });
+        
+        if (!isOpen) {
+            optionsContainer.classList.add('show');
+            selected.classList.add('active');
+        }
+    });
+    
+    wrapper.appendChild(selected);
+    wrapper.appendChild(optionsContainer);
+    
+    // Hide original select and insert wrapper
+    selectElement.style.display = 'none';
+    selectElement.parentNode.insertBefore(wrapper, selectElement);
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+            optionsContainer.classList.remove('show');
+            selected.classList.remove('active');
+        }
+    });
+}
+
+// THEN ADD THE UPDATED initStyledDropdowns FUNCTION:
+function initStyledDropdowns() {
+    const dropdowns = document.querySelectorAll('#home select');
+    dropdowns.forEach(select => {
+        // Check if already styled to prevent duplicates
+        if (!select.nextElementSibling?.classList.contains('styled-dropdown-wrapper') && select.style.display !== 'none') {
+            createStyledDropdown(select);
+        }
+    });
+}
+
+function showFollowUpPrompt() {
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (!flashcard) return;
+    
+    // Remove any existing follow-up
+    const existingFollowUp = document.getElementById('inlineFollowUp');
+    if (existingFollowUp) existingFollowUp.remove();
+    
+    // Create compact inline follow-up below textarea
+    const followUpSection = document.createElement('div');
+    followUpSection.id = 'inlineFollowUp';
+    followUpSection.style.cssText = `
+        margin-top: 12px;
+        padding: 16px;
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    followUpSection.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+            <div style="flex: 1;">
+                <p style="margin: 0; color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
+                    Explore more about <strong>${flashcard.topic}</strong>?
+                </p>
+                <p style="margin: 2px 0 0 0; color: var(--text-muted); font-size: 0.8rem;">
+                    Get related topics and practice questions
+                </p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="compact-follow-btn maybe-later" onclick="handleInlineFollowUp('later')" style="
+                    padding: 8px 16px;
+                    background: var(--bg-secondary);
+                    color: var(--text-secondary);
+                    border: 1px solid var(--border-color);
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
+                ">
+                    Maybe Later
+                </button>
+                <button class="compact-follow-btn yes-explore" onclick="handleInlineFollowUp('yes')" style="
+                    padding: 8px 20px;
+                    background: var(--accent-blue);
+                    color: white;
+                    border: 1px solid var(--accent-blue);
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
+                ">
+                    Yes, Explore
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Insert after textarea
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (textarea && textarea.parentElement) {
+        textarea.parentElement.appendChild(followUpSection);
+        
+        // Animate in
+        setTimeout(() => {
+            followUpSection.style.opacity = '1';
+            followUpSection.style.transform = 'translateY(0)';
+        }, 100);
+    }
+}
+
+function handleInlineFollowUp(response) {
+    const followUpSection = document.getElementById('inlineFollowUp');
+    
+    if (response === 'later') {
+        // Fade out and remove
+        followUpSection.style.opacity = '0';
+        followUpSection.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+            if (followUpSection.parentNode) {
+                followUpSection.remove();
+            }
+        }, 500);
+        
+        showAlert('You can explore more anytime from the menu', 'info');
+        
+    } else if (response === 'yes') {
+        // Show loading state
+        const yesButton = followUpSection.querySelector('.yes-explore');
+        const originalContent = yesButton.innerHTML;
+        
+        yesButton.innerHTML = `
+            <div style="width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Opening...
+        `;
+        yesButton.disabled = true;
+        
+        setTimeout(() => {
+            followUpSection.style.opacity = '0';
+            followUpSection.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                if (followUpSection.parentNode) {
+                    followUpSection.remove();
+                }
+                openExplorationPage();
+            }, 500);
+        }, 800);
+    }
+}
+
+function openExplorationPage() {
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (!flashcard) return;
+    
+    // Store current flashcard content
+    window.previousFlashcardContent = {
+        id: flashcard.id,
+        subject: flashcard.subject,
+        topic: flashcard.topic,
+        notes: flashcard.notes
+    };
+    
+    // Close current flashcard interface
+    closeFlashcardInterface();
+    
+    // Create new exploration interface
+    const explorationInterface = document.createElement('div');
+    explorationInterface.id = 'explorationInterface';
+    explorationInterface.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-primary);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    `;
+    
+    explorationInterface.innerHTML = `
+        <!-- Header with tabs -->
+        <div class="exploration-header">
+            <div class="exploration-tabs">
+                <div class="exploration-tab active" onclick="switchExplorationTab('previous')" data-tab="previous">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    Previous Notes
+                </div>
+                <div class="exploration-tab" onclick="switchExplorationTab('explore')" data-tab="explore">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    Explore More
+                </div>
+            </div>
+            <button class="exploration-close" onclick="closeExplorationInterface()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Content areas -->
+        <div class="exploration-content">
+            <div class="exploration-panel active" id="previousPanel">
+                <div class="panel-header">
+                    <h2>${flashcard.subject} - ${flashcard.topic}</h2>
+                    <p>Your previous notes</p>
+                </div>
+                <div class="panel-content">
+                    <textarea readonly style="width: 100%; height: calc(100% - 60px); padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; line-height: 1.6; resize: none;">${flashcard.notes}</textarea>
+                </div>
+            </div>
+            
+            <div class="exploration-panel" id="explorePanel">
+                <div class="panel-header">
+                    <h2>Explore: ${flashcard.topic}</h2>
+                    <p>Discover related topics and resources</p>
+                </div>
+                <div class="panel-content">
+                    <div class="explore-loading">
+                        <div class="explore-spinner"></div>
+                        <p>Generating related topics and resources...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(explorationInterface);
+    
+    // Animate in
+    setTimeout(() => {
+        explorationInterface.style.transform = 'scale(1)';
+        explorationInterface.style.opacity = '1';
+    }, 50);
+    
+    // Start generating exploration content
+    setTimeout(() => {
+        generateExplorationContent(flashcard);
+    }, 1000);
+}
+
+function switchExplorationTab(tab) {
+    // Update tab states
+    document.querySelectorAll('.exploration-tab').forEach(tabEl => {
+        tabEl.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    
+    // Update panel states
+    document.querySelectorAll('.exploration-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    if (tab === 'previous') {
+        document.getElementById('previousPanel').classList.add('active');
+    } else {
+        document.getElementById('explorePanel').classList.add('active');
+    }
+}
+
+function generateExplorationContent(flashcard) {
+    const exploreContent = document.querySelector('#explorePanel .panel-content');
+    
+    // Simulate content generation
+    setTimeout(() => {
+        exploreContent.innerHTML = `
+            <div class="explore-sections">
+                <div class="explore-section">
+                    <h3>Related Topics</h3>
+                    <div class="explore-cards">
+                        <div class="explore-card" onclick="exploreRelatedTopic('Advanced ${flashcard.topic}')">
+                            <h4>Advanced ${flashcard.topic}</h4>
+                            <p>Dive deeper into complex concepts</p>
+                        </div>
+                        <div class="explore-card" onclick="exploreRelatedTopic('${flashcard.topic} Applications')">
+                            <h4>${flashcard.topic} Applications</h4>
+                            <p>Real-world uses and examples</p>
+                        </div>
+                        <div class="explore-card" onclick="exploreRelatedTopic('${flashcard.topic} Practice')">
+                            <h4>Practice Questions</h4>
+                            <p>Test your understanding</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="explore-section">
+                    <h3>Study Resources</h3>
+                    <div class="resource-links">
+                        <a href="#" class="resource-link" onclick="openStudyResource('video')">
+                            <svg class="icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            Video Tutorials
+                        </a>
+                        <a href="#" class="resource-link" onclick="openStudyResource('practice')">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                            Practice Papers
+                        </a>
+                        <a href="#" class="resource-link" onclick="openStudyResource('summary')">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            Study Summaries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }, 2000);
+}
+
+function closeExplorationInterface() {
+    const explorationInterface = document.getElementById('explorationInterface');
+    if (explorationInterface) {
+        explorationInterface.style.transform = 'scale(0.95)';
+        explorationInterface.style.opacity = '0';
+        
+        setTimeout(() => {
+            if (explorationInterface.parentNode) {
+                explorationInterface.remove();
+            }
+        }, 400);
+    }
+}
+
+// Add CSS for styled dropdowns and follow-up modal
+function addEnhancedStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Styled Dropdowns */
+        .styled-dropdown-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .styled-dropdown-selected {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .styled-dropdown-selected:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        
+        .styled-dropdown-selected.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        .styled-dropdown-selected.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .styled-dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            margin-top: 4px;
+        }
+        
+        .styled-dropdown-options.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .styled-dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .styled-dropdown-option:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .styled-dropdown-option:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .styled-dropdown-option:last-child {
+            border-radius: 0 0 10px 10px;
+        }
+        
+        /* Follow-up Modal */
+        .follow-up-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        
+        .follow-up-modal-overlay.show {
+            opacity: 1;
+        }
+        
+        .follow-up-modal {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            margin: 20px;
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--border-color);
+        }
+        
+        .follow-up-modal-overlay.show .follow-up-modal {
+            transform: scale(1);
+        }
+        
+        .follow-up-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .follow-up-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .follow-up-content p {
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        
+        .follow-up-subtext {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        .follow-up-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .follow-up-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .maybe-later {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+        
+        .maybe-later:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+        }
+        
+        .yes-explore {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .yes-explore:hover {
+            background: var(--accent-blue-dark, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Exploration Interface */
+        .exploration-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 32px;
+            border-bottom: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .exploration-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .exploration-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .exploration-tab:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .exploration-tab.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .exploration-close {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .exploration-close:hover {
+            background: var(--accent-red, #ef4444);
+            color: white;
+            border-color: var(--accent-red, #ef4444);
+        }
+        
+        .exploration-content {
+            flex: 1;
+            position: relative;
+        }
+        
+        .exploration-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 32px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+        
+        .exploration-panel.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        
+        .panel-header h2 {
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        
+        .panel-header p {
+            margin: 0 0 24px 0;
+            color: var(--text-muted);
+        }
+        
+        .explore-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        
+        .explore-section h3 {
+            margin: 0 0 16px 0;
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .explore-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .explore-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .explore-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        
+        .explore-card h4 {
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        
+        .explore-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+            color: white;
+            transform: translateX(8px);
+        }
+        
+        .explore-loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .explore-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize everything when DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+    addEnhancedStyles();
+    
+    // Initialize styled dropdowns after a short delay
+    setTimeout(() => {
+        initStyledDropdowns();
+    }, 500);
+});
+
+function completeTypingEffect(textarea, glowOverlay) {
+    textarea.focus();
+    autoSaveNotes();
+    
+    // Add completion glow effect
+    textarea.style.transition = 'all 0.5s ease';
+    textarea.style.boxShadow = '0 0 20px rgba(59, 130, 246, 0.3)';
+    textarea.style.borderColor = 'var(--accent-blue)';
+    
+    // Fade out the glow overlay
+    glowOverlay.style.transition = 'opacity 1s ease-out';
+    glowOverlay.style.opacity = '0';
+    
+    setTimeout(() => {
+        if (glowOverlay.parentNode) {
+            glowOverlay.remove();
+        }
+        
+        // Reset textarea styles
+        textarea.style.boxShadow = '';
+        textarea.style.borderColor = '';
+        textarea.style.transition = '';
+    }, 1500);
+}
+
+function finalizeReveal(content) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    const revealOverlay = document.getElementById('revealOverlay');
+    
+    if (textarea && revealOverlay) {
+        // Fade out overlay and set final content
+        revealOverlay.style.transition = 'all 0.5s ease-out';
+        revealOverlay.style.opacity = '0';
+        revealOverlay.style.transform = 'scale(0.98)';
+        
+        setTimeout(() => {
+            textarea.value = content;
+            textarea.style.opacity = '0';
+            textarea.style.transition = 'all 0.5s ease-out';
+            
+            // Remove overlay
+            if (revealOverlay.parentNode) {
+                revealOverlay.remove();
+            }
+            
+            // Fade in final textarea
+            setTimeout(() => {
+                textarea.style.opacity = '1';
+                textarea.focus();
+                autoSaveNotes();
+            }, 100);
+            
+        }, 500);
+    }
+}
+
+// Tab switching functionality
+function switchFlashcardTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.flashcard-tab').forEach(tab => {
+        tab.classList.remove('active');
+        tab.style.background = 'var(--bg-primary)';
+        tab.style.color = 'var(--text-primary)';
+        tab.style.borderColor = 'var(--border-color)';
+    });
+    
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+        activeTab.style.background = 'var(--accent-blue)';
+        activeTab.style.color = 'white';
+        activeTab.style.borderColor = 'var(--accent-blue)';
+    }
+    
+    // Update tab content
+    document.querySelectorAll('.flashcard-tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.opacity = '0';
+        content.style.transform = 'translateX(-100%)';
+        content.style.pointerEvents = 'none';
+    });
+    
+    const activeContent = document.getElementById(`${tabName}TabContent`);
+    if (activeContent) {
+        setTimeout(() => {
+            activeContent.classList.add('active');
+            activeContent.style.opacity = '1';
+            activeContent.style.transform = 'translateX(0)';
+            activeContent.style.pointerEvents = 'auto';
+        }, 200);
+    }
+}
+
+// Replace the existing openQuestionsFromImage function
+function openQuestionsFromImage() {
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (!flashcard || !flashcard.notes) {
+        showAlert('No notes found to extract questions from', 'error');
+        return;
+    }
+    
+    let questions = [];
+    
+    // First, check if we have AI-generated questions
+    if (aiGeneratedQuestions.length > 0) {
+        questions = aiGeneratedQuestions;
+        console.log('Using AI-generated questions:', questions);
+    } else {
+        // Fall back to manual extraction
+        questions = extractQuestionsFromText(flashcard.notes);
+        console.log('Using manually extracted questions:', questions);
+    }
+    
+    if (questions.length === 0) {
+        showAlert('No questions found. Try using AI structure with Q&A format first.', 'info');
+        return;
+    }
+    
+    // Switch to questions tab
+    switchFlashcardTab('questions');
+    
+    // Display interactive questions using the single-question interface
+    displayInteractiveQuestions(questions);
+}
+
+// Extract questions from text
+function extractQuestionsFromText(text) {
+    const questions = [];
+    const lines = text.split('\n');
+    
+    lines.forEach((line, index) => {
+        line = line.trim();
+        
+        // Look for numbered questions (1. 2. 3. etc.)
+        const numberedMatch = line.match(/^\d+\.\s*(.+\?)\s*$/);
+        if (numberedMatch) {
+            questions.push({
+                type: 'short_answer',
+                question: numberedMatch[1],
+                answer: extractAnswerFromContext(lines, index)
+            });
+            return;
+        }
+        
+        // Look for questions with question marks
+        if (line.includes('?') && line.length > 10) {
+            questions.push({
+                type: 'short_answer',
+                question: line.replace(/^\*\*|\*\*$/g, '').replace(/^-\s*/, ''),
+                answer: extractAnswerFromContext(lines, index)
+            });
+        }
+        
+        // Look for fill-in-the-blank patterns
+        if (line.includes('_____') || line.includes('___')) {
+            const questionText = line.replace(/\*\*/g, '');
+            const blankMatch = questionText.match(/(.+?)_+(.+)/);
+            if (blankMatch) {
+                questions.push({
+                    type: 'fill_blank',
+                    question: questionText,
+                    answer: extractFillInAnswer(text, questionText)
+                });
+            }
+        }
+    });
+    
+    // Create some fill-in-the-blank questions from key concepts
+    const keyTerms = extractKeyTerms(text);
+    keyTerms.slice(0, 3).forEach(term => {
+        const sentence = findSentenceWithTerm(text, term);
+        if (sentence) {
+            const fillBlankQuestion = sentence.replace(new RegExp(term, 'gi'), '_____');
+            questions.push({
+                type: 'fill_blank',
+                question: fillBlankQuestion,
+                answer: term
+            });
+        }
+    });
+    
+    return questions.slice(0, 8); // Limit to 8 questions
+}
+
+// Helper functions for question extraction
+function extractAnswerFromContext(lines, questionIndex) {
+    // Look for answer in next few lines
+    for (let i = questionIndex + 1; i < Math.min(questionIndex + 4, lines.length); i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('A:') || line.startsWith('Answer:')) {
+            return line.replace(/^A:\s*|^Answer:\s*/i, '').trim();
+        }
+        if (line.length > 20 && !line.includes('?')) {
+            return line.trim();
+        }
+    }
+    return 'Check your notes for the answer';
+}
+
+function extractFillInAnswer(text, questionText) {
+    // Simple pattern matching for common fill-in answers
+    const patterns = [
+        /The (\w+) is/,
+        /(\w+) is the/,
+        /known as (\w+)/,
+        /called (\w+)/
+    ];
+    
+    for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match) return match[1];
+    }
+    return 'Answer from notes';
+}
+
+function extractKeyTerms(text) {
+    const terms = [];
+    
+    // Look for terms in bold (**term**)
+    const boldMatches = text.match(/\*\*([^*]+)\*\*/g);
+    if (boldMatches) {
+        boldMatches.forEach(match => {
+            const term = match.replace(/\*\*/g, '');
+            if (term.length > 2 && term.length < 30) {
+                terms.push(term);
+            }
+        });
+    }
+    
+    // Look for capitalized terms
+    const capitalMatches = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b/g);
+    if (capitalMatches) {
+        capitalMatches.forEach(term => {
+            if (term.length > 3 && term.length < 25 && !['The', 'This', 'That', 'What', 'When', 'Where', 'Why', 'How'].includes(term)) {
+                terms.push(term);
+            }
+        });
+    }
+    
+    return [...new Set(terms)]; // Remove duplicates
+}
+
+function findSentenceWithTerm(text, term) {
+    const sentences = text.split(/[.!?]+/);
+    for (const sentence of sentences) {
+        if (sentence.toLowerCase().includes(term.toLowerCase()) && sentence.length > 20) {
+            return sentence.trim();
+        }
+    }
+    return null;
+}
+
+function displayInteractiveQuestions(questions) {
+    const container = document.getElementById('questionsContainer');
+    if (!container) return;
+    
+    // Initialize state
+    currentQuestionIndex = 0;
+    userAnswers = new Array(questions.length).fill('');
+    totalQuestions = questions.length;
+    
+    // Store questions globally for navigation
+    window.currentQuestions = questions;
+    
+    showSingleQuestion();
+}
+
+function updateCurrentAnswer() {
+    const input = document.getElementById('currentAnswer');
+    if (input) {
+        userAnswers[currentQuestionIndex] = input.value;
+    }
+}
+
+function handleAnswerKeypress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        if (currentQuestionIndex < totalQuestions - 1) {
+            nextQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+}
+
+function nextQuestion() {
+    updateCurrentAnswer();
+    
+    if (currentQuestionIndex < totalQuestions - 1) {
+        currentQuestionIndex++;
+        showSingleQuestion();
+    }
+}
+
+function previousQuestion() {
+    updateCurrentAnswer();
+    
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showSingleQuestion();
+    }
+}
+
+function finishQuiz() {
+    updateCurrentAnswer();
+    showQuizResults();
+}
+
+function showSingleQuestion() {
+    const container = document.getElementById('questionsContainer');
+    const questions = window.currentQuestions;
+    const currentQ = questions[currentQuestionIndex];
+    const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+    
+    container.innerHTML = `
+        <div style="
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        ">
+            <!-- Progress Header -->
+            <div style="
+                position: absolute;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            ">
+                <span style="
+                    color: var(--accent-blue);
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                ">Question ${currentQuestionIndex + 1} of ${totalQuestions}</span>
+                
+                <!-- Progress Bar -->
+                <div style="
+                    width: 200px;
+                    height: 6px;
+                    background: var(--border-color);
+                    border-radius: 3px;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        width: ${((currentQuestionIndex + 1) / totalQuestions) * 100}%;
+                        height: 100%;
+                        background: var(--accent-blue);
+                        transition: width 0.3s ease;
+                    "></div>
+                </div>
+            </div>
+            
+            <!-- Main Question Content -->
+            <div style="
+                max-width: 600px;
+                width: 100%;
+                margin: auto;
+            ">
+                <!-- Question Type Badge -->
+                <div style="
+                    background: var(--accent-blue);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    display: inline-block;
+                    margin-bottom: 24px;
+                ">
+                    ${currentQ.type === 'fill_blank' ? 'Fill in the Blank' : 'Short Answer'}
+                </div>
+                
+                <!-- Question Text -->
+                <h2 style="
+                    color: var(--text-primary);
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    line-height: 1.4;
+                    margin-bottom: 32px;
+                ">
+                    ${currentQ.question}
+                </h2>
+                
+                <!-- Answer Input -->
+                <div style="margin-bottom: 40px;">
+                    ${currentQ.type === 'fill_blank' ? `
+                        <input type="text" 
+                               id="currentAnswer"
+                               value="${userAnswers[currentQuestionIndex]}"
+                               placeholder="Type your answer..." 
+                               style="
+                                   width: 100%;
+                                   padding: 16px 20px;
+                                   border: 3px solid var(--border-color);
+                                   border-radius: 12px;
+                                   background: var(--bg-primary);
+                                   color: var(--text-primary);
+                                   font-size: 1.1rem;
+                                   font-weight: 500;
+                                   text-align: center;
+                                   transition: all 0.3s ease;
+                                   box-sizing: border-box;
+                               " 
+                               onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" 
+                               onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
+                               oninput="updateCurrentAnswer()"
+                               onkeypress="handleAnswerKeypress(event)">
+                    ` : `
+                        <textarea id="currentAnswer"
+                                  placeholder="Write your answer..." 
+                                  style="
+                                      width: 100%;
+                                      height: 120px;
+                                      padding: 16px 20px;
+                                      border: 3px solid var(--border-color);
+                                      border-radius: 12px;
+                                      background: var(--bg-primary);
+                                      color: var(--text-primary);
+                                      font-size: 1.1rem;
+                                      font-weight: 500;
+                                      resize: none;
+                                      transition: all 0.3s ease;
+                                      font-family: inherit;
+                                      line-height: 1.4;
+                                      box-sizing: border-box;
+                                  " 
+                                  onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" 
+                                  onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
+                                  oninput="updateCurrentAnswer()">${userAnswers[currentQuestionIndex]}</textarea>
+                    `}
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div style="
+                    display: flex;
+                    gap: 16px;
+                    justify-content: center;
+                    align-items: center;
+                ">
+                    ${currentQuestionIndex > 0 ? `
+                        <button onclick="previousQuestion()" style="
+                            background: var(--bg-secondary);
+                            color: var(--text-primary);
+                            border: 2px solid var(--border-color);
+                            padding: 14px 24px;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        " onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15,18 9,12 15,6"/>
+                            </svg>
+                            Previous
+                        </button>
+                    ` : ''}
+                    
+                    <button onclick="${isLastQuestion ? 'finishQuiz()' : 'nextQuestion()'}" 
+                            id="nextBtn"
+                            style="
+                                background: var(--accent-blue);
+                                color: white;
+                                border: none;
+                                padding: 14px 28px;
+                                border-radius: 12px;
+                                font-size: 1rem;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                            " onmouseover="this.style.background='var(--accent-blue-dark, #2563eb)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--accent-blue)'; this.style.transform='translateY(0)'">
+                        ${isLastQuestion ? `
+                            <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Check Answers
+                        ` : `
+                            Next
+                            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,18 15,12 9,6"/>
+                            </svg>
+                        `}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Focus on input
+    setTimeout(() => {
+        document.getElementById('currentAnswer').focus();
+    }, 100);
+}
+
+function showQuizResults() {
+    const container = document.getElementById('questionsContainer');
+    const questions = window.currentQuestions;
+    let correctCount = 0;
+    
+    // Calculate results
+    const results = questions.map((question, index) => {
+        const userAnswer = userAnswers[index].trim().toLowerCase();
+        const correctAnswer = question.answer.toLowerCase();
+        const isCorrect = userAnswer === correctAnswer || 
+                         userAnswer.includes(correctAnswer) || 
+                         correctAnswer.includes(userAnswer) ||
+                         similarity(userAnswer, correctAnswer) > 0.7;
+        
+        if (isCorrect) correctCount++;
+        
+        return {
+            question: question.question,
+            userAnswer: userAnswers[index],
+            correctAnswer: question.answer,
+            isCorrect: isCorrect
+        };
+    });
+    
+    const percentage = Math.round((correctCount / totalQuestions) * 100);
+    
+    container.innerHTML = `
+        <div style="
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            padding: 40px;
+            overflow-y: auto;
+        ">
+            <!-- Results Header -->
+            <div style="
+                text-align: center;
+                margin-bottom: 40px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid var(--border-color);
+            ">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 20px;
+                    border-radius: 50%;
+                    background: ${correctCount === totalQuestions ? 'var(--accent-green, #10b981)' : 
+                                correctCount >= totalQuestions * 0.7 ? 'var(--accent-orange, #f59e0b)' : 'var(--accent-red, #ef4444)'};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 2rem;
+                    font-weight: 800;
+                ">
+                    ${percentage}%
+                </div>
+                
+                <h2 style="
+                    color: var(--text-primary);
+                    margin: 0 0 8px 0;
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                ">
+                    ${correctCount === totalQuestions ? 'Perfect Score!' : 
+                      correctCount >= totalQuestions * 0.7 ? 'Good Work!' : 'Keep Practicing!'}
+                </h2>
+                
+                <p style="
+                    color: var(--text-secondary);
+                    margin: 0;
+                    font-size: 1.1rem;
+                ">
+                    You got ${correctCount} out of ${totalQuestions} questions correct
+                </p>
+            </div>
+            
+            <!-- Detailed Results -->
+            <div style="
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                max-width: 800px;
+                margin: 0 auto;
+                width: 100%;
+            ">
+                ${results.map((result, index) => `
+                    <div style="
+                        background: var(--bg-secondary);
+                        border: 2px solid ${result.isCorrect ? 'var(--accent-green, #10b981)' : 'var(--accent-red, #ef4444)'};
+                        border-radius: 12px;
+                        padding: 20px;
+                    ">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            margin-bottom: 12px;
+                        ">
+                            <div style="
+                                width: 28px;
+                                height: 28px;
+                                border-radius: 50%;
+                                background: ${result.isCorrect ? 'var(--accent-green, #10b981)' : 'var(--accent-red, #ef4444)'};
+                                color: white;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: 700;
+                                font-size: 0.9rem;
+                            ">${index + 1}</div>
+                            
+                            <span style="
+                                background: ${result.isCorrect ? 'var(--accent-green, #10b981)' : 'var(--accent-red, #ef4444)'};
+                                color: white;
+                                padding: 4px 12px;
+                                border-radius: 12px;
+                                font-size: 0.8rem;
+                                font-weight: 600;
+                            ">
+                                ${result.isCorrect ? 'Correct' : 'Incorrect'}
+                            </span>
+                        </div>
+                        
+                        <h4 style="
+                            color: var(--text-primary);
+                            margin: 0 0 12px 0;
+                            font-size: 1rem;
+                        ">${result.question}</h4>
+                        
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: var(--text-secondary);">Your Answer:</strong>
+                            <span style="color: var(--text-primary); margin-left: 8px;">${result.userAnswer || 'No answer provided'}</span>
+                        </div>
+                        
+                        ${!result.isCorrect ? `
+                            <div>
+                                <strong style="color: var(--text-secondary);">Correct Answer:</strong>
+                                <span style="
+                                    color: var(--accent-green, #10b981);
+                                    margin-left: 8px;
+                                    font-weight: 600;
+                                ">${result.correctAnswer}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="
+                margin-top: 30px;
+                text-align: center;
+                padding-top: 20px;
+                border-top: 1px solid var(--border-color);
+            ">
+                <button onclick="restartQuiz()" style="
+                    background: var(--accent-blue);
+                    color: white;
+                    border: none;
+                    padding: 14px 24px;
+                    border-radius: 12px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin-right: 12px;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.background='var(--accent-blue-dark, #2563eb)'" onmouseout="this.style.background='var(--accent-blue)'">
+                    Try Again
+                </button>
+                
+                <button onclick="switchFlashcardTab('notes')" style="
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    border: 2px solid var(--border-color);
+                    padding: 14px 24px;
+                    border-radius: 12px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                    Back to Notes
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function restartQuiz() {
+    currentQuestionIndex = 0;
+    userAnswers = new Array(totalQuestions).fill('');
+    showSingleQuestion();
+}
+
+// Simple similarity function for answer checking
+function similarity(s1, s2) {
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const editDistance = levenshteinDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+}
+
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
+
+function saveFlashcardNotes(flashcardId) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    const saveBtn = document.getElementById('flashcardSaveBtn');
+    
+    if (!textarea || !saveBtn) return;
+    
+    const notes = textarea.value;
+    
+    // Find and update flashcard
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (flashcard) {
+        flashcard.notes = notes;
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Show save feedback
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = `
+            <svg style="width: 16px; height: 16px; margin-right: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"/>
+            </svg>
+            Saved!
+        `;
+        saveBtn.style.background = 'var(--accent-green)';
+        
+        setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.style.background = '';
+        }, 2000);
+        
+        // Update main flashcard display
+        updateFlashcardPreview(flashcardId, notes);
+        
+        showAlert('Notes saved successfully!', 'success');
+    }
+}
+
+function saveFlashcardNotesQuietly(flashcardId) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    const notes = textarea.value;
+    
+    // Find and update flashcard
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (flashcard) {
+        flashcard.notes = notes;
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Show subtle saving indicator
+        showSavingIndicator();
+        
+        // Update main flashcard display
+        updateFlashcardPreview(flashcardId, notes);
+    }
+}
+
+function showSavingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        backdrop-filter: blur(20px);
+        z-index: 10000;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    `;
+    indicator.textContent = 'Saving...';
+    
+    document.body.appendChild(indicator);
+    
+    // Animate in
+    setTimeout(() => {
+        indicator.style.opacity = '1';
+        indicator.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+function markFlashcardAsChanged() {
+    // This function can be used to track changes if needed
+    // For now, we'll just enable auto-save on close
+}
+
+function getCurrentFlashcardId() {
+    const fullpage = document.getElementById('flashcardFullpage');
+    if (!fullpage) return null;
+    
+    // Extract flashcard ID from the save button onclick attribute
+    const saveBtn = document.getElementById('flashcardSaveBtn');
+    if (saveBtn && saveBtn.onclick) {
+        const onclickStr = saveBtn.onclick.toString();
+        const match = onclickStr.match(/saveFlashcardNotes\('([^']+)'\)/);
+        return match ? match[1] : null;
+    }
+    
+    return null;
+}
+
+function updateFlashcardPreview(flashcardId, notes) {
+    // Update the preview in the main flashcards grid
+    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+    if (flashcardElement) {
+        const preview = flashcardElement.querySelector('.flashcard-preview');
+        if (preview) {
+            const previewText = notes ? 
+                (notes.length > 100 ? notes.substring(0, 100) + '...' : notes) : 
+                'Click to add notes...';
+            preview.textContent = previewText;
+        }
+    }
+}
+
+// ADD THE DELETE FUNCTIONS HERE:
+function deleteFlashcardWithConfirmation(flashcardId) {
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (!flashcard) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'duplicate-modal-overlay';
+    modal.innerHTML = `
+        <div class="duplicate-modal">
+            <h3 style="color: var(--accent-red);">Delete Flashcard?</h3>
+            <p>Are you sure you want to delete the flashcard "<strong>${flashcard.topic}</strong>" for ${flashcard.subject}?</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">This action cannot be undone.</p>
+            <div class="duplicate-modal-buttons">
+                <button class="duplicate-modal-button add-new" onclick="cancelFlashcardDelete(this.closest('.duplicate-modal-overlay'))">
+                    Cancel
+                </button>
+                <button class="duplicate-modal-button replace" onclick="confirmFlashcardDelete('${flashcardId}', this.closest('.duplicate-modal-overlay'))">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+
+function cancelFlashcardDelete(modal) {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+}
+
+function confirmFlashcardDelete(flashcardId, modal) {
+    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+    
+    // Animate flashcard out
+    if (flashcardElement) {
+        flashcardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        flashcardElement.style.transform = 'scale(0.8) translateY(-20px)';
+        flashcardElement.style.opacity = '0';
+    }
+    
+    // Remove from array and localStorage
+    flashcards = flashcards.filter(f => f.id != flashcardId);
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    
+    // Close modal
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 400);
+    
+    // Update display after animation
+    setTimeout(() => {
+        displayFlashcards();
+        updateSidebarStats();
+    }, 400);
+    
+    showAlert('Flashcard deleted successfully', 'success');
+}
+
+// Auto-save functionality
+let autoSaveTimer = null;
+
+function autoSaveNotes() {
+    clearTimeout(autoSaveTimer);
+    updateWordCount();
+    
+    autoSaveTimer = setTimeout(() => {
+        if (window.currentFlashcardId) {
+            const textarea = document.getElementById('flashcardNotesTextarea');
+            if (textarea) {
+                const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+                if (flashcard) {
+                    flashcard.notes = textarea.value;
+                    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+                    updateLastSavedTime();
+                    
+                    // Update the main flashcard display
+                    updateFlashcardPreview(window.currentFlashcardId, textarea.value);
+                }
+            }
+        }
+    }, 1000);
+}
+
+function setupAutoSave() {
+    setInterval(() => {
+        if (document.getElementById('flashcardNotesTextarea')) {
+            autoSaveNotes();
+        }
+    }, 30000);
+}
+
+function updateLastSavedTime() {
+    const timeElement = document.getElementById('lastSavedTime');
+    if (timeElement) {
+        const now = new Date();
+        timeElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+}
+
+function updateWordCount() {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    const countElement = document.getElementById('wordCount');
+    if (textarea && countElement) {
+        const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);
+        countElement.textContent = words.length;
+    }
+}
+
+function formatText(format) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    let formattedText = '';
+    switch(format) {
+        case 'bold':
+            formattedText = `**${selectedText || 'bold text'}**`;
+            break;
+        case 'italic':
+            formattedText = `*${selectedText || 'italic text'}*`;
+            break;
+    }
+    
+    textarea.setRangeText(formattedText, start, end, 'end');
+    textarea.focus();
+    autoSaveNotes();
+}
+
+function insertTemplate(type) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    const templates = {
+        bullet: '\n• \n• \n• ',
+        formula: '\n📐 [Formula Name]: [Expression]\n   Example: \n   When to use: \n'
+    };
+    
+    const template = templates[type];
+    const cursorPos = textarea.selectionStart;
+    const textBefore = textarea.value.substring(0, cursorPos);
+    const textAfter = textarea.value.substring(cursorPos);
+    
+    textarea.value = textBefore + template + textAfter;
+    textarea.focus();
+    textarea.setSelectionRange(cursorPos + template.length, cursorPos + template.length);
+    autoSaveNotes();
+}
+
+function changeTextSize(size) {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (textarea) {
+        textarea.style.fontSize = size;
+    }
+}
+
+function clearNotes() {
+    if (confirm('Are you sure you want to clear all notes? This cannot be undone.')) {
+        const textarea = document.getElementById('flashcardNotesTextarea');
+        if (textarea) {
+            textarea.value = '';
+            textarea.focus();
+            autoSaveNotes();
+        }
+    }
+}
+
+function exportNotes() {
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    
+    if (textarea && flashcard) {
+        const content = `# ${flashcard.subject} - ${flashcard.topic}\n\n${textarea.value}`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${flashcard.subject}_${flashcard.topic}_notes.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showAlert('Notes exported successfully!', 'success');
+    }
+}
+
+function focusAnswerBox(index) {
+    document.getElementById(`answer_${index}`).focus();
+}
+
+function updateAnswer(index) {
+    const textarea = document.getElementById(`answer_${index}`);
+    if (textarea) {
+        userAnswers[index] = textarea.value;
+    }
+}
+
+function submitAllAnswers() {
+    // Update all answers
+    for (let i = 0; i < totalQuestions; i++) {
+        updateAnswer(i);
+    }
+    
+    // Show results using existing function
+    showQuizResults();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadAppState();
+    loadSettings();
+    
+    // Initialize authentication system
+    initAuthenticationSystem();
+    
+    // Initialize EmailJS
+    initEmailJS();
+    
+    // Migrate existing emails to lowercase
+    migrateExistingEmails();
+    
+    // Rest of initialization...
+    const currentPage = appState.currentPage || 'home';
+    
+    // Initialize upload after a delay to ensure DOM is ready
+    setTimeout(() => {
+        initHomeUpload();
+    }, 500);
+    
+    // Handle days until exam change
+    setTimeout(() => {
+        handleDaysUntilExamChange();
+    }, 300);
+    
+    setTimeout(() => {
+        if (Object.keys(appState.schedules).length > 0) {
+            updateCenteredCarousel();
+        }
+        appState.isInitialized = true;
+    }, 300);
+    
+    // Initialize styled dropdowns only once with delay
+    let dropdownsInitialized = false;
+    setTimeout(() => {
+        if (!dropdownsInitialized) {
+            initStyledDropdowns();
+            dropdownsInitialized = true;
+        }
+    }, 800); // Increased delay to prevent conflicts
+    
+    // Add highlight and modal styles
+    addHighlightAndModalStyles();
+});
+
+
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.revision-card-mini-menu') && !event.target.closest('.dropdown')) {
+        closeAllDropdowns();
+    }
+    
+    if (!event.target.closest('.tab-menu')) {
+        document.querySelectorAll('.tab-dropdown').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    }
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeSidebar();
+        closeAllDropdowns();
+    }
+    
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        openSidebar();
+    }
+});
+
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        appState.visibleTabCount = 2;
+    } else {
+        appState.visibleTabCount = 1;
+    }
+    updateCenteredCarousel();
+});
+
+// Touch event listeners
+document.addEventListener('touchstart', handleTouchStart, { passive: false });
+document.addEventListener('touchmove', handleTouchMove, { passive: false });
+document.addEventListener('touchend', handleTouchEnd);
+
+// Prevent sidebar closing when hovering over trigger while leaving sidebar
+const sidebarTrigger = document.querySelector('.sidebar-trigger');
+if (sidebarTrigger) {
+    sidebarTrigger.addEventListener('mouseenter', function() {
+        clearTimeout(sidebarTimeout);
+    });
+}
+
+// File Upload Management
+let uploadedFiles = JSON.parse(localStorage.getItem('gcseUploadedFiles') || '[]');
+
+function initFileUpload() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileUpload');
+    
+    if (!uploadArea || !fileInput) return;
+    
+    // Drag and drop events
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    displayUploadedFiles();
+}
+
+function handleFiles(files) {  
+    Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileData = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: formatFileSize(file.size),
+                    type: file.type,
+                    data: e.target.result,
+                    uploadDate: new Date().toISOString()
+                };
+                
+                uploadedFiles.push(fileData);
+                localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
+                displayUploadedFiles();
+                updateSidebarStats(); // Update stats
+                updateHomeUploadDisplay(); // Update home display
+                showAlert('File uploaded successfully!', 'success');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            showAlert('Only images and PDF files are supported', 'error');
+        }
+    });
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function displayUploadedFiles() {
+    const container = document.getElementById('uploadedFiles');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    uploadedFiles.forEach(file => {
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'uploaded-file';
+        fileDiv.style.cursor = 'pointer';
+        
+        let filePreview = '';
+        if (file.type.startsWith('image/')) {
+            filePreview = `<img src="${file.data}" alt="${file.name}">`;
+        } else {
+            filePreview = `
+                <div style="width: 100%; height: 120px; background: var(--calendar-day); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                    <svg style="width: 48px; height: 48px; color: var(--accent-red);" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                    </svg>
+                </div>
+            `;
+        }
+        
+        fileDiv.innerHTML = `
+            ${filePreview}
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${file.size}</div>
+            <button class="file-delete" onclick="event.stopPropagation(); deleteUploadedFile('${file.id}')">×</button>
+        `;
+        
+        // Add click handler to view file
+        fileDiv.addEventListener('click', () => viewUploadedFile(file.id));
+        
+        container.appendChild(fileDiv);
+    });
+}
+
+function deleteUploadedFile(fileId) {
+    uploadedFiles = uploadedFiles.filter(file => file.id != fileId);
+    localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
+    displayUploadedFiles();
+    showAlert('File deleted', 'success');
+}
+
+function viewUploadedFile(fileId) {
+    const file = uploadedFiles.find(f => f.id == fileId);
+    if (!file) return;
+    
+    // Create full-screen modal
+    const modal = document.createElement('div');
+    modal.id = 'fileViewModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    let content = '';
+    if (file.type === 'application/pdf') {
+        content = `<embed src="${file.data}" type="application/pdf" style="width: 90%; height: 90%; border-radius: 8px;" />`;
+    } else {
+        content = `<img src="${file.data}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;" alt="${file.name}">`;
+    }
+    
+    modal.innerHTML = `
+        ${content}
+        <button onclick="closeFileView()" style="
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000000;
+        " onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">×</button>
+        <div style="
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        ">${file.name} • ${file.size} • Press ESC to close</div>
+    `;
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeFileView();
+        }
+    });
+    
+    document.body.appendChild(modal);
+    
+    // Add ESC key listener
+    function handleEscape(event) {
+        if (event.key === 'Escape') {
+            closeFileView();
+        }
+    }
+    
+    document.addEventListener('keydown', handleEscape);
+    modal.escapeHandler = handleEscape; // Store reference for cleanup
+    
+    // Animate in
+    setTimeout(() => modal.style.opacity = '1', 50);
+}
+
+function closeFileView() {
+    const modal = document.getElementById('fileViewModal');
+    if (modal) {
+        // Remove ESC listener
+        if (modal.escapeHandler) {
+            document.removeEventListener('keydown', modal.escapeHandler);
+        }
+        
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+function initHomeUpload() {
+    // Wait for DOM to be fully ready
+    if (document.readyState !== 'complete') {
+        setTimeout(initHomeUpload, 100);
+        return;
+    }
+    
+    const uploadArea = document.getElementById('homeUploadArea');
+    const fileInput = document.getElementById('homeFileUpload');
+    const uploadSection = document.getElementById('homeUploadSection');
+    
+    if (!uploadSection) {
+        console.log('Upload section not found, retrying...');
+        setTimeout(initHomeUpload, 500);
+        return;
+    }
+    
+    // If upload area doesn't exist but section does, create it
+    if (!uploadArea) {
+        updateHomeUploadDisplay();
+        setTimeout(initHomeUpload, 200);
+        return;
+    }
+    
+    if (!fileInput) {
+        console.log('File input not found, creating it...');
+        const newFileInput = document.createElement('input');
+        newFileInput.type = 'file';
+        newFileInput.id = 'homeFileUpload';
+        newFileInput.accept = 'image/*,application/pdf';
+        newFileInput.multiple = true;
+        newFileInput.style.display = 'none';
+        uploadSection.appendChild(newFileInput);
+        setTimeout(initHomeUpload, 200);
+        return;
+    }
+    
+    // Remove existing listeners to prevent duplicates
+    const newUploadArea = uploadArea.cloneNode(true);
+    const newFileInput = fileInput.cloneNode(true);
+    
+    uploadArea.parentNode.replaceChild(newUploadArea, uploadArea);
+    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    
+    // Add event listeners
+    setupUploadListeners(newUploadArea, newFileInput);
+    
+    console.log('Upload initialization complete');
+}
+
+function setupUploadListeners(uploadArea, fileInput) {
+    // Drag and drop events
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    uploadArea.addEventListener('click', (e) => {
+        e.preventDefault();
+        fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFiles(e.target.files);
+        }
+    });
+}
+
+function updateHomeUploadDisplay() {
+    const section = document.getElementById('homeUploadSection');
+    if (!section) return;
+    
+    if (uploadedFiles.length === 0) {
+        // Show full upload area smoothly without blinking
+        section.innerHTML = `
+            <div class="upload-area" id="homeUploadArea" style="margin-top: 24px; opacity: 1; transform: translateY(0); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17,8 12,3 7,8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <div class="upload-text">Upload Study Materials</div>
+                <div class="upload-subtext">Drag files here or click to browse</div>
+            </div>
+            <input type="file" id="homeFileUpload" accept="image/*,application/pdf" multiple style="display: none;">
+        `;
+        
+        // Reinitialize event listeners directly (without calling initHomeUpload)
+        const uploadArea = document.getElementById('homeUploadArea');
+        const fileInput = document.getElementById('homeFileUpload');
+        
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+                updateHomeUploadDisplay();
+            });
+            
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+                updateHomeUploadDisplay();
+            });
+        }
+    } else {
+        // Show first uploaded file
+        const firstFile = uploadedFiles[0];
+        let fileDisplay = '';
+        
+        if (firstFile.type.startsWith('image/')) {
+            fileDisplay = `<img src="${firstFile.data}" alt="${firstFile.name}">`;
+        } else {
+            fileDisplay = `
+                <svg class="pdf-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                </svg>
+            `;
+        }
+        
+        section.innerHTML = `
+            <div class="upload-image-display" style="opacity: 1; transform: translateY(0);">
+                <div class="uploaded-image-square" onclick="viewUploadedFile('${firstFile.id}')">
+                    ${fileDisplay}
+                    <button class="image-delete-btn" onclick="event.stopPropagation(); deleteUploadedFileWithAnimation('${firstFile.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <polyline points="3,6 5,6 21,6"/>
+                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="upload-image-info">
+                    <strong>${firstFile.name}</strong><br>
+                    File uploaded • ${firstFile.size}
+                </div>
+                <div class="upload-manage-buttons">
+                    <button class="upload-manage-btn view" onclick="viewUploadedFile('${firstFile.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        View File
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function deleteUploadedFileWithAnimation(fileId) {
+    const section = document.getElementById('homeUploadSection');
+    const imageDisplay = section.querySelector('.upload-image-display');
+    
+    // Smooth fade out
+    imageDisplay.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    imageDisplay.style.opacity = '0';
+    imageDisplay.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+        deleteUploadedFile(fileId);
+        updateHomeUploadDisplay();
+        updateSidebarStats();
+    }, 400);
+}
+function viewAllUploadedFiles() {
+    // Create a modal to show all files
+    const modal = document.createElement('div');
+    modal.className = 'duplicate-modal-overlay';
+    modal.style.zIndex = '10000';
+    modal.innerHTML = `
+        <div class="duplicate-modal" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 20px;">All Uploaded Files (${uploadedFiles.length})</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                ${uploadedFiles.map(file => {
+                    let thumb = '';
+                    if (file.type.startsWith('image/')) {
+                        thumb = `<img src="${file.data}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">`;
+                    } else {
+                        thumb = `
+                            <div style="width: 100%; height: 80px; background: var(--calendar-day); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <svg style="width: 32px; height: 32px; color: var(--accent-red);" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                            </div>
+                        `;
+                    }
+                    return `
+                        <div onclick="viewUploadedFile('${file.id}'); document.querySelector('.duplicate-modal-overlay').remove();" style="cursor: pointer; text-align: center; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                            ${thumb}
+                            <div style="font-size: 0.75rem; margin-top: 4px; word-break: break-word;">${file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <button onclick="this.closest('.duplicate-modal-overlay').remove()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">Close</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 100);
+}
+    </script>
+</body>
+</html>
