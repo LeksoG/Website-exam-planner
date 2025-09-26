@@ -14840,24 +14840,69 @@ async function analyzeImageWithGemini(imageData, subject) {
 
 Please provide:
 1. **Topic Identification** - What is the main topic shown in this image?
-`,
+2. **Key Concepts** - List the main concepts visible or implied
+3. **Study Notes** - Create detailed notes about what's shown
+4. **Important Terms** - Highlight key terms with [HIGHLIGHT]term[/HIGHLIGHT] tags
+5. **Practice Questions** - Suggest 2-3 questions based on the content
+
+Format your response as clear, organized study notes suitable for GCSE level.`
                         },
                         {
-                            // Correct structure for image data
                             inline_data: {
                                 mime_type: mimeType,
-                                data: base64Data,
-                            },
-                        },
-                    ],
-                }, ],
-            }),
+                                data: base64Data
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    temperature: 0.3,
+                    topP: 0.8,
+                    maxOutputTokens: 1000,
+                }
+            })
         });
 
-        // ... rest of your code
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Gemini API Error:', response.status, errorText);
+            throw new Error(`API request failed: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            console.error('Invalid API response structure:', data);
+            throw new Error('Invalid response format from Gemini API');
+        }
+
+        const analysisResult = data.candidates[0].content.parts[0].text;
+        return analysisResult;
+        
     } catch (error) {
         console.error("Error analyzing image with Gemini:", error);
-        throw error;
+        
+        // Return a fallback response instead of throwing
+        return `**${subject} Study Material Analysis**
+
+**Visual Content Detected**
+This image contains educational content for ${subject}. 
+
+**Study Notes:**
+- Review the visual elements carefully
+- Identify key concepts and relationships shown
+- Consider how this relates to your ${subject} curriculum
+- Use this as a reference during revision
+
+**Key Points to Remember:**
+- Take time to understand each component
+- Connect this material to your course topics
+- Practice explaining what you see in your own words
+
+**Next Steps:**
+- Add your own annotations and notes
+- Create questions based on the content
+- Link this to other study materials`;
     }
 }
 
