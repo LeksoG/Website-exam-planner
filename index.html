@@ -14821,7 +14821,6 @@ async function callGeminiAPI(userMessage, context) {
     }
 }
 
-// Add this function for Gemini Vision API
 async function analyzeImageWithGemini(imageData, subject) {
     try {
         // Convert base64 to the format Gemini expects
@@ -14841,34 +14840,26 @@ async function analyzeImageWithGemini(imageData, subject) {
 
 Please provide:
 1. **Topic Identification** - What is the main topic shown in this image?
-`, // Added newline for clarity, complete the prompt here
+`,
                         },
                         {
-                            inlineData: {
-                                mime_type: mimeType, // Use the extracted mime type
-                                data: base64Data, // Use the base64 data
-                            }
-                        }
-                    ]
-                }]
+                            // Correct structure for image data
+                            inline_data: {
+                                mime_type: mimeType,
+                                data: base64Data,
+                            },
+                        },
+                    ],
+                }, ],
             }),
         });
 
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error('Gemini API error:', response.status, response.statusText, errorBody);
-            throw new Error(`Gemini API request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
-
+        // ... rest of your code
     } catch (error) {
-        console.error('Error analyzing image with Gemini:', error);
+        console.error("Error analyzing image with Gemini:", error);
         throw error;
     }
 }
-
 
 // Create system prompt with context
 function createSystemPrompt(context) {
@@ -19516,6 +19507,7 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
 
 
