@@ -9630,6 +9630,9 @@ let currentAISubject = 'General';
 let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
+// API Configuration
+const GEMINI_API_KEY = 'AIzaSyCVYNL_SjMbNl5fFPZrlbT3HGNya7IoLfY';
+
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -15554,22 +15557,13 @@ async function analyzeImageWithGemini(imageData, subject) {
         const base64Data = imageData.split(',')[1];
         const mimeType = imageData.split(';')[0].split(':')[1];
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: `Analyze this educational image and create comprehensive study content for a GCSE ${subject} student. 
-
-Please provide:
-1. **Topic Identification** - What is the main topic shown in this image?
-2. **Key Concepts** - List 5-7 important concepts visible in the image
-3. **Detailed Explanation** - A clear, structured explanation of what's shown (200-300 words)
-4. **Study Questions** - 5 questions ranging from basic recall to application level
-5. **Memory Tips** - 2-3 helpful ways to remember this information
-
-Format your response with clear headings and bullet points for easy studying.` },
+                        { text: `Analyze this educational image and create study content for GCSE ${subject}.` },
                         {
                             inlineData: {
                                 mimeType: mimeType,
@@ -15580,15 +15574,13 @@ Format your response with clear headings and bullet points for easy studying.` }
                 }],
                 generationConfig: {
                     temperature: 0.4,
-                    topP: 0.8,
-                    maxOutputTokens: 1500,
+                    maxOutputTokens: 800,
                 }
             })
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API request failed: ${response.status} - ${errorText}`);
+            throw new Error(`API request failed: ${response.status}`);
         }
 
         const data = await response.json();
@@ -16326,7 +16318,7 @@ function handleFlashcardCreation(event) {
     }
 }
 
-// Add this function to process uploaded images and create flashcards
+// Find this function and replace it:
 async function processUploadedImagesForFlashcards(subjects) {
     const imageFiles = uploadedFiles.filter(file => file.type.startsWith('image/'));
     
@@ -16334,54 +16326,33 @@ async function processUploadedImagesForFlashcards(subjects) {
     
     for (let i = 0; i < imageFiles.length; i++) {
         const imageFile = imageFiles[i];
-        
-        // Determine the best subject match for this image
         const primarySubject = subjects[0] || 'General Studies';
+        const topicName = extractTopicFromFilename(imageFile.name) || `Visual Study Material ${i + 1}`;
+        
+        let analysisContent = `**Study Material - ${primarySubject}**\n\nImage uploaded for ${topicName}. Add your notes here.`;
         
         try {
-            // Analyze image with Gemini
-            const analysisContent = await analyzeImageWithGemini(imageFile.data, primarySubject);
-            
-            // Extract topic from filename or analysis
-            const topicName = extractTopicFromFilename(imageFile.name) || `Visual Study Material ${i + 1}`;
-            
-            // Create flashcard with analysis content
-            const flashcard = {
-                id: Date.now() + Math.random() + i,
-                subject: primarySubject,
-                topic: topicName,
-                notes: analysisContent,
-                contentFile: imageFile.id,
-                imageData: imageFile.data, // Store image data for display
-                created: new Date().toISOString(),
-                isFromImage: true // Flag to identify image-based flashcards
-            };
-            
-            flashcards.push(flashcard);
-            
+            analysisContent = await analyzeImageWithGemini(imageFile.data, primarySubject);
         } catch (error) {
             console.error('Error processing image:', error);
-            
-            // Create basic flashcard even if analysis fails
-            const flashcard = {
-                id: Date.now() + Math.random() + i,
-                subject: primarySubject,
-                topic: `Study Image: ${imageFile.name}`,
-                notes: `**Visual Study Material**\n\nThis image contains important educational content for ${primarySubject}. Please review the visual elements and consider:\n\n• What are the main concepts shown?\n• How do these relate to your studies?\n• What key information can you extract?\n• How can you use this for revision?`,
-                contentFile: imageFile.id,
-                imageData: imageFile.data,
-                created: new Date().toISOString(),
-                isFromImage: true
-            };
-            
-            flashcards.push(flashcard);
         }
+        
+        const flashcard = {
+            id: Date.now() + Math.random() + i,
+            subject: primarySubject,
+            topic: topicName,
+            notes: analysisContent,
+            contentFile: imageFile.id,
+            // Don't store image data to avoid quota issues
+            created: new Date().toISOString(),
+            isFromImage: true
+        };
+        
+        flashcards.push(flashcard);
     }
     
-    // Save flashcards
     localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
     updateSidebarStats();
-    
     showAlert(`Created ${imageFiles.length} flashcard(s) from uploaded images!`, 'success');
 }
 
@@ -17510,25 +17481,23 @@ function revealContentWithWordGlow(content) {
 async function callGeminiForStructure(content, structureType, subject) {
     try {
         const enhancedPrompts = {
-            // ... your existing prompts ...
+            // Your existing prompts...
         };
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: enhancedPrompts[structureType] }] }],
                 generationConfig: {
                     temperature: 0.3,
-                    topP: 0.8,
-                    maxOutputTokens: 1500,
+                    maxOutputTokens: 1000,
                 }
             })
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API request failed: ${response.status} - ${errorText}`);
+            throw new Error(`API request failed: ${response.status}`);
         }
 
         const data = await response.json();
