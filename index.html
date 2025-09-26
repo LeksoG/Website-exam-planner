@@ -9108,19 +9108,50 @@ async function loadConfig() {
 }
 
 async function initializeApp() {
+    console.log('🚀 Starting app initialization...');
+    
     try {
         // Load configuration from Vercel first
+        console.log('📡 Attempting to load config...');
         await loadConfig();
         console.log('✅ Configuration loaded successfully');
+        console.log('🔑 GEMINI_API_KEY status:', GEMINI_API_KEY ? 'LOADED' : 'NOT LOADED');
+        console.log('🔑 configLoaded flag:', configLoaded);
         
         // Initialize EmailJS after config is loaded
         if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey) {
             emailjs.init(EMAILJS_CONFIG.publicKey);
+            console.log('📧 EmailJS initialized');
         }
         
     } catch (error) {
         console.error('❌ Failed to load configuration:', error);
+        console.log('🔑 Final GEMINI_API_KEY status:', GEMINI_API_KEY ? 'LOADED' : 'NOT LOADED');
+        console.log('🔑 Final configLoaded flag:', configLoaded);
         showAlert('Configuration failed to load. Some features may not work.', 'error');
+    }
+    
+    console.log('🏁 App initialization complete');
+}
+
+// Add this function to test your config endpoint
+async function testConfigEndpoint() {
+    try {
+        console.log('🧪 Testing /api/config endpoint...');
+        const response = await fetch('/api/config');
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        if (response.ok) {
+            const config = await response.json();
+            console.log('📦 Config data received:', config);
+            console.log('🔍 GEMINI_API_KEY in response:', !!config.GEMINI_API_KEY);
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Config endpoint error:', errorText);
+        }
+    } catch (error) {
+        console.error('❌ Config endpoint fetch failed:', error);
     }
 }
 
@@ -9836,6 +9867,7 @@ function displayFlashcards() {
         flashcardElement.style.cursor = 'pointer';
         
         // Choose what to display - image thumbnail or text preview
+        let contentDisplay = '';
         if (flashcard.imageData) {
             contentDisplay = `
                 <div class="flashcard-image-preview" style="
@@ -19137,16 +19169,28 @@ function submitAllAnswers() {
     showQuizResults();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('📄 DOM Content Loaded');
+    
+    // Test the config endpoint first
+    await testConfigEndpoint();
+    
+    // Load configuration FIRST before anything else
+    console.log('⏳ Waiting for app initialization...');
+    await initializeApp();
+    
+    // Add a delay to ensure everything is loaded
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    console.log('🔍 Final check - GEMINI_API_KEY:', GEMINI_API_KEY ? 'AVAILABLE' : 'NOT AVAILABLE');
+    console.log('🔍 Final check - configLoaded:', configLoaded);
+    
     loadAppState();
     loadSettings();
     
-    // Initialize authentication system (will show auth modal if not logged in)
+    // Initialize authentication system
     initAuthenticationSystem();
-    
-    // Initialize EmailJS
-    initEmailJS();
+
     
     // Rest of your existing initialization code...
     const currentPage = appState.currentPage || 'home';
@@ -19608,8 +19652,6 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
-
-
 
 
 
