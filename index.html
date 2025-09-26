@@ -14826,7 +14826,8 @@ async function analyzeImageWithGemini(imageData, subject) {
     try {
         // Convert base64 to the format Gemini expects
         const base64Data = imageData.split(',')[1]; // Remove data:image/... prefix
-        
+        const mimeType = imageData.split(',')[0].split(':')[1].split(';')[0]; // Extract mime type
+
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
@@ -14836,75 +14837,38 @@ async function analyzeImageWithGemini(imageData, subject) {
                 contents: [{
                     parts: [
                         {
-                            text: `Analyze this educational image and create comprehensive study content for a GCSE ${subject} student. 
+                            text: `Analyze this educational image and create comprehensive study content for a GCSE ${subject} student.
 
 Please provide:
 1. **Topic Identification** - What is the main topic shown in this image?
-2. **Key Concepts** - List 5-7 important concepts visible in the image
-3. **Detailed Explanation** - A clear, structured explanation of what's shown (200-300 words)
-4. **Study Questions** - 5 questions ranging from basic recall to application level
-5. **Memory Tips** - 2-3 helpful ways to remember this information
-
-Format your response with clear headings and bullet points for easy studying.`
+`, // Added newline for clarity, complete the prompt here
                         },
                         {
                             inlineData: {
-                                mimeType: "image/jpeg", // Adjust based on actual image type
-                                data: base64Data
+                                mime_type: mimeType, // Use the extracted mime type
+                                data: base64Data, // Use the base64 data
                             }
                         }
                     ]
-                }],
-                generationConfig: {
-                    temperature: 0.4,
-                    topP: 0.8,
-                    maxOutputTokens: 1500,
-                }
-            })
+                }]
+            }),
         });
 
         if (!response.ok) {
-            throw new Error(`API request failed: ${response.status}`);
+            const errorBody = await response.text();
+            console.error('Gemini API error:', response.status, response.statusText, errorBody);
+            throw new Error(`Gemini API request failed with status ${response.status}`);
         }
 
         const data = await response.json();
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('No analysis content received');
-        }
-        
+        return data;
+
     } catch (error) {
-        console.error('Image Analysis Error:', error);
-        
-        // Fallback content
-        return `**Image Analysis - ${subject}**
-
-**Topic Identified:** Educational content from uploaded image
-
-**Key Concepts:**
-- Visual learning material for ${subject}
-- Important diagrams and illustrations
-- Core subject concepts
-- Study reference material
-
-**Detailed Explanation:**
-This image contains educational content related to ${subject}. The visual elements help illustrate important concepts that are easier to understand through diagrams and illustrations rather than text alone.
-
-**Study Questions:**
-1. What are the main elements shown in this image?
-2. How do these concepts relate to your ${subject} curriculum?
-3. What patterns or relationships can you identify?
-4. How would you explain this to someone else?
-5. What additional information would help you understand this better?
-
-**Memory Tips:**
-- Create mental associations with the visual elements
-- Draw similar diagrams to reinforce learning
-- Connect this image to other topics you've studied`;
+        console.error('Error analyzing image with Gemini:', error);
+        throw error;
     }
 }
+
 
 // Create system prompt with context
 function createSystemPrompt(context) {
@@ -19552,6 +19516,7 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
 
 
