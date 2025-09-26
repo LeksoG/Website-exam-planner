@@ -8957,6 +8957,21 @@ body {
 .dropdown,
 .tab-dropdown-overlay { z-index: var(--z-dropdown) !important; }
 .notification-container { z-index: var(--z-notification) !important; }
+
+.flashcard.selection-mode {
+    border: 2px dashed var(--border-color);
+    transform: scale(0.95);
+}
+
+.flashcard.selected {
+    border-color: var(--accent-blue) !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    transform: scale(0.95) !important;
+}
+
+.flashcard-controls {
+    align-items: center;
+}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -10239,6 +10254,45 @@ function displayFlashcards() {
     }
     
     grid.innerHTML = '';
+
+    // In displayFlashcards() function, after the grid check but before the forEach loop, add:
+if (flashcards.length > 0) {
+    // Add control buttons before the grid
+    const controlsDiv = document.createElement('div');
+    controlsDiv.className = 'flashcard-controls';
+    controlsDiv.style.cssText = `
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        justify-content: flex-end;
+    `;
+    
+    controlsDiv.innerHTML = `
+        <button id="selectModeBtn" onclick="toggleSelectMode()" style="
+            padding: 10px 16px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">Select</button>
+        
+        <button onclick="deleteAllFlashcardsWithConfirmation()" style="
+            padding: 10px 16px;
+            background: var(--accent-red, #ef4444);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">Delete All</button>
+    `;
+    
+    grid.parentElement.insertBefore(controlsDiv, grid);
+}
     
     flashcards.forEach((flashcard, index) => {
         const colorIndex = (index % 4) + 1;
@@ -10283,12 +10337,28 @@ function displayFlashcards() {
             `;
         }
         
-        flashcardElement.innerHTML = `
-            <div class="flashcard-content">
-                <div class="flashcard-subject">${flashcard.subject}</div>
-                <div class="flashcard-topic">${flashcard.topic}</div>
-                ${contentDisplay}
-            </div>
+        // Replace the flashcardElement.innerHTML in displayFlashcards() with:
+flashcardElement.innerHTML = `
+    <div class="flashcard-selection" style="
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        display: none;
+        z-index: 10;
+    ">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleFlashcardSelection('${flashcard.id}')" 
+               id="checkbox_${flashcard.id}" style="
+               width: 20px;
+               height: 20px;
+               cursor: pointer;
+        ">
+    </div>
+    
+    <div class="flashcard-content">
+        <div class="flashcard-subject">${flashcard.subject}</div>
+        <div class="flashcard-topic">${flashcard.topic}</div>
+        ${contentDisplay}
+    </div>
             
             <!-- Hover buttons container -->
             <div class="flashcard-hover-buttons" style="
@@ -10367,6 +10437,145 @@ function displayFlashcards() {
         
         grid.appendChild(flashcardElement);
     });
+}
+
+// Selection mode state
+let isSelectMode = false;
+let selectedFlashcards = new Set();
+
+function toggleSelectMode() {
+    isSelectMode = !isSelectMode;
+    const selectBtn = document.getElementById('selectModeBtn');
+    const checkboxes = document.querySelectorAll('.flashcard-selection');
+    const flashcardElements = document.querySelectorAll('.flashcard');
+    
+    if (isSelectMode) {
+        // Enter selection mode
+        selectBtn.textContent = 'Cancel';
+        selectBtn.style.background = 'var(--bg-secondary)';
+        selectBtn.style.color = 'var(--text-primary)';
+        
+        // Show checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'block';
+        });
+        
+        // Add selection styling
+        flashcardElements.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.classList.add('selection-mode');
+        });
+        
+        // Add delete selected button
+        addDeleteSelectedButton();
+        
+    } else {
+        // Exit selection mode
+        selectBtn.textContent = 'Select';
+        selectBtn.style.background = 'var(--accent-blue)';
+        selectBtn.style.color = 'white';
+        
+        // Hide checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'none';
+        });
+        
+        // Remove selection styling
+        flashcardElements.forEach(card => {
+            card.style.cursor = '';
+            card.classList.remove('selection-mode', 'selected');
+        });
+        
+        // Clear selections
+        selectedFlashcards.clear();
+        document.querySelectorAll('input[id^="checkbox_"]').forEach(cb => cb.checked = false);
+        
+        // Remove delete selected button
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        if (deleteSelectedBtn) deleteSelectedBtn.remove();
+    }
+}
+
+function addDeleteSelectedButton() {
+    const controlsDiv = document.querySelector('.flashcard-controls');
+    const deleteSelectedBtn = document.createElement('button');
+    deleteSelectedBtn.id = 'deleteSelectedBtn';
+    deleteSelectedBtn.textContent = 'Delete Selected (0)';
+    deleteSelectedBtn.style.cssText = `
+        padding: 10px 16px;
+        background: var(--accent-orange, #f59e0b);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.5;
+    `;
+    deleteSelectedBtn.onclick = deleteSelectedFlashcards;
+    controlsDiv.insertBefore(deleteSelectedBtn, controlsDiv.lastElementChild);
+}
+
+function toggleFlashcardSelection(flashcardId) {
+    const checkbox = document.getElementById(`checkbox_${flashcardId}`);
+    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    
+    if (checkbox.checked) {
+        selectedFlashcards.add(flashcardId);
+        flashcardElement.classList.add('selected');
+    } else {
+        selectedFlashcards.delete(flashcardId);
+        flashcardElement.classList.remove('selected');
+    }
+    
+    // Update delete selected button
+    if (deleteSelectedBtn) {
+        const count = selectedFlashcards.size;
+        deleteSelectedBtn.textContent = `Delete Selected (${count})`;
+        deleteSelectedBtn.style.opacity = count > 0 ? '1' : '0.5';
+        deleteSelectedBtn.disabled = count === 0;
+    }
+}
+
+function deleteSelectedFlashcards() {
+    if (selectedFlashcards.size === 0) {
+        showAlert('No flashcards selected', 'error');
+        return;
+    }
+    
+    const confirmMessage = `Are you sure you want to delete ${selectedFlashcards.size} selected flashcard(s)? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+        // Remove selected flashcards
+        flashcards = flashcards.filter(f => !selectedFlashcards.has(f.id));
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Exit selection mode and refresh display
+        toggleSelectMode();
+        displayFlashcards();
+        updateSidebarStats();
+        
+        showAlert(`${selectedFlashcards.size} flashcard(s) deleted successfully`, 'success');
+        selectedFlashcards.clear();
+    }
+}
+
+function deleteAllFlashcardsWithConfirmation() {
+    if (flashcards.length === 0) {
+        showAlert('No flashcards to delete', 'error');
+        return;
+    }
+    
+    const confirmMessage = `Are you sure you want to delete ALL ${flashcards.length} flashcard(s)? This action cannot be undone.`;
+    
+    if (confirm(confirmMessage)) {
+        flashcards = [];
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        displayFlashcards();
+        updateSidebarStats();
+        showAlert('All flashcards deleted successfully', 'success');
+    }
 }
 
 function showDashboardWithLoading() {
