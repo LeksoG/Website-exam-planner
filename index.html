@@ -9076,6 +9076,7 @@ async function loadConfig() {
     // Update Google Calendar config
     GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
     GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+    GEMINI_API_KEY = config.GEMINI_API_KEY;
     
     // Update EmailJS config
     EMAILJS_CONFIG = {
@@ -9171,9 +9172,6 @@ let aiChatbotOpen = false;
 let currentAISubject = 'General';
 let aiChatHistory = [];
 let aiGeneratedQuestions = [];
-
-// API Configuration
-const GEMINI_API_KEY = 'your-gemini-api-key';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -19551,4 +19549,5 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
