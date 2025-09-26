@@ -14737,7 +14737,7 @@ async function callGeminiAPI(userMessage, context) {
         throw new Error('API key not configured');
     }
 
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
     
     // Create system prompt with context
     const systemPrompt = createSystemPrompt(context);
@@ -14826,7 +14826,7 @@ async function analyzeImageWithGemini(imageData, subject) {
         // Convert base64 to the format Gemini expects
         const base64Data = imageData.split(',')[1]; // Remove data:image/... prefix
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -16760,7 +16760,7 @@ async function translateKeyTerm(term, subject) {
 }
 
 async function getAIExplanation(term, subject) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -16885,7 +16885,7 @@ ${content}
 Transform this into effective Q&A study format with highlighted key terms.`
         };
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -19551,3 +19551,4 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
