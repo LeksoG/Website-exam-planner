@@ -15582,10 +15582,11 @@ async function analyzeImageWithGemini(imageData, subject) {
 
         const data = await response.json();
         
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
             return data.candidates[0].content.parts[0].text;
         } else {
-            throw new Error('No analysis content received');
+            console.error('Invalid API response structure:', data);
+            throw new Error('Invalid response format from API');
         }
         
     } catch (error) {
