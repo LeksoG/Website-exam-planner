@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,7 +11,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Get API key from Vercel environment variables
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
@@ -23,7 +21,10 @@ export default async function handler(req, res) {
     const { prompt, imageData, type } = req.body;
     
     let requestBody;
+    let modelName;
+    
     if (type === 'image' && imageData) {
+      modelName = 'gemini-pro-vision';
       requestBody = {
         contents: [{
           parts: [
@@ -43,6 +44,7 @@ export default async function handler(req, res) {
         }
       };
     } else {
+      modelName = 'gemini-pro';
       requestBody = {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
@@ -53,7 +55,7 @@ export default async function handler(req, res) {
       };
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
@@ -65,10 +67,10 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    res.status(200).json(data);
+    return res.status(200).json(data);
     
   } catch (error) {
-    console.error('Gemini API Error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API Error:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
