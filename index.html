@@ -9045,7 +9045,8 @@ let GOOGLE_CLIENT_ID = 'your-google-client-id';
 let GOOGLE_API_KEY = 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-
+const GEMINI_API_KEY = 'your-gemini-api-key'
+        
         // EmailJS Configuration
 let EMAILJS_CONFIG = {
     serviceID: 'your-service-id',
@@ -9090,7 +9091,8 @@ async function loadConfig() {
     console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
     console.log('Google API Key set:', !!GOOGLE_API_KEY);
     console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
-    
+    console.log('GEMINI API Key set:', !!GEMINI_API_KEY);
+      
     return config;
     
   } catch (error) {
@@ -19549,5 +19551,6 @@ function viewAllUploadedFiles() {
     </script>
 </body>
 </html>
+
 
 
