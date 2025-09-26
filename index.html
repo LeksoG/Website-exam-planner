@@ -8749,6 +8749,214 @@ html, body {
         text-align: center;
     }
 }
+
+/* Fixed Modal Centering */
+.auth-overlay,
+.duplicate-modal-overlay,
+.payment-modal-overlay,
+.delete-account-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10000 !important;
+}
+
+.auth-modal,
+.duplicate-modal,
+.payment-modal {
+    position: relative !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 20px !important;
+    max-height: calc(100vh - 40px) !important;
+    overflow-y: auto !important;
+}
+
+/* Mobile specific modal fixes */
+@media (max-width: 768px) {
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        margin: 20px !important;
+    }
+    
+    .auth-fullpage-container {
+        position: relative !important;
+        transform: none !important;
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        margin: 20px !important;
+    }
+}
+
+/* Fixed Bottom Navigation */
+.bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    transform: translateZ(0); /* Force hardware acceleration */
+    -webkit-transform: translateZ(0);
+}
+
+/* Prevent body scroll affecting bottom nav */
+body {
+    padding-bottom: 80px !important;
+}
+
+/* Ensure container doesn't overlap bottom nav */
+.container {
+    margin-bottom: 0 !important;
+    padding-bottom: 20px !important;
+}
+
+/* Fix for settings page specifically */
+@media (max-width: 768px) {
+    .page#settings {
+        padding-bottom: 100px !important; /* Extra padding for settings */
+    }
+    
+    /* Ensure bottom nav is always on top */
+    .bottom-nav {
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        background: var(--glass-bg) !important;
+        border-top: 2px solid var(--glass-border) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Prevent any content from going behind bottom nav */
+    .settings-grid,
+    .settings-card {
+        margin-bottom: 20px !important;
+    }
+}
+
+/* Ensure all modals are properly centered */
+.modal-overlay,
+.overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 10000 !important;
+}
+
+/* Fix dropdown positioning */
+.dropdown,
+.tab-dropdown-overlay {
+    position: fixed !important;
+    z-index: 11000 !important;
+}
+
+/* Mobile dropdown centering */
+@media (max-width: 768px) {
+    .dropdown,
+    .tab-dropdown-overlay {
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+    }
+    
+    .dropdown.show,
+    .tab-dropdown-overlay.show {
+        transform: translate(-50%, -50%) scale(1) !important;
+    }
+}
+
+/* Fix notification positioning */
+.notification-container {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 12000 !important;
+}
+
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        width: calc(100% - 20px) !important;
+    }
+    
+    .notification {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+}
+
+/* Prevent viewport issues on mobile */
+html {
+    height: 100% !important;
+    overflow-x: hidden !important;
+}
+
+body {
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+}
+
+/* Fix mobile viewport units */
+@media (max-width: 768px) {
+    /* Use viewport units that account for mobile browsers */
+    .auth-overlay,
+    .duplicate-modal-overlay,
+    .payment-modal-overlay {
+        height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height for mobile */
+    }
+    
+    /* Prevent horizontal scroll */
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix modal max heights */
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        max-height: calc(100vh - 40px) !important;
+        max-height: calc(100dvh - 40px) !important;
+    }
+}
+
+/* Proper z-index layering */
+:root {
+    --z-bottom-nav: 1000;
+    --z-sidebar: 1500;
+    --z-modal: 10000;
+    --z-dropdown: 11000;
+    --z-notification: 12000;
+}
+
+.bottom-nav { z-index: var(--z-bottom-nav) !important; }
+.sidebar { z-index: var(--z-sidebar) !important; }
+.auth-overlay,
+.duplicate-modal-overlay,
+.payment-modal-overlay { z-index: var(--z-modal) !important; }
+.dropdown,
+.tab-dropdown-overlay { z-index: var(--z-dropdown) !important; }
+.notification-container { z-index: var(--z-notification) !important; }
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
