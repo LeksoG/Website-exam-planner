@@ -8392,6 +8392,363 @@ body {
 .flashcard {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Enhanced Mobile Auth Modal */
+@media (max-width: 768px) {
+    .auth-overlay {
+        padding: 10px;
+    }
+    
+    .auth-modal {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 24px 20px;
+        border-radius: 20px;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .auth-fullpage-container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 32px 20px;
+        border-radius: 16px;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 20px;
+    }
+    
+    .auth-tab {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+        min-height: 48px; /* Ensure tap targets are large enough */
+    }
+    
+    .auth-submit {
+        padding: 18px 24px;
+        font-size: 16px;
+        min-height: 48px; /* Ensure tap targets are large enough */
+        width: 100%;
+    }
+    
+    .auth-input {
+        padding: 16px 14px;
+        font-size: 16px; /* Prevent zoom on iOS */
+        min-height: 48px;
+    }
+    
+    .auth-input-group label {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+}
+
+/* Full Background Theme Support */
+body {
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Ensure the entire viewport background changes */
+html {
+    background: var(--bg-primary);
+}
+
+/* Update root variables for better background control */
+:root {
+    --page-bg: var(--bg-primary);
+    --body-bg: linear-gradient(135deg, #ffffff 0%, #fefefe 25%, #f9fafb 50%, #f3f4f6 75%, #e5e7eb 100%);
+}
+
+[data-theme="black"] {
+    --page-bg: var(--bg-primary);
+    --body-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+}
+
+/* Apply to html and body */
+html, body {
+    background: var(--body-bg);
+    background-attachment: fixed;
+}
+
+/* Mobile Dashboard Tabs */
+.mobile-dashboard-tabs {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-dashboard-tabs {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 2px solid var(--glass-border);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        padding: 8px;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .mobile-tab-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 4px 0;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .mobile-tab-scroll::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .mobile-tab-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .mobile-subject-tab {
+        flex-shrink: 0;
+        padding: 12px 20px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        min-width: 100px;
+        text-align: center;
+        user-select: none;
+    }
+    
+    .mobile-subject-tab.active {
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .mobile-subject-tab:hover:not(.active) {
+        background: var(--accent-blue-light);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    
+    /* Hide desktop schedule grid on mobile */
+    .schedule-grid-container.desktop-layout {
+        display: none !important;
+    }
+    
+    /* Mobile subject content */
+    .mobile-subject-content {
+        display: none;
+        background: var(--glass-bg);
+        border: 2px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 20px;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .mobile-subject-content.active {
+        display: block;
+        animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .mobile-subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .mobile-subject-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--accent-blue);
+    }
+    
+    .mobile-task-count {
+        background: var(--accent-blue-light);
+        color: var(--accent-blue);
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    
+    .mobile-day-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+    }
+    
+    .mobile-day-column {
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        padding: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-day-column:hover {
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .mobile-day-header {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-day-header.today {
+        color: var(--accent-green);
+        border-bottom-color: var(--accent-green);
+    }
+    
+    .mobile-task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mobile-task-item {
+        background: var(--calendar-day);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-task-item:hover {
+        border-color: var(--accent-blue);
+        background: var(--accent-blue-light);
+    }
+    
+    .mobile-task-item.completed {
+        opacity: 0.7;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--accent-green);
+    }
+    
+    .mobile-task-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    
+    .mobile-task-topic {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+    }
+    
+    /* Empty state for mobile */
+    .mobile-empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+    }
+    
+    .mobile-empty-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 16px auto;
+        background: var(--border-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Ensure desktop layout is shown on larger screens */
+@media (min-width: 769px) {
+    .mobile-dashboard-tabs,
+    .mobile-subject-content {
+        display: none !important;
+    }
+    
+    .schedule-grid-container.desktop-layout {
+        display: block !important;
+    }
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+    /* Ensure all interactive elements are at least 44px */
+    .btn-primary,
+    .btn-secondary,
+    .auth-tab,
+    .auth-submit,
+    .mobile-subject-tab {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better spacing for touch */
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    /* Prevent zoom on input focus */
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+    
+    /* Better modal positioning */
+    .auth-modal,
+    .duplicate-modal,
+    .payment-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 20px);
+        max-height: calc(100% - 40px);
+        overflow-y: auto;
+    }
+    
+    /* Improved button spacing */
+    .auth-tabs {
+        gap: 4px;
+    }
+    
+    .auth-tab {
+        flex: 1;
+        text-align: center;
+    }
+}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
