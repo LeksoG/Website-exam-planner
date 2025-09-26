@@ -8392,1980 +8392,6 @@ body {
 .flashcard {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-/* Enhanced Mobile Auth Modal */
-@media (max-width: 768px) {
-    .auth-overlay {
-        padding: 10px;
-    }
-    
-    .auth-modal {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 24px 20px;
-        border-radius: 20px;
-        max-height: 95vh;
-        overflow-y: auto;
-    }
-    
-    .auth-fullpage-container {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 32px 20px;
-        border-radius: 16px;
-    }
-    
-    .auth-tabs {
-        margin-bottom: 20px;
-    }
-    
-    .auth-tab {
-        padding: 14px 16px;
-        font-size: 0.9rem;
-        min-height: 48px; /* Ensure tap targets are large enough */
-    }
-    
-    .auth-submit {
-        padding: 18px 24px;
-        font-size: 16px;
-        min-height: 48px; /* Ensure tap targets are large enough */
-        width: 100%;
-    }
-    
-    .auth-input {
-        padding: 16px 14px;
-        font-size: 16px; /* Prevent zoom on iOS */
-        min-height: 48px;
-    }
-    
-    .auth-input-group label {
-        font-size: 1rem;
-        margin-bottom: 8px;
-    }
-}
-
-/* Full Background Theme Support */
-body {
-    background: var(--bg-primary);
-    min-height: 100vh;
-}
-
-/* Ensure the entire viewport background changes */
-html {
-    background: var(--bg-primary);
-}
-
-/* Update root variables for better background control */
-:root {
-    --page-bg: var(--bg-primary);
-    --body-bg: linear-gradient(135deg, #ffffff 0%, #fefefe 25%, #f9fafb 50%, #f3f4f6 75%, #e5e7eb 100%);
-}
-
-[data-theme="black"] {
-    --page-bg: var(--bg-primary);
-    --body-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
-}
-
-/* Apply to html and body */
-html, body {
-    background: var(--body-bg);
-    background-attachment: fixed;
-}
-
-/* Mobile Dashboard Tabs */
-.mobile-dashboard-tabs {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .mobile-dashboard-tabs {
-        display: block;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        border: 2px solid var(--glass-border);
-        border-radius: 20px;
-        margin-bottom: 20px;
-        padding: 8px;
-        box-shadow: var(--shadow-lg);
-    }
-    
-    .mobile-tab-scroll {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding: 4px 0;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Hide scrollbar but keep functionality */
-    .mobile-tab-scroll::-webkit-scrollbar {
-        display: none;
-    }
-    
-    .mobile-tab-scroll {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-    
-    .mobile-subject-tab {
-        flex-shrink: 0;
-        padding: 12px 20px;
-        background: var(--bg-secondary);
-        border: 2px solid var(--border-color);
-        border-radius: 16px;
-        color: var(--text-secondary);
-        font-weight: 700;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        white-space: nowrap;
-        min-width: 100px;
-        text-align: center;
-        user-select: none;
-    }
-    
-    .mobile-subject-tab.active {
-        background: var(--accent-blue);
-        color: white;
-        border-color: var(--accent-blue);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-    }
-    
-    .mobile-subject-tab:hover:not(.active) {
-        background: var(--accent-blue-light);
-        border-color: var(--accent-blue);
-        color: var(--accent-blue);
-    }
-    
-    /* Hide desktop schedule grid on mobile */
-    .schedule-grid-container.desktop-layout {
-        display: none !important;
-    }
-    
-    /* Mobile subject content */
-    .mobile-subject-content {
-        display: none;
-        background: var(--glass-bg);
-        border: 2px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 20px;
-        backdrop-filter: blur(20px);
-        box-shadow: var(--shadow-lg);
-    }
-    
-    .mobile-subject-content.active {
-        display: block;
-        animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .mobile-subject-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid var(--border-color);
-    }
-    
-    .mobile-subject-title {
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: var(--accent-blue);
-    }
-    
-    .mobile-task-count {
-        background: var(--accent-blue-light);
-        color: var(--accent-blue);
-        padding: 6px 12px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 700;
-    }
-    
-    .mobile-day-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
-    }
-    
-    .mobile-day-column {
-        background: var(--bg-secondary);
-        border: 2px solid var(--border-color);
-        border-radius: 16px;
-        padding: 16px;
-        transition: all 0.3s ease;
-    }
-    
-    .mobile-day-column:hover {
-        border-color: var(--accent-blue);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-    
-    .mobile-day-header {
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border-color);
-        text-align: center;
-        font-size: 0.9rem;
-    }
-    
-    .mobile-day-header.today {
-        color: var(--accent-green);
-        border-bottom-color: var(--accent-green);
-    }
-    
-    .mobile-task-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .mobile-task-item {
-        background: var(--calendar-day);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 10px;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .mobile-task-item:hover {
-        border-color: var(--accent-blue);
-        background: var(--accent-blue-light);
-    }
-    
-    .mobile-task-item.completed {
-        opacity: 0.7;
-        background: rgba(16, 185, 129, 0.1);
-        border-color: var(--accent-green);
-    }
-    
-    .mobile-task-title {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 4px;
-    }
-    
-    .mobile-task-topic {
-        color: var(--text-secondary);
-        font-size: 0.75rem;
-    }
-    
-    /* Empty state for mobile */
-    .mobile-empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: var(--text-muted);
-    }
-    
-    .mobile-empty-icon {
-        width: 48px;
-        height: 48px;
-        margin: 0 auto 16px auto;
-        background: var(--border-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
-
-/* Ensure desktop layout is shown on larger screens */
-@media (min-width: 769px) {
-    .mobile-dashboard-tabs,
-    .mobile-subject-content {
-        display: none !important;
-    }
-    
-    .schedule-grid-container.desktop-layout {
-        display: block !important;
-    }
-}
-
-/* Better touch targets for mobile */
-@media (max-width: 768px) {
-    /* Ensure all interactive elements are at least 44px */
-    .btn-primary,
-    .btn-secondary,
-    .auth-tab,
-    .auth-submit,
-    .mobile-subject-tab {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    /* Better spacing for touch */
-    .input-group {
-        margin-bottom: 20px;
-    }
-    
-    /* Prevent zoom on input focus */
-    input, textarea, select {
-        font-size: 16px !important;
-    }
-    
-    /* Better modal positioning */
-    .auth-modal,
-    .duplicate-modal,
-    .payment-modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: calc(100% - 20px);
-        max-height: calc(100% - 40px);
-        overflow-y: auto;
-    }
-    
-    /* Improved button spacing */
-    .auth-tabs {
-        gap: 4px;
-    }
-    
-    .auth-tab {
-        flex: 1;
-        text-align: center;
-    }
-}
-
-/* Fixed Modal Centering */
-.auth-overlay,
-.duplicate-modal-overlay,
-.payment-modal-overlay,
-.delete-account-modal {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 10000 !important;
-}
-
-.auth-modal,
-.duplicate-modal,
-.payment-modal {
-    position: relative !important;
-    transform: none !important;
-    top: auto !important;
-    left: auto !important;
-    margin: 20px !important;
-    max-height: calc(100vh - 40px) !important;
-    overflow-y: auto !important;
-}
-
-/* Mobile specific modal fixes */
-@media (max-width: 768px) {
-    .auth-modal,
-    .duplicate-modal,
-    .payment-modal {
-        width: calc(100% - 40px) !important;
-        max-width: 400px !important;
-        margin: 20px !important;
-    }
-    
-    .auth-fullpage-container {
-        position: relative !important;
-        transform: none !important;
-        width: calc(100% - 40px) !important;
-        max-width: 400px !important;
-        margin: 20px !important;
-    }
-}
-
-/* Fixed Bottom Navigation */
-.bottom-nav {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 1000 !important;
-    transform: translateZ(0); /* Force hardware acceleration */
-    -webkit-transform: translateZ(0);
-}
-
-/* Prevent body scroll affecting bottom nav */
-body {
-    padding-bottom: 80px !important;
-}
-
-/* Ensure container doesn't overlap bottom nav */
-.container {
-    margin-bottom: 0 !important;
-    padding-bottom: 20px !important;
-}
-
-/* Fix for settings page specifically */
-@media (max-width: 768px) {
-    .page#settings {
-        padding-bottom: 100px !important; /* Extra padding for settings */
-    }
-    
-    /* Ensure bottom nav is always on top */
-    .bottom-nav {
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        background: var(--glass-bg) !important;
-        border-top: 2px solid var(--glass-border) !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    /* Prevent any content from going behind bottom nav */
-    .settings-grid,
-    .settings-card {
-        margin-bottom: 20px !important;
-    }
-}
-
-/* Ensure all modals are properly centered */
-.modal-overlay,
-.overlay {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: blur(8px) !important;
-    z-index: 10000 !important;
-}
-
-/* Fix dropdown positioning */
-.dropdown,
-.tab-dropdown-overlay {
-    position: fixed !important;
-    z-index: 11000 !important;
-}
-
-/* Mobile dropdown centering */
-@media (max-width: 768px) {
-    .dropdown,
-    .tab-dropdown-overlay {
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        position: fixed !important;
-    }
-    
-    .dropdown.show,
-    .tab-dropdown-overlay.show {
-        transform: translate(-50%, -50%) scale(1) !important;
-    }
-}
-
-/* Fix notification positioning */
-.notification-container {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    z-index: 12000 !important;
-}
-
-@media (max-width: 768px) {
-    .notification-container {
-        top: 10px !important;
-        right: 10px !important;
-        left: 10px !important;
-        width: calc(100% - 20px) !important;
-    }
-    
-    .notification {
-        width: 100% !important;
-        min-width: auto !important;
-    }
-}
-
-/* Prevent viewport issues on mobile */
-html {
-    height: 100% !important;
-    overflow-x: hidden !important;
-}
-
-body {
-    min-height: 100% !important;
-    overflow-x: hidden !important;
-    position: relative !important;
-}
-
-/* Fix mobile viewport units */
-@media (max-width: 768px) {
-    /* Use viewport units that account for mobile browsers */
-    .auth-overlay,
-    .duplicate-modal-overlay,
-    .payment-modal-overlay {
-        height: 100vh !important;
-        height: 100dvh !important; /* Dynamic viewport height for mobile */
-    }
-    
-    /* Prevent horizontal scroll */
-    .container {
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
-    
-    /* Fix modal max heights */
-    .auth-modal,
-    .duplicate-modal,
-    .payment-modal {
-        max-height: calc(100vh - 40px) !important;
-        max-height: calc(100dvh - 40px) !important;
-    }
-}
-
-/* Proper z-index layering */
-:root {
-    --z-bottom-nav: 1000;
-    --z-sidebar: 1500;
-    --z-modal: 10000;
-    --z-dropdown: 11000;
-    --z-notification: 12000;
-}
-
-.bottom-nav { z-index: var(--z-bottom-nav) !important; }
-.sidebar { z-index: var(--z-sidebar) !important; }
-.auth-overlay,
-.duplicate-modal-overlay,
-.payment-modal-overlay { z-index: var(--z-modal) !important; }
-.dropdown,
-.tab-dropdown-overlay { z-index: var(--z-dropdown) !important; }
-.notification-container { z-index: var(--z-notification) !important; }
-
-.flashcard.selection-mode {
-    border: 2px dashed var(--border-color);
-    transform: scale(0.95);
-}
-
-.flashcard.selected {
-    border-color: var(--accent-blue) !important;
-    background: rgba(59, 130, 246, 0.1) !important;
-    transform: scale(0.95) !important;
-}
-
-.flashcard-controls {
-    align-items: center;
-}
-
-/* Professional Sidebar Design */
-.sidebar {
-    background: linear-gradient(145deg, 
-        rgba(15, 23, 42, 0.95) 0%, 
-        rgba(30, 41, 59, 0.9) 100%);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(148, 163, 184, 0.2);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-item {
-    position: relative;
-    margin: 6px 12px;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: rgba(226, 232, 240, 0.8);
-    font-weight: 500;
-}
-
-.sidebar-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.8) 0%, 
-        rgba(99, 102, 241, 0.8) 100%);
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
-}
-
-.sidebar-item:hover::before {
-    opacity: 1;
-}
-
-.sidebar-item.active::before {
-    opacity: 1;
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 1) 0%, 
-        rgba(99, 102, 241, 1) 100%);
-}
-
-.sidebar-item:hover {
-    transform: translateX(4px);
-    color: white;
-    font-weight: 600;
-}
-
-.sidebar-item.active {
-    color: white;
-    font-weight: 700;
-}
-
-.sidebar-item svg {
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.sidebar-item:hover svg,
-.sidebar-item.active svg {
-    opacity: 1;
-}
-
-/* Professional Top Tab Bar */
-.top-tab-bar {
-    background: rgba(248, 250, 252, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="black"] .top-tab-bar {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom: 1px solid rgba(71, 85, 105, 0.6);
-}
-
-.top-tab-item {
-    color: rgba(71, 85, 105, 0.8);
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    padding: 12px 20px;
-    border-radius: 10px;
-    margin: 0 4px;
-}
-
-[data-theme="black"] .top-tab-item {
-    color: rgba(226, 232, 240, 0.8);
-}
-
-.top-tab-item::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    width: 0;
-    height: 3px;
-    background: linear-gradient(90deg, 
-        #3b82f6 0%, 
-        #6366f1 100%);
-    border-radius: 2px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateX(-50%);
-}
-
-.top-tab-item:hover {
-    color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-    transform: translateY(-1px);
-}
-
-[data-theme="black"] .top-tab-item:hover {
-    color: #60a5fa;
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.top-tab-item.active {
-    color: #3b82f6;
-    font-weight: 700;
-    background: rgba(59, 130, 246, 0.08);
-}
-
-[data-theme="black"] .top-tab-item.active {
-    color: #60a5fa;
-    background: rgba(59, 130, 246, 0.15);
-}
-
-.top-tab-item.active::after {
-    width: 80%;
-}
-
-/* Improved Glassmorphism for Content */
-.flashcard, .revision-card-mini, .settings-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme="black"] .flashcard,
-[data-theme="black"] .revision-card-mini,
-[data-theme="black"] .settings-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.flashcard:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
-}
-
-[data-theme="black"] .flashcard:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* Better Input Readability */
-input, textarea, select {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(226, 232, 240, 0.6);
-    color: #1e293b;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme="black"] input,
-[data-theme="black"] textarea,
-[data-theme="black"] select {
-    background: rgba(30, 41, 59, 0.9);
-    border: 2px solid rgba(71, 85, 105, 0.6);
-    color: #e2e8f0;
-}
-
-input:focus, textarea:focus, select:focus {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-[data-theme="black"] input:focus,
-[data-theme="black"] textarea:focus,
-[data-theme="black"] select:focus {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-/* Professional Upload Area */
-.upload-area {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    border: 2px dashed rgba(148, 163, 184, 0.4);
-    border-radius: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #475569;
-}
-
-[data-theme="black"] .upload-area {
-    background: rgba(30, 41, 59, 0.7);
-    border: 2px dashed rgba(100, 116, 139, 0.4);
-    color: #94a3b8;
-}
-
-.upload-area:hover {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: #3b82f6;
-    color: #1e293b;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-}
-
-[data-theme="black"] .upload-area:hover {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: #60a5fa;
-    color: #e2e8f0;
-}
-
-/* Enhanced Schedule Grid */
-.schedule-grid {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(226, 232, 240, 0.4);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(31, 38, 135, 0.1);
-}
-
-[data-theme="black"] .schedule-grid {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.4);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.grid-header {
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.9) 0%, 
-        rgba(99, 102, 241, 0.9) 100%);
-    color: white;
-    font-weight: 600;
-    padding: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.schedule-cell {
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(226, 232, 240, 0.3);
-    transition: all 0.3s ease;
-}
-
-[data-theme="black"] .schedule-cell {
-    background: rgba(51, 65, 85, 0.4);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-}
-
-.schedule-cell:hover {
-    background: rgba(255, 255, 255, 0.7);
-}
-
-[data-theme="black"] .schedule-cell:hover {
-    background: rgba(51, 65, 85, 0.7);
-}
-
-/* Better Text Contrast */
-.flashcard-subject,
-.flashcard-topic,
-.revision-card-mini-title {
-    color: #1e293b;
-    font-weight: 600;
-}
-
-[data-theme="black"] .flashcard-subject,
-[data-theme="black"] .flashcard-topic,
-[data-theme="black"] .revision-card-mini-title {
-    color: #e2e8f0;
-}
-
-.flashcard-preview,
-.revision-card-mini-meta {
-    color: #475569;
-    font-weight: 500;
-}
-
-[data-theme="black"] .flashcard-preview,
-[data-theme="black"] .revision-card-mini-meta {
-    color: #94a3b8;
-}
-
-/* Professional Buttons */
-button {
-    font-weight: 600;
-    letter-spacing: 0.025em;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Mobile Bottom Navigation */
-.bottom-navigation {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(226, 232, 240, 0.6);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="black"] .bottom-navigation {
-    background: rgba(15, 23, 42, 0.95);
-    border-top: 1px solid rgba(71, 85, 105, 0.6);
-}
-
-.bottom-nav-item {
-    color: rgba(71, 85, 105, 0.7);
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-[data-theme="black"] .bottom-nav-item {
-    color: rgba(226, 232, 240, 0.7);
-}
-
-.bottom-nav-item.active {
-    color: #3b82f6;
-    font-weight: 600;
-}
-
-[data-theme="black"] .bottom-nav-item.active {
-    color: #60a5fa;
-}
-
-.top-tab-item {
-    color: rgba(71, 85, 105, 0.8);
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    padding: 12px 24px; /* Increased horizontal padding for oval shape */
-    border-radius: 25px; /* More rounded for oval effect */
-    margin: 0 4px;
-}
-
-.top-tab-item:hover {
-    color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-    transform: translateY(-1px);
-    border-radius: 30px; /* Even more oval when hovering */
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-.top-tab-item.active {
-    color: #3b82f6;
-    font-weight: 700;
-    background: rgba(59, 130, 246, 0.15);
-    border-radius: 30px; /* Oval when active */
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
-
-/* Enhanced Settings Design */
-.settings-main-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-    padding: 20px 0;
-}
-
-.settings-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    border-radius: 20px;
-    padding: 28px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.settings-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.settings-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
-}
-
-.settings-card:hover::before {
-    opacity: 1;
-}
-
-[data-theme="black"] .settings-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.6);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.settings-card h4 {
-    color: #1e293b;
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-[data-theme="black"] .settings-card h4 {
-    color: #e2e8f0;
-}
-
-.settings-card h4 svg {
-    width: 24px;
-    height: 24px;
-    color: #3b82f6;
-}
-
-.settings-card p {
-    color: #64748b;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-[data-theme="black"] .settings-card p {
-    color: #94a3b8;
-}
-
-.settings-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 16px;
-    padding: 16px;
-    background: rgba(248, 250, 252, 0.8);
-    border-radius: 12px;
-    border: 1px solid rgba(226, 232, 240, 0.5);
-}
-
-[data-theme="black"] .settings-control {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-}
-
-.settings-toggle {
-    width: 52px;
-    height: 28px;
-    background: #cbd5e1;
-    border-radius: 14px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.settings-toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.settings-toggle.active {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-.settings-toggle.active::after {
-    transform: translateX(24px);
-}
-
-/* Enhanced User Info */
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: rgba(248, 250, 252, 0.8);
-    border-radius: 16px;
-    border: 1px solid rgba(226, 232, 240, 0.5);
-    margin-bottom: 20px;
-}
-
-[data-theme="black"] .user-info {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-}
-
-.user-avatar {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.user-details h4 {
-    color: #1e293b;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 4px 0;
-}
-
-[data-theme="black"] .user-details h4 {
-    color: #e2e8f0;
-}
-
-.user-details p {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-[data-theme="black"] .user-details p {
-    color: #94a3b8;
-}
-
-/* Organized Settings Layout */
-.settings-header {
-    text-align: center;
-    padding: 32px 0;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-    margin-bottom: 32px;
-}
-
-.settings-container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.settings-section {
-    margin-bottom: 48px;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.section-header h3 {
-    color: var(--text-primary);
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin: 0;
-    min-width: fit-content;
-}
-
-.section-divider {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.5), transparent);
-}
-
-.settings-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-}
-
-.settings-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    border-radius: 16px;
-    padding: 24px;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-[data-theme="black"] .settings-card {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(71, 85, 105, 0.6);
-}
-
-.settings-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(31, 38, 135, 0.15);
-    border-color: rgba(59, 130, 246, 0.4);
-}
-
-.card-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    flex-shrink: 0;
-}
-
-.card-icon svg {
-    width: 20px;
-    height: 20px;
-    color: white;
-}
-
-.card-icon.google-icon {
-    background: #4285f4;
-}
-
-.card-content h4 {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-}
-
-.card-content p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin: 0 0 16px 0;
-    line-height: 1.5;
-}
-
-/* Account Card Specific */
-.account-card {
-    flex-direction: column;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: rgba(248, 250, 252, 0.8);
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-[data-theme="black"] .user-profile {
-    background: rgba(15, 23, 42, 0.6);
-}
-
-.user-avatar {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-    flex-shrink: 0;
-}
-
-.user-info h4 {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 4px 0;
-}
-
-.user-info p {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin: 0 0 4px 0;
-}
-
-.member-since {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
-.account-actions {
-    display: flex;
-    gap: 12px;
-}
-
-/* Button Styles */
-.settings-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-
-.settings-btn.primary {
-    background: linear-gradient(135deg, #3b82f6, #6366f1);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.settings-btn.primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.settings-btn.secondary {
-    background: rgba(248, 250, 252, 0.8);
-    color: var(--text-primary);
-    border: 2px solid rgba(226, 232, 240, 0.6);
-    flex: 1;
-}
-
-[data-theme="black"] .settings-btn.secondary {
-    background: rgba(30, 41, 59, 0.8);
-    border: 2px solid rgba(71, 85, 105, 0.6);
-}
-
-.settings-btn.secondary:hover {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-.settings-btn.danger {
-    background: #ef4444;
-    color: white;
-    flex: 1;
-}
-
-.settings-btn.danger:hover {
-    background: #dc2626;
-    transform: translateY(-1px);
-}
-
-.settings-btn.small {
-    padding: 8px 16px;
-    font-size: 0.85rem;
-}
-
-.settings-btn .icon {
-    width: 16px;
-    height: 16px;
-}
-
-/* Toggle Controls */
-.toggle-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-}
-
-.toggle-control span {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.settings-toggle {
-    width: 48px;
-    height: 24px;
-    background: #cbd5e1;
-    border-radius: 12px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.settings-toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.settings-toggle.active {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-}
-
-.settings-toggle.active::after {
-    transform: translateX(24px);
-}
-
-/* Theme Selector */
-.theme-selector {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.theme-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border: 2px solid rgba(226, 232, 240, 0.6);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex: 1;
-}
-
-.theme-option:hover {
-    border-color: #3b82f6;
-    transform: translateY(-2px);
-}
-
-.theme-option.active {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-.theme-preview {
-    width: 40px;
-    height: 24px;
-    border-radius: 6px;
-    border: 1px solid rgba(226, 232, 240, 0.6);
-}
-
-.theme-preview.light {
-    background: linear-gradient(135deg, #ffffff, #f8fafc);
-}
-
-.theme-preview.dark {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-}
-
-.theme-option span {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-/* Backup Actions */
-.backup-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-/* Note Text */
-.note {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    margin-top: 8px;
-    font-style: italic;
-}
-
-/* Reminder Options */
-.reminder-options {
-    margin-top: 20px;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reminder-section h5 {
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0 12px 0;
-}
-
-.reminders-list {
-    margin-bottom: 16px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .settings-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .account-actions {
-        flex-direction: column;
-    }
-    
-    .backup-actions {
-        flex-direction: column;
-    }
-    
-    .theme-selector {
-        flex-direction: row;
-    }
-}
-
-/* Perfect Grid Settings Layout */
-.settings-header {
-    text-align: center;
-    padding: 40px 0 32px 0;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.4);
-    margin-bottom: 40px;
-}
-
-.settings-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.settings-section {
-    margin-bottom: 56px;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 28px;
-    height: 40px; /* Fixed height for consistency */
-}
-
-.section-header h3 {
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0;
-    white-space: nowrap;
-    min-width: fit-content;
-}
-
-.section-divider {
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.1), transparent);
-    border-radius: 1px;
-}
-
-/* Perfect Grid System */
-.settings-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: 24px;
-    align-items: start; /* Prevents height stretching */
-}
-
-.settings-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(226, 232, 240, 0.5);
-    border-radius: 20px;
-    padding: 28px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    min-height: 200px; /* Ensures consistent minimum height */
-    box-shadow: 0 4px 20px rgba(31, 38, 135, 0.08);
-    position: relative;
-    overflow: hidden;
-}
-
-[data-theme="black"] .settings-card {
-    background: rgba(30, 41, 59, 0.85);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.settings-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.settings-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(31, 38, 135, 0.15);
-    border-color: rgba(59, 130, 246, 0.4);
-}
-
-.settings-card:hover::before {
-    opacity: 1;
-}
-
-/* Perfect Card Header Alignment */
-.card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.card-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.card-icon svg {
-    width: 22px;
-    height: 22px;
-    color: white;
-}
-
-.card-icon.google-icon {
-    background: linear-gradient(135deg, #4285f4, #34a853);
-}
-
-.card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Prevents flex overflow issues */
-}
-
-.card-content h4 {
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-    line-height: 1.3;
-}
-
-.card-content p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    margin: 0 0 20px 0;
-    line-height: 1.5;
-    flex-grow: 1; /* Takes available space */
-}
-
-/* Account Card - Perfect Layout */
-.account-card {
-    grid-column: 1 / -1; /* Spans full width */
-    min-height: auto;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 24px;
-    background: rgba(248, 250, 252, 0.8);
-    border-radius: 16px;
-    margin-bottom: 24px;
-    border: 1px solid rgba(226, 232, 240, 0.3);
-}
-
-[data-theme="black"] .user-profile {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-}
-
-.user-avatar {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: white;
-    flex-shrink: 0;
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.user-info {
-    flex: 1;
-}
-
-.user-info h4 {
-    color: var(--text-primary);
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin: 0 0 6px 0;
-}
-
-.user-info p {
-    color: var(--text-secondary);
-    font-size: 1rem;
-    margin: 0 0 4px 0;
-}
-
-.member-since {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-style: italic;
-}
-
-.account-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: auto; /* Pushes to bottom */
-}
-
-/* Perfect Button System */
-.settings-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    font-size: 0.95rem;
-    white-space: nowrap;
-    min-height: 48px; /* Consistent button height */
-    box-sizing: border-box;
-}
-
-.settings-btn.primary {
-    background: linear-gradient(135deg, #3b82f6, #6366f1);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.settings-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.settings-btn.secondary {
-    background: rgba(248, 250, 252, 0.9);
-    color: var(--text-primary);
-    border: 2px solid rgba(226, 232, 240, 0.6);
-}
-
-[data-theme="black"] .settings-btn.secondary {
-    background: rgba(30, 41, 59, 0.9);
-    border: 2px solid rgba(71, 85, 105, 0.6);
-}
-
-.settings-btn.secondary:hover {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.08);
-    transform: translateY(-1px);
-}
-
-.settings-btn.danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.settings-btn.danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-.settings-btn .icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-}
-
-/* Perfect Toggle Controls */
-.toggle-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 0;
-    margin-top: auto; /* Pushes to bottom of card */
-    border-top: 1px solid rgba(226, 232, 240, 0.3);
-}
-
-[data-theme="black"] .toggle-control {
-    border-top: 1px solid rgba(71, 85, 105, 0.3);
-}
-
-.toggle-control span {
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.settings-toggle {
-    width: 52px;
-    height: 28px;
-    background: #e2e8f0;
-    border-radius: 14px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
-    flex-shrink: 0;
-}
-
-.settings-toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.settings-toggle.active {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-color: rgba(59, 130, 246, 0.2);
-}
-
-.settings-toggle.active::after {
-    transform: translateX(24px);
-}
-
-/* Perfect Theme Selector */
-.theme-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: auto;
-}
-
-.theme-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    border: 2px solid rgba(226, 232, 240, 0.6);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255, 255, 255, 0.5);
-    min-height: 80px;
-    justify-content: center;
-}
-
-[data-theme="black"] .theme-option {
-    background: rgba(30, 41, 59, 0.5);
-    border-color: rgba(71, 85, 105, 0.6);
-}
-
-.theme-option:hover {
-    border-color: #3b82f6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-.theme-option.active {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.08);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-.theme-preview {
-    width: 48px;
-    height: 28px;
-    border-radius: 8px;
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.theme-preview.light {
-    background: linear-gradient(135deg, #ffffff, #f8fafc);
-}
-
-.theme-preview.dark {
-    background: linear-gradient(135deg, #0f172a, #334155);
-}
-
-.theme-option span {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-/* Perfect Backup Actions */
-.backup-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: auto;
-}
-
-/* Note Text */
-.note {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    margin-top: 12px;
-    font-style: italic;
-    text-align: center;
-    padding: 8px;
-    background: rgba(59, 130, 246, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
-}
-
-/* Reminder Options */
-.reminder-options {
-    margin-top: 20px;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Perfect Responsive Design */
-@media (max-width: 768px) {
-    .settings-container {
-        padding: 0 16px;
-    }
-    
-    .settings-row {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .account-actions {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .backup-actions {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .theme-selector {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    .user-profile {
-        flex-direction: column;
-        text-align: center;
-        gap: 16px;
-    }
-    
-    .settings-card {
-        min-height: auto;
-        padding: 24px;
-    }
-}
-
-@media (max-width: 480px) {
-    .theme-selector {
-        grid-template-columns: 1fr;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        height: auto;
-    }
-    
-    .section-divider {
-        width: 100%;
-        height: 2px;
-    }
-}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -11015,15 +9041,119 @@ let googleCalendarAccessToken = null;
 let studyReminders = JSON.parse(localStorage.getItem('gcseStudyReminders') || '[]');
 
 // Google Calendar API Configuration
-const GOOGLE_CLIENT_ID = '706092852156-7n7geb46sf0qcqumbk53anb7gl2u6uth.apps.googleusercontent.com';
-const GOOGLE_API_KEY = 'AIzaSyCWGfdMc7ly5C97VNhPWPAHsaGq9fGKCes';
+let GOOGLE_CLIENT_ID = 'your-google-client-id';
+let GOOGLE_API_KEY = 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 
-// Image placeholder for Google Calendar icon (base64 encoded)
-const GOOGLE_CALENDAR_ICON = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTIiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTEyIDEyaDI0djI0SDEyeiIgZmlsbD0iI0ZGRkZGRiIvPgo8cGF0aCBkPSJNMTYgMjBoMTZ2NGgtMTZ6IiBmaWxsPSIjNDI4NUY0Ii8+CjxwYXRoIGQ9Ik0xNiAyNmgxMnY0SDE2eiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTYgMzJoOHY0SDE2eiIgZmlsbD0iIzQyODVGNCIvPgo8L3N2Zz4K";
+        // EmailJS Configuration
+let EMAILJS_CONFIG = {
+    serviceID: 'your-service-id',
+    templateID: 'your-template-id',
+    publicKey: 'your-public-key'
+};
+        
+// Fetch configuration from API
+async function loadConfig() {
+  try {
+    console.log('Loading configuration from /api/config...');
+    const response = await fetch('/api/config');
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Config API Error:', response.status, errorText);
+      throw new Error(`Config API returned ${response.status}: ${errorText}`);
+    }
+    
+    const config = await response.json();
+    console.log('Raw config received:', config);
+    
+    // Validate that we got the required fields
+    if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_API_KEY) {
+      throw new Error('Missing Google API credentials in config');
+    }
+    
+    // Update Google Calendar config
+    GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+    GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+    
+    // Update EmailJS config
+    EMAILJS_CONFIG = {
+      serviceID: config.EMAILJS_SERVICE_ID,
+      templateID: config.EMAILJS_TEMPLATE_ID,
+      publicKey: config.EMAILJS_PUBLIC_KEY
+    };
+    
+    configLoaded = true;
+    console.log('Configuration loaded successfully');
+    console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
+    console.log('Google API Key set:', !!GOOGLE_API_KEY);
+    console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
+    
+    return config;
+    
+  } catch (error) {
+    console.error('Failed to load configuration:', error);
+    configLoaded = false;
+    throw error;
+  }
+}
 
+// Initialize configuration (fallback to hardcoded values if API fails)
+async function initializeApp() {
+    try {
+        // Try to load from API, but don't fail if it doesn't work
+        await loadConfig();
+        console.log('Configuration loaded from API');
+    } catch (error) {
+        console.log('Using hardcoded configuration values');
+        // Configuration already set above as constants
+    }
+    
+    // Initialize EmailJS with existing config
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
+    
+    console.log('All configurations loaded');
+}
 
+// Also update the loadConfig function to not throw errors
+async function loadConfig() {
+    try {
+        console.log('Attempting to load configuration from /api/config...');
+        const response = await fetch('/api/config');
+        
+        if (!response.ok) {
+            throw new Error(`Config API returned ${response.status}`);
+        }
+        
+        const config = await response.json();
+        
+        // Only update if we got valid config from API
+        if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
+            // Update the global variables
+            window.GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+            window.GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+            
+            if (config.EMAILJS_SERVICE_ID) {
+                window.EMAILJS_CONFIG = {
+                    serviceID: config.EMAILJS_SERVICE_ID,
+                    templateID: config.EMAILJS_TEMPLATE_ID,
+                    publicKey: config.EMAILJS_PUBLIC_KEY
+                };
+            }
+        }
+        
+    } catch (error) {
+        console.log('Failed to load API config, using defaults:', error.message);
+        throw error; // Re-throw so initializeApp can catch it
+    }
+}
+
+// Initialize the app
+initializeApp();
+        
 // UI State Variables
 let activeDropdown = null;
 let sidebarTimeout = null;
@@ -11042,6 +9172,8 @@ let currentAISubject = 'General';
 let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
+// API Configuration
+const GEMINI_API_KEY = 'your-gemini-api-key';
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -11507,20 +9639,8 @@ function showGenerationAnimationAndNavigate(subjects, scheduleData) {
         }, 500);
     }, 3000);
 }
-
 function findSimilarSchedule(scheduleName, subjects) {
-    // Check if any schedules exist first
-    const scheduleKeys = Object.keys(appState.schedules);
-    if (scheduleKeys.length === 0) {
-        return null; // No schedules exist, so no duplicates possible
-    }
-    
     for (const [scheduleId, schedule] of Object.entries(appState.schedules)) {
-        // Skip if schedule is undefined or null
-        if (!schedule || !schedule.subjects) {
-            continue;
-        }
-        
         if (schedule.name === scheduleName) {
             return { id: scheduleId, schedule: schedule, type: 'exact' };
         }
@@ -11663,45 +9783,6 @@ function displayFlashcards() {
     }
     
     grid.innerHTML = '';
-
-    // In displayFlashcards() function, replace the controls section with:
-if (flashcards.length > 0) {
-    const controlsDiv = document.createElement('div');
-    controlsDiv.className = 'flashcard-controls';
-    controlsDiv.style.cssText = `
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-        justify-content: flex-end;
-        align-items: center;
-    `;
-    
-    controlsDiv.innerHTML = `
-        <button id="selectModeBtn" onclick="toggleSelectMode()" style="
-            padding: 10px 16px;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        ">Select</button>
-        
-        <button onclick="showDeleteAllModal()" style="
-            padding: 10px 16px;
-            background: var(--accent-red, #ef4444);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        ">Delete All</button>
-    `;
-    
-    grid.parentElement.insertBefore(controlsDiv, grid);
-}
     
     flashcards.forEach((flashcard, index) => {
         const colorIndex = (index % 4) + 1;
@@ -11746,28 +9827,12 @@ if (flashcards.length > 0) {
             `;
         }
         
-        // Replace the flashcardElement.innerHTML in displayFlashcards() with:
-flashcardElement.innerHTML = `
-    <div class="flashcard-selection" style="
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        display: none;
-        z-index: 10;
-    ">
-        <input type="checkbox" onclick="event.stopPropagation(); toggleFlashcardSelection('${flashcard.id}')" 
-               id="checkbox_${flashcard.id}" style="
-               width: 20px;
-               height: 20px;
-               cursor: pointer;
-        ">
-    </div>
-    
-    <div class="flashcard-content">
-        <div class="flashcard-subject">${flashcard.subject}</div>
-        <div class="flashcard-topic">${flashcard.topic}</div>
-        ${contentDisplay}
-    </div>
+        flashcardElement.innerHTML = `
+            <div class="flashcard-content">
+                <div class="flashcard-subject">${flashcard.subject}</div>
+                <div class="flashcard-topic">${flashcard.topic}</div>
+                ${contentDisplay}
+            </div>
             
             <!-- Hover buttons container -->
             <div class="flashcard-hover-buttons" style="
@@ -11846,305 +9911,6 @@ flashcardElement.innerHTML = `
         
         grid.appendChild(flashcardElement);
     });
-}
-
-function showDeleteAllModal() {
-    if (flashcards.length === 0) {
-        showAlert('No flashcards to delete', 'error');
-        return;
-    }
-    
-    const modal = document.createElement('div');
-    modal.className = 'delete-confirmation-overlay';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100000;
-        opacity: 0;
-        transition: all 0.3s ease;
-    `;
-    
-    modal.innerHTML = `
-        <div class="delete-confirmation-modal" style="
-            background: var(--bg-primary);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 400px;
-            width: 90%;
-            border: 2px solid var(--accent-red, #ef4444);
-            transform: scale(0.9);
-            transition: all 0.3s ease;
-        ">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <svg style="width: 48px; height: 48px; color: var(--accent-red, #ef4444); margin-bottom: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-                <h3 style="margin: 0 0 8px 0; color: var(--accent-red, #ef4444); font-size: 1.4rem; font-weight: 800;">Delete All Flashcards?</h3>
-                <p style="margin: 0; color: var(--text-secondary);">This will permanently delete all ${flashcards.length} flashcard(s). This action cannot be undone.</p>
-            </div>
-            
-            <div style="display: flex; gap: 12px;">
-                <button onclick="closeDeleteModal()" style="
-                    flex: 1;
-                    padding: 12px;
-                    background: var(--bg-secondary);
-                    color: var(--text-primary);
-                    border: 2px solid var(--border-color);
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                ">Cancel</button>
-                
-                <button onclick="confirmDeleteAll()" style="
-                    flex: 1;
-                    padding: 12px;
-                    background: var(--accent-red, #ef4444);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                ">Delete All</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modal.querySelector('.delete-confirmation-modal').style.transform = 'scale(1)';
-    }, 100);
-}
-
-function showDeleteSelectedModal() {
-    if (selectedFlashcards.size === 0) {
-        showAlert('No flashcards selected', 'error');
-        return;
-    }
-    
-    const modal = document.createElement('div');
-    modal.className = 'delete-confirmation-overlay';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100000;
-        opacity: 0;
-        transition: all 0.3s ease;
-    `;
-    
-    modal.innerHTML = `
-        <div class="delete-confirmation-modal" style="
-            background: var(--bg-primary);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 400px;
-            width: 90%;
-            border: 2px solid var(--accent-orange, #f59e0b);
-            transform: scale(0.9);
-            transition: all 0.3s ease;
-        ">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <svg style="width: 48px; height: 48px; color: var(--accent-orange, #f59e0b); margin-bottom: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.24 0 2.42.25 3.5.7"/>
-                </svg>
-                <h3 style="margin: 0 0 8px 0; color: var(--accent-orange, #f59e0b); font-size: 1.4rem; font-weight: 800;">Delete Selected Flashcards?</h3>
-                <p style="margin: 0; color: var(--text-secondary);">This will permanently delete ${selectedFlashcards.size} selected flashcard(s). This action cannot be undone.</p>
-            </div>
-            
-            <div style="display: flex; gap: 12px;">
-                <button onclick="closeDeleteModal()" style="
-                    flex: 1;
-                    padding: 12px;
-                    background: var(--bg-secondary);
-                    color: var(--text-primary);
-                    border: 2px solid var(--border-color);
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                ">Cancel</button>
-                
-                <button onclick="confirmDeleteSelected()" style="
-                    flex: 1;
-                    padding: 12px;
-                    background: var(--accent-orange, #f59e0b);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                ">Delete Selected</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modal.querySelector('.delete-confirmation-modal').style.transform = 'scale(1)';
-    }, 100);
-}
-
-function closeDeleteModal() {
-    const modal = document.querySelector('.delete-confirmation-overlay');
-    if (modal) {
-        modal.style.opacity = '0';
-        modal.querySelector('.delete-confirmation-modal').style.transform = 'scale(0.9)';
-        setTimeout(() => modal.remove(), 300);
-    }
-}
-
-function confirmDeleteAll() {
-    flashcards = [];
-    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-    displayFlashcards();
-    updateSidebarStats();
-    closeDeleteModal();
-    showAlert('All flashcards deleted successfully', 'success');
-}
-
-function confirmDeleteSelected() {
-    flashcards = flashcards.filter(f => !selectedFlashcards.has(f.id));
-    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-    
-    const deletedCount = selectedFlashcards.size;
-    selectedFlashcards.clear();
-    
-    toggleSelectMode(); // Exit selection mode
-    displayFlashcards();
-    updateSidebarStats();
-    closeDeleteModal();
-    
-    showAlert(`${deletedCount} flashcard(s) deleted successfully`, 'success');
-}
-
-// Selection mode state
-let isSelectMode = false;
-let selectedFlashcards = new Set();
-
-function toggleSelectMode() {
-    isSelectMode = !isSelectMode;
-    const selectBtn = document.getElementById('selectModeBtn');
-    const checkboxes = document.querySelectorAll('.flashcard-selection');
-    const flashcardElements = document.querySelectorAll('.flashcard');
-    
-    if (isSelectMode) {
-        // Enter selection mode
-        selectBtn.textContent = 'Cancel';
-        selectBtn.style.background = 'var(--bg-secondary)';
-        selectBtn.style.color = 'var(--text-primary)';
-        
-        // Show checkboxes
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'block';
-        });
-        
-        // Add selection styling
-        flashcardElements.forEach(card => {
-            card.style.cursor = 'pointer';
-            card.classList.add('selection-mode');
-        });
-        
-        // Add delete selected button
-        addDeleteSelectedButton();
-        
-    } else {
-        // Exit selection mode
-        selectBtn.textContent = 'Select';
-        selectBtn.style.background = 'var(--accent-blue)';
-        selectBtn.style.color = 'white';
-        
-        // Hide checkboxes
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'none';
-        });
-        
-        // Remove selection styling
-        flashcardElements.forEach(card => {
-            card.style.cursor = '';
-            card.classList.remove('selection-mode', 'selected');
-        });
-        
-        // Clear selections
-        selectedFlashcards.clear();
-        document.querySelectorAll('input[id^="checkbox_"]').forEach(cb => cb.checked = false);
-        
-        // Remove delete selected button
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-        if (deleteSelectedBtn) deleteSelectedBtn.remove();
-    }
-}
-
-function addDeleteSelectedButton() {
-    const controlsDiv = document.querySelector('.flashcard-controls');
-    const deleteSelectedBtn = document.createElement('button');
-    deleteSelectedBtn.id = 'deleteSelectedBtn';
-    deleteSelectedBtn.textContent = 'Delete Selected (0)';
-    deleteSelectedBtn.style.cssText = `
-        padding: 10px 16px;
-        background: var(--accent-orange, #f59e0b);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        opacity: 0.5;
-    `;
-    deleteSelectedBtn.onclick = deleteSelectedFlashcards;
-    controlsDiv.insertBefore(deleteSelectedBtn, controlsDiv.lastElementChild);
-}
-
-function toggleFlashcardSelection(flashcardId) {
-    const checkbox = document.getElementById(`checkbox_${flashcardId}`);
-    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
-    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-    
-    if (checkbox.checked) {
-        selectedFlashcards.add(flashcardId);
-        flashcardElement.classList.add('selected');
-    } else {
-        selectedFlashcards.delete(flashcardId);
-        flashcardElement.classList.remove('selected');
-    }
-    
-    // Update delete selected button
-    if (deleteSelectedBtn) {
-        const count = selectedFlashcards.size;
-        deleteSelectedBtn.textContent = `Delete Selected (${count})`;
-        deleteSelectedBtn.style.opacity = count > 0 ? '1' : '0.5';
-        deleteSelectedBtn.disabled = count === 0;
-    }
-}
-
-function deleteSelectedFlashcards() {
-    showDeleteSelectedModal();
-}
-
-function deleteAllFlashcardsWithConfirmation() {
-    showDeleteAllModal();
 }
 
 function showDashboardWithLoading() {
@@ -13908,22 +11674,6 @@ function populateSubjectReminders() {
     
     container.innerHTML = activeSchedule.subjects.map(subject => {
         const existingReminder = studyReminders.find(r => r.subject === subject);
-        
-        let frequencyText = '';
-        if (existingReminder) {
-            if (existingReminder.type === 'daily') {
-                frequencyText = 'Daily';
-            } else if (existingReminder.type === 'weekly' && existingReminder.selectedDays) {
-                frequencyText = `Weekly (${existingReminder.selectedDays.length} days)`;
-            } else if (existingReminder.type === 'custom' && existingReminder.selectedDays) {
-                frequencyText = `${existingReminder.selectedDays.length} days per week`;
-            } else if (existingReminder.type === 'once') {
-                frequencyText = 'One-time';
-            } else {
-                frequencyText = 'Daily';
-            }
-        }
-        
         return `
             <div class="subject-reminder-item" style="
                 display: flex;
@@ -13937,7 +11687,7 @@ function populateSubjectReminders() {
                 <div>
                     <strong style="color: var(--text-primary);">${subject}</strong>
                     <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.8rem;">
-                        ${existingReminder ? `${frequencyText} at ${existingReminder.time}` : 'No reminder set'}
+                        ${existingReminder ? `Daily at ${existingReminder.time}` : 'No reminder set'}
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -13951,7 +11701,7 @@ function populateSubjectReminders() {
                         font-weight: 600;
                         cursor: pointer;
                     ">
-                        ${existingReminder ? 'Update' : 'Set Reminder'}
+                        ${existingReminder ? 'Update' : 'Set Time'}
                     </button>
                     ${existingReminder ? `
                         <button onclick="removeSubjectReminder('${subject}')" style="
@@ -13975,82 +11725,21 @@ function setSubjectReminder(subject) {
     const modal = document.createElement('div');
     modal.className = 'auth-overlay';
     modal.innerHTML = `
-        <div class="auth-modal" style="max-width: 500px;">
+        <div class="auth-modal">
             <button class="auth-close" onclick="this.closest('.auth-overlay').remove()">×</button>
             <div class="auth-header">
                 <h2>Set ${subject} Reminder</h2>
-                <p>Configure when and how often you'd like to be reminded to study ${subject}</p>
+                <p>Choose when you'd like to be reminded to study ${subject}</p>
             </div>
-            <form onsubmit="saveEnhancedSubjectReminder(event, '${subject}')">
+            <form onsubmit="saveSubjectReminder(event, '${subject}')">
                 <div class="auth-input-group">
                     <label>Reminder Time</label>
                     <input type="time" id="reminderTime" class="auth-input" required>
                 </div>
-                
                 <div class="auth-input-group">
-                    <label>Reminder Type</label>
-                    <select id="reminderType" class="auth-input" onchange="toggleRecurringOptions()" required>
-                        <option value="">Choose reminder type...</option>
-                        <option value="once">One-time reminder</option>
-                        <option value="daily">Daily reminder</option>
-                        <option value="weekly">Weekly reminder</option>
-                        <option value="custom">Custom frequency</option>
-                    </select>
-                </div>
-                
-                <div id="recurringOptions" style="display: none; margin-top: 16px;">
-                    <div class="auth-input-group">
-                        <label>Days of the Week</label>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-monday" value="monday"> Monday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-tuesday" value="tuesday"> Tuesday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-wednesday" value="wednesday"> Wednesday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-thursday" value="thursday"> Thursday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-friday" value="friday"> Friday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-saturday" value="saturday"> Saturday
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                                <input type="checkbox" id="day-sunday" value="sunday"> Sunday
-                            </label>
-                        </div>
-                        <div style="margin-top: 12px;">
-                            <button type="button" onclick="selectAllDays()" style="
-                                background: var(--bg-secondary);
-                                border: 1px solid var(--border-color);
-                                border-radius: 6px;
-                                padding: 6px 12px;
-                                font-size: 0.8rem;
-                                cursor: pointer;
-                                margin-right: 8px;
-                            ">Select All</button>
-                            <button type="button" onclick="selectWeekdays()" style="
-                                background: var(--bg-secondary);
-                                border: 1px solid var(--border-color);
-                                border-radius: 6px;
-                                padding: 6px 12px;
-                                font-size: 0.8rem;
-                                cursor: pointer;
-                            ">Weekdays Only</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="auth-input-group">
-                    <label>Custom Message (Optional)</label>
+                    <label>Message (Optional)</label>
                     <input type="text" id="reminderMessage" class="auth-input" placeholder="Time to study ${subject}!">
                 </div>
-                
                 <button type="submit" class="auth-submit">Save Reminder</button>
             </form>
         </div>
@@ -14059,146 +11748,19 @@ function setSubjectReminder(subject) {
     setTimeout(() => modal.classList.add('show'), 100);
 }
 
-function toggleRecurringOptions() {
-    const type = document.getElementById('reminderType').value;
-    const options = document.getElementById('recurringOptions');
-    
-    if (type === 'weekly' || type === 'custom') {
-        options.style.display = 'block';
-        if (type === 'weekly') {
-            selectWeekdays(); // Auto-select weekdays for weekly reminders
-        }
-    } else {
-        options.style.display = 'none';
-    }
-}
-
-function selectAllDays() {
-    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
-    checkboxes.forEach(cb => cb.checked = true);
-}
-
-function selectWeekdays() {
-    const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-    const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]');
-    
-    checkboxes.forEach(cb => {
-        cb.checked = weekdays.includes(cb.value);
-    });
-}
-
-function saveEnhancedSubjectReminder(event, subject) {
-    event.preventDefault();
-    
-    const time = document.getElementById('reminderTime').value;
-    const type = document.getElementById('reminderType').value;
-    const message = document.getElementById('reminderMessage').value || `Time to study ${subject}!`;
-    
-    let selectedDays = [];
-    if (type === 'weekly' || type === 'custom') {
-        const checkboxes = document.querySelectorAll('#recurringOptions input[type="checkbox"]:checked');
-        selectedDays = Array.from(checkboxes).map(cb => cb.value);
+function removeSubjectReminder(subject) {
+    if (confirm(`Remove reminder for ${subject}?`)) {
+        studyReminders = studyReminders.filter(r => r.subject !== subject);
+        localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
         
-        if (selectedDays.length === 0) {
-            showAlert('Please select at least one day for recurring reminders', 'error');
-            return;
-        }
-    }
-    
-    // Remove existing reminders for this subject
-    studyReminders = studyReminders.filter(r => r.subject !== subject);
-    
-    // Add new reminder(s)
-    const reminderData = {
-        subject: subject,
-        time: time,
-        message: message,
-        type: type,
-        selectedDays: selectedDays,
-        created: new Date().toISOString()
-    };
-    
-    studyReminders.push(reminderData);
-    localStorage.setItem('gcseStudyReminders', JSON.stringify(studyReminders));
-    
-    // Create calendar events if connected
-    if (isGoogleCalendarConnected) {
-        createEnhancedCalendarReminder(reminderData);
-    }
-    
-    document.querySelector('.auth-overlay').remove();
-    populateSubjectReminders();
-    
-    const frequency = type === 'daily' ? 'daily' : 
-                     type === 'weekly' ? `weekly (${selectedDays.length} days)` :
-                     type === 'custom' ? `${selectedDays.length} days per week` : 'once';
-    
-    showAlert(`${subject} reminder set for ${time} - ${frequency}`, 'success');
-}
-
-async function createEnhancedCalendarReminder(reminderData) {
-    if (!isGoogleCalendarConnected || !accessToken) {
-        console.log('Google Calendar not connected, skipping calendar reminder creation');
-        return;
-    }
-    
-    try {
-        const { subject, time, message, type, selectedDays } = reminderData;
-        const [hours, minutes] = time.split(':');
-        
-        if (type === 'once') {
-            // Create single event for tomorrow
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(hours, minutes, 0, 0);
-            
-            await createSingleCalendarEvent(subject, message, tomorrow);
-            
-        } else if (type === 'daily') {
-            // Create daily recurring event
-            const startDate = new Date();
-            startDate.setHours(hours, minutes, 0, 0);
-            // If time has passed today, start tomorrow
-            if (startDate.getTime() < Date.now()) {
-                startDate.setDate(startDate.getDate() + 1);
-            }
-            
-            await createRecurringCalendarEvent(subject, message, startDate, 'DAILY');
-            
-        } else if (type === 'weekly' || type === 'custom') {
-            // Create events for selected days
-            const promises = selectedDays.map(async (day) => {
-                const startDate = getNextDateForDay(day);
-                startDate.setHours(hours, minutes, 0, 0);
-                
-                return await createRecurringCalendarEvent(subject, message, startDate, 'WEEKLY');
-            });
-            
-            await Promise.allSettled(promises);
+        // Clear the notification timer for this subject
+        if (isGoogleCalendarConnected) {
+            setupAllReminders(); // Refresh all reminders
         }
         
-        console.log('Enhanced calendar reminder created successfully');
-        
-    } catch (error) {
-        console.error('Failed to create enhanced calendar reminder:', error);
-        // Don't throw the error - just log it so the local reminder still works
+        populateSubjectReminders();
+        showAlert(`${subject} reminder removed`, 'success');
     }
-}
-
-function getNextDateForDay(dayName) {
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const today = new Date();
-    const todayIndex = today.getDay();
-    const targetIndex = days.indexOf(dayName.toLowerCase());
-    
-    let daysUntilTarget = targetIndex - todayIndex;
-    if (daysUntilTarget <= 0) {
-        daysUntilTarget += 7; // Next week
-    }
-    
-    const targetDate = new Date(today);
-    targetDate.setDate(today.getDate() + daysUntilTarget);
-    return targetDate;
 }
 
 function saveSubjectReminder(event, subject) {
@@ -14219,89 +11781,6 @@ function saveSubjectReminder(event, subject) {
     document.querySelector('.auth-overlay').remove();
     populateSubjectReminders();
     showAlert(`${subject} reminder set for ${time}`, 'success');
-}
-
-// ADD THE TWO NEW FUNCTIONS RIGHT HERE:
-
-async function createSingleCalendarEvent(subject, message, dateTime) {
-    if (!isGoogleCalendarConnected || !accessToken) return;
-    
-    try {
-        const endDateTime = new Date(dateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
-        
-        const event = {
-            summary: `Study Reminder: ${subject}`,
-            description: message,
-            start: {
-                dateTime: dateTime.toISOString(),
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            },
-            end: {
-                dateTime: endDateTime.toISOString(),
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            },
-            reminders: {
-                useDefault: false,
-                overrides: [
-                    {method: 'popup', minutes: 0},
-                    {method: 'email', minutes: 10}
-                ]
-            }
-        };
-        
-        const response = await gapi.client.calendar.events.insert({
-            calendarId: 'primary',
-            resource: event
-        });
-        
-        console.log('Single calendar reminder created for', subject, response);
-        return response;
-        
-    } catch (error) {
-        console.error('Failed to create single calendar reminder:', error);
-        throw error;
-    }
-}
-
-async function createRecurringCalendarEvent(subject, message, startDateTime, frequency) {
-    if (!isGoogleCalendarConnected || !accessToken) return;
-    
-    try {
-        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
-        
-        const event = {
-            summary: `Study Reminder: ${subject}`,
-            description: message,
-            start: {
-                dateTime: startDateTime.toISOString(),
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            },
-            end: {
-                dateTime: endDateTime.toISOString(),
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            },
-            recurrence: [`RRULE:FREQ=${frequency}`],
-            reminders: {
-                useDefault: false,
-                overrides: [
-                    {method: 'popup', minutes: 0},
-                    {method: 'email', minutes: 10}
-                ]
-            }
-        };
-        
-        const response = await gapi.client.calendar.events.insert({
-            calendarId: 'primary',
-            resource: event
-        });
-        
-        console.log('Recurring calendar reminder created for', subject, response);
-        return response;
-        
-    } catch (error) {
-        console.error('Failed to create recurring calendar reminder:', error);
-        throw error;
-    }
 }
 
 function addRemindersToSchedule() {
@@ -15070,15 +12549,13 @@ function handleLogin(event) {
                 localStorage.setItem('gcseRevisionUser', JSON.stringify(user));
                 
                 // Actually close the auth modal now
-const overlay = document.getElementById('authOverlay');
-if (overlay) {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-        if (overlay.parentNode) {
-            overlay.parentNode.removeChild(overlay);
-        }
-    }, 500);
-}
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                    }, 500);
+                }
                 
                 updateSettingsWithUserInfo();
                 showAlert('Welcome back, ' + user.name + '!', 'success');
@@ -15205,15 +12682,13 @@ function handleSignup(event) {
             localStorage.setItem('gcseRevisionUser', JSON.stringify(newUser));
             
             // Actually close the auth modal now
-const overlay = document.getElementById('authOverlay');
-if (overlay) {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-        if (overlay.parentNode) {
-            overlay.parentNode.removeChild(overlay);
-        }
-    }, 500);
-}
+            const overlay = document.getElementById('authOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
             
             updateSettingsWithUserInfo();
             showAlert('Account created successfully! Welcome, ' + name + '!', 'success');
@@ -15285,13 +12760,6 @@ function migrateExistingEmails() {
     
     return migratedUsers;
 }
-
-// EmailJS Configuration
-        const EMAILJS_CONFIG = {
-            serviceID: 'service_qpxfn0h',
-            templateID: 'template_fgzy3dv', 
-            publicKey: 'waYmChwv7LiRd1geI'
-        };
 
         // Initialize EmailJS
 function initEmailJS() {
@@ -16434,206 +13902,174 @@ function updateSettingsWithUserInfo() {
             const cardContent = settingsPage.querySelector('.card');
             if (cardContent) {
                 cardContent.innerHTML = `
-    <div class="settings-header">
-        <h2 style="color: var(--accent-blue); margin: 0 0 8px 0; font-size: 2rem; font-weight: 800; display: flex; align-items: center; gap: 12px;">
-            <svg style="width: 32px; height: 32px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
-                <path d="M20.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83"/>
-                <path d="M14 4.93a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0"/>
-                <path d="M10 19.07a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0"/>
-                <path d="M4.93 14a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
-                <path d="M9.07 4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0"/>
-            </svg>
-            Settings & Preferences
-        </h2>
-        <p style="color: var(--text-muted); margin: 0; font-size: 1rem;">Customize your study experience</p>
+                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Settings & Preferences</h2>
+                    
+                    <div class="settings-main-grid">
+
+                        <div class="settings-card">
+    <h4>
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        Study Reminders
+    </h4>
+    <p>Set up intelligent study reminders for your subjects</p>
+    <div class="settings-control">
+        <label style="color: var(--text-secondary); font-weight: 600;">Enable Study Reminders:</label>
+        <div class="settings-toggle" id="studyNotifications" onclick="toggleStudyReminders()"></div>
     </div>
-
-    <div class="settings-container">
-        <!-- Account Section -->
-        <div class="settings-section">
-            <div class="section-header">
-                <h3>Account & Profile</h3>
-                <div class="section-divider"></div>
+    
+    <!-- Reminder Options (Initially Hidden) -->
+    <div id="reminderOptions" style="
+        margin-top: 20px; 
+        opacity: 0; 
+        max-height: 0; 
+        overflow: hidden; 
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    ">
+        <div style="padding: 20px; background: var(--bg-primary); border-radius: 12px; border: 2px solid var(--border-color);">
+            <h5 style="margin: 0 0 16px 0; color: var(--text-primary); font-weight: 700;">Subject Reminders</h5>
+            <div id="subjectRemindersList">
+                <!-- Subject reminders will be populated here -->
             </div>
-            
-            <div class="settings-card account-card">
-                <div class="user-profile">
-                    <div class="user-avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
-                    <div class="user-info">
-                        <h4>${currentUser.name}</h4>
-                        <p>${currentUser.email}</p>
-                        <span class="member-since">Member since ${new Date(currentUser.joinDate).toLocaleDateString()}</span>
-                    </div>
-                </div>
-                
-                <div class="account-actions">
-                    <button class="settings-btn secondary" onclick="changePassword()">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <circle cx="12" cy="16" r="1"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        Change Password
-                    </button>
-                    <button class="settings-btn danger" onclick="logout()">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16,17 21,12 16,7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Sign Out
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Study Preferences Section -->
-        <div class="settings-section">
-            <div class="section-header">
-                <h3>Study Preferences</h3>
-                <div class="section-divider"></div>
-            </div>
-            
-            <div class="settings-row">
-                <div class="settings-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                        </svg>
-                    </div>
-                    <div class="card-content">
-                        <h4>Study Reminders</h4>
-                        <p>Get notified when it's time to study</p>
-                        <div class="toggle-control">
-                            <span>Enable Reminders</span>
-                            <div class="settings-toggle" id="studyNotifications" onclick="toggleStudyReminders()"></div>
-                        </div>
-                        
-                        <div id="reminderOptions" class="reminder-options">
-                            <div class="reminder-section">
-                                <h5>Subject Reminders</h5>
-                                <div id="subjectRemindersList" class="reminders-list"></div>
-                                <button class="settings-btn primary small" onclick="addNewReminder()">+ Add Reminder</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="settings-card">
-                    <div class="card-icon google-icon">
-                        <img src="${GOOGLE_CALENDAR_ICON}" alt="Google Calendar" style="width: 24px; height: 24px; border-radius: 4px;">
-                    </div>
-                    <div class="card-content">
-                        <h4>Google Calendar</h4>
-                        <p>Sync study reminders with your calendar</p>
-                        <button id="googleCalendarBtn" onclick="toggleGoogleCalendarConnection()" class="settings-btn primary">
-                            Connect
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Appearance Section -->
-        <div class="settings-section">
-            <div class="section-header">
-                <h3>Appearance & Interface</h3>
-                <div class="section-divider"></div>
-            </div>
-            
-            <div class="settings-row">
-                <div class="settings-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"/>
-                            <line x1="12" y1="1" x2="12" y2="3"/>
-                            <line x1="12" y1="21" x2="12" y2="23"/>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                            <line x1="1" y1="12" x2="3" y2="12"/>
-                            <line x1="21" y1="12" x2="23" y2="12"/>
-                        </svg>
-                    </div>
-                    <div class="card-content">
-                        <h4>Theme</h4>
-                        <p>Choose your preferred color scheme</p>
-                        <div class="theme-selector">
-                            <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
-                                <div class="theme-preview light"></div>
-                                <span>Light</span>
-                            </div>
-                            <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
-                                <div class="theme-preview dark"></div>
-                                <span>Dark</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="settings-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                            <polyline points="9,22 9,12 15,12 15,22"/>
-                        </svg>
-                    </div>
-                    <div class="card-content">
-                        <h4>Navigation Style</h4>
-                        <p>Choose your navigation preference</p>
-                        <div class="toggle-control">
-                            <span>Use Top Tab Bar</span>
-                            <div class="settings-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()"></div>
-                        </div>
-                        <small class="note">Desktop only feature</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Data Management Section -->
-        <div class="settings-section">
-            <div class="section-header">
-                <h3>Data & Backup</h3>
-                <div class="section-divider"></div>
-            </div>
-            
-            <div class="settings-card">
-                <div class="card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <polyline points="1 20 1 14 7 14"/>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-                    </svg>
-                </div>
-                <div class="card-content">
-                    <h4>Backup & Sync</h4>
-                    <p>Protect your data and sync across devices</p>
-                    <div class="backup-actions">
-                        <button class="settings-btn secondary" onclick="createBackup()">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17,8 12,3 7,8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                            Create Backup
-                        </button>
-                        <button class="settings-btn secondary" onclick="restoreBackup()">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Restore Backup
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <button onclick="addNewReminder()" style="
+                width: 100%;
+                margin-top: 16px;
+                padding: 12px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">+ Add Subject Reminder</button>
         </div>
     </div>
+</div>
 
+<div class="settings-card">
+    <h4>
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9l-5 4.87L18.18 22 12 18.77 5.82 22 7 13.87 2 9l6.91-.74L12 2z"/>
+        </svg>
+        Connected Services
+    </h4>
+    <p>Connect external services for enhanced functionality</p>
+    
+    <div class="connected-service" style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        margin-top: 16px;
+    ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="
+                width: 40px;
+                height: 40px;
+                background: #4285f4;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M15.5,12L14,10.5V9H13V10.5H12V9H11V10.5L9.5,12L11,13.5V15H12V13.5H13V15H14V13.5L15.5,12Z"/>
+                </svg>
+            </div>
+            <div>
+                <h6 style="margin: 0; color: var(--text-primary); font-weight: 700;">Google Calendar</h6>
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">Sync study reminders with your calendar</p>
+            </div>
+        </div>
+        
+        <button id="googleCalendarBtn" onclick="toggleGoogleCalendarConnection()" style="
+            padding: 10px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">
+            Connect
+        </button>
+    </div>
+</div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="M1 12h6m6 0h6"/>
+                                </svg>
+                                Theme Options
+                            </h4>
+                            <p>Choose between Light or Dark theme</p>
+                            <div class="theme-selector">
+                                <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; color: #374151; font-weight: 800; font-size: 10px;">Light</div>
+                                </div>
+                                <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
+                                    <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #0f172a 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #f1f5f9; font-weight: 800; font-size: 10px;">Dark</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9,22 9,12 15,12 15,22"/>
+                                </svg>
+                                Navigation Style
+                            </h4>
+                            <p>Choose between sidebar or top tab bar navigation</p>
+                            <div class="settings-control">
+                                <label style="color: var(--text-secondary); font-weight: 600;">Use Top Tab Bar:</label>
+                                <div class="settings-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()"></div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+                                Note: This feature is disabled on mobile devices
+                            </p>
+                        </div>
+
+                        <div class="settings-card">
+                            <h4>
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <polyline points="1 20 1 14 7 14"/>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                </svg>
+                                Backup & Sync
+                            </h4>
+                            <p>Sync your data across devices and create automatic backups</p>
+                            <div class="settings-control">
+                                <button class="btn-secondary" onclick="createBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    Create Backup
+                                </button>
+                                <button class="btn-secondary" onclick="restoreBackup()">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Restore Backup
+                                </button>
+                            </div>
+                        </div>
 
                         <div class="settings-card">
                             <h4>
@@ -17293,19 +14729,17 @@ async function processAIResponse(userMessage) {
     }
 }
 
+// Google Gemini API Integration with improved error handling
 async function callGeminiAPI(userMessage, context) {
-    // Fix this check - remove the wrong API key
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GOOGLE_GEMINI_API_KEY_HERE' || GEMINI_API_KEY.length < 30) {
+    // First check if API key is valid
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyAd9K0tS-0p-bVyVUhlFkNNCbuU9qJ5qQ4' || GEMINI_API_KEY.length < 30) {
         console.log('Using mock response - API key not configured');
         throw new Error('API key not configured');
     }
 
-    // Updated API URL with correct model
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
     
-    // Rest of the function...
-    
-    // Rest of the function stays the same...
+    // Create system prompt with context
     const systemPrompt = createSystemPrompt(context);
     const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`;
     
@@ -17320,7 +14754,25 @@ async function callGeminiAPI(userMessage, context) {
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 1024,
-        }
+        },
+        safetySettings: [
+            {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                category: "HARM_CATEGORY_HATE_SPEECH",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            }
+        ]
     };
 
     try {
@@ -17351,39 +14803,52 @@ async function callGeminiAPI(userMessage, context) {
 
         const aiResponse = data.candidates[0].content.parts[0].text;
         
+        // Parse response for actions
         return parseGeminiResponse(aiResponse, context);
         
     } catch (error) {
         console.error('Gemini API Error:', error);
+        
+        // For development purposes, show a helpful message
+        if (error.message.includes('404')) {
+            console.log('API endpoint not found. Using mock response.');
+        } else if (error.message.includes('403')) {
+            console.log('API key invalid or no permissions. Using mock response.');
+        }
+        
         throw error;
     }
 }
 
+// Add this function for Gemini Vision API
 async function analyzeImageWithGemini(imageData, subject) {
     try {
-        // Get the API key from your config endpoint
-        const configResponse = await fetch('/api/config');
-        const config = await configResponse.json();
-        const apiKey = config.GOOGLE_API_KEY;
+        // Convert base64 to the format Gemini expects
+        const base64Data = imageData.split(',')[1]; // Remove data:image/... prefix
         
-        if (!apiKey) {
-            throw new Error('API key not found in config');
-        }
-
-        const base64Data = imageData.split(',')[1];
-        const mimeType = imageData.split(';')[0].split(':')[1];
-        
-        // Call Gemini directly with the retrieved API key
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: `Analyze this educational image and create study content for GCSE ${subject}.` },
+                        {
+                            text: `Analyze this educational image and create comprehensive study content for a GCSE ${subject} student. 
+
+Please provide:
+1. **Topic Identification** - What is the main topic shown in this image?
+2. **Key Concepts** - List 5-7 important concepts visible in the image
+3. **Detailed Explanation** - A clear, structured explanation of what's shown (200-300 words)
+4. **Study Questions** - 5 questions ranging from basic recall to application level
+5. **Memory Tips** - 2-3 helpful ways to remember this information
+
+Format your response with clear headings and bullet points for easy studying.`
+                        },
                         {
                             inlineData: {
-                                mimeType: mimeType,
+                                mimeType: "image/jpeg", // Adjust based on actual image type
                                 data: base64Data
                             }
                         }
@@ -17391,7 +14856,8 @@ async function analyzeImageWithGemini(imageData, subject) {
                 }],
                 generationConfig: {
                     temperature: 0.4,
-                    maxOutputTokens: 800,
+                    topP: 0.8,
+                    maxOutputTokens: 1500,
                 }
             })
         });
@@ -17402,15 +14868,40 @@ async function analyzeImageWithGemini(imageData, subject) {
 
         const data = await response.json();
         
-        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
             return data.candidates[0].content.parts[0].text;
         } else {
-            throw new Error('Invalid response format from Gemini API');
+            throw new Error('No analysis content received');
         }
         
     } catch (error) {
         console.error('Image Analysis Error:', error);
-        throw error;
+        
+        // Fallback content
+        return `**Image Analysis - ${subject}**
+
+**Topic Identified:** Educational content from uploaded image
+
+**Key Concepts:**
+- Visual learning material for ${subject}
+- Important diagrams and illustrations
+- Core subject concepts
+- Study reference material
+
+**Detailed Explanation:**
+This image contains educational content related to ${subject}. The visual elements help illustrate important concepts that are easier to understand through diagrams and illustrations rather than text alone.
+
+**Study Questions:**
+1. What are the main elements shown in this image?
+2. How do these concepts relate to your ${subject} curriculum?
+3. What patterns or relationships can you identify?
+4. How would you explain this to someone else?
+5. What additional information would help you understand this better?
+
+**Memory Tips:**
+- Create mental associations with the visual elements
+- Draw similar diagrams to reinforce learning
+- Connect this image to other topics you've studied`;
     }
 }
 
@@ -18135,7 +15626,7 @@ function handleFlashcardCreation(event) {
     }
 }
 
-// Find this function and replace it:
+// Add this function to process uploaded images and create flashcards
 async function processUploadedImagesForFlashcards(subjects) {
     const imageFiles = uploadedFiles.filter(file => file.type.startsWith('image/'));
     
@@ -18143,33 +15634,54 @@ async function processUploadedImagesForFlashcards(subjects) {
     
     for (let i = 0; i < imageFiles.length; i++) {
         const imageFile = imageFiles[i];
-        const primarySubject = subjects[0] || 'General Studies';
-        const topicName = extractTopicFromFilename(imageFile.name) || `Visual Study Material ${i + 1}`;
         
-        let analysisContent = `**Study Material - ${primarySubject}**\n\nImage uploaded for ${topicName}. Add your notes here.`;
+        // Determine the best subject match for this image
+        const primarySubject = subjects[0] || 'General Studies';
         
         try {
-            analysisContent = await analyzeImageWithGemini(imageFile.data, primarySubject);
+            // Analyze image with Gemini
+            const analysisContent = await analyzeImageWithGemini(imageFile.data, primarySubject);
+            
+            // Extract topic from filename or analysis
+            const topicName = extractTopicFromFilename(imageFile.name) || `Visual Study Material ${i + 1}`;
+            
+            // Create flashcard with analysis content
+            const flashcard = {
+                id: Date.now() + Math.random() + i,
+                subject: primarySubject,
+                topic: topicName,
+                notes: analysisContent,
+                contentFile: imageFile.id,
+                imageData: imageFile.data, // Store image data for display
+                created: new Date().toISOString(),
+                isFromImage: true // Flag to identify image-based flashcards
+            };
+            
+            flashcards.push(flashcard);
+            
         } catch (error) {
             console.error('Error processing image:', error);
+            
+            // Create basic flashcard even if analysis fails
+            const flashcard = {
+                id: Date.now() + Math.random() + i,
+                subject: primarySubject,
+                topic: `Study Image: ${imageFile.name}`,
+                notes: `**Visual Study Material**\n\nThis image contains important educational content for ${primarySubject}. Please review the visual elements and consider:\n\n• What are the main concepts shown?\n• How do these relate to your studies?\n• What key information can you extract?\n• How can you use this for revision?`,
+                contentFile: imageFile.id,
+                imageData: imageFile.data,
+                created: new Date().toISOString(),
+                isFromImage: true
+            };
+            
+            flashcards.push(flashcard);
         }
-        
-        const flashcard = {
-            id: Date.now() + Math.random() + i,
-            subject: primarySubject,
-            topic: topicName,
-            notes: analysisContent,
-            contentFile: imageFile.id,
-            // Don't store image data to avoid quota issues
-            created: new Date().toISOString(),
-            isFromImage: true
-        };
-        
-        flashcards.push(flashcard);
     }
     
+    // Save flashcards
     localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
     updateSidebarStats();
+    
     showAlert(`Created ${imageFiles.length} flashcard(s) from uploaded images!`, 'success');
 }
 
@@ -19248,18 +16760,28 @@ async function translateKeyTerm(term, subject) {
 }
 
 async function getAIExplanation(term, subject) {
-    // TO:
-const configResponse = await fetch('/api/config');
-const config = await configResponse.json();
-const apiKey = config.GOOGLE_API_KEY;
-
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: `Explain "${term}" for GCSE ${subject} students.` }] }],
+            contents: [{
+                parts: [{
+                    text: `Provide a clear, concise explanation of the term "${term}" in the context of ${subject}. 
+
+Include:
+1. Definition
+2. Key characteristics or properties
+3. Why it's important in ${subject}
+4. A simple example if applicable
+
+Keep the explanation focused and educational, suitable for GCSE level students.`
+                }]
+            }],
             generationConfig: {
                 temperature: 0.3,
+                topP: 0.8,
                 maxOutputTokens: 300,
             }
         })
@@ -19301,23 +16823,83 @@ function revealContentWithWordGlow(content) {
 async function callGeminiForStructure(content, structureType, subject) {
     try {
         const enhancedPrompts = {
-            // Your existing prompts...
+            bullet: `Transform the following ${subject} study notes into a well-organized bullet point format with HIGHLIGHTED KEY TERMS. Create clear, scannable bullet points with:
+
+- Main topics as primary bullets
+- Subtopics as secondary bullets (indented)
+- Key facts and details as tertiary bullets
+- **IMPORTANT**: Wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Use consistent formatting throughout
+- Keep each bullet point concise but complete
+- Group related information together
+- Add spacing between major sections
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Please restructure this into professional bullet points with highlighted key terms that are easy to study from.`,
+
+            outline: `Convert the following ${subject} study notes into a clear, hierarchical outline format with HIGHLIGHTED KEY TERMS. Structure it with:
+
+I. Main Topics (Roman numerals)
+   A. Subtopics (Capital letters)
+      1. Key points (Numbers)
+         a. Supporting details (Lowercase letters)
+            i. Specific examples (Lowercase Roman numerals)
+
+Requirements:
+- Use proper outline formatting
+- **IMPORTANT**: Wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Create logical hierarchy
+- Group related concepts together
+- Include all important information
+- Make it easy to follow and study
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Transform this into a structured outline format with highlighted key terms.`,
+
+            qa: `Convert the following ${subject} study notes into a comprehensive Question & Answer format with HIGHLIGHTED KEY TERMS for effective studying:
+
+Create questions that:
+- Test key concepts and understanding
+- Cover all major topics mentioned
+- Range from basic recall to application
+- Include "what," "why," "how," and "when" questions
+- **IMPORTANT**: In answers, wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Follow each question immediately with a clear, complete answer
+
+Format each as:
+Q: [Clear, specific question]
+A: [Detailed, accurate answer with highlighted key terms]
+
+Group questions by topic where logical.
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Transform this into effective Q&A study format with highlighted key terms.`
         };
         
-        // To this:
-// TO: (update to use Flash directly like the image analysis)
-const configResponse = await fetch('/api/config');
-const config = await configResponse.json();
-const apiKey = config.GOOGLE_API_KEY;
-
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: enhancedPrompts[structureType] }] }],
+                contents: [{
+                    parts: [{
+                        text: enhancedPrompts[structureType]
+                    }]
+                }],
                 generationConfig: {
                     temperature: 0.3,
-                    maxOutputTokens: 1000,
+                    topP: 0.8,
+                    maxOutputTokens: 1500,
                 }
             })
         });
@@ -19331,8 +16913,10 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
         if (data.candidates && data.candidates[0] && data.candidates[0].content) {
             const structuredContent = data.candidates[0].content.parts[0].text;
             
+            // Extract questions if this is Q&A format
             if (structureType === 'qa') {
                 aiGeneratedQuestions = extractQuestionsFromAIContent(structuredContent);
+                console.log('AI Generated Questions:', aiGeneratedQuestions);
             }
             
             const highlightedContent = processHighlightedContent(structuredContent, subject);
@@ -19343,10 +16927,31 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
     } catch (error) {
         console.error('AI Structure Error:', error);
         hideEnhancedAIAnimation();
-        throw error;
+        
+        // Enhanced fallback with manual highlights for testing
+        const fallbackWithHighlights = {
+            qa: `**${subject} Study Questions & Answers**
+
+Q: What is the [HIGHLIGHT]cell membrane[/HIGHLIGHT], and what is its primary function?
+A: The [HIGHLIGHT]cell membrane[/HIGHLIGHT] is a [HIGHLIGHT]selectively permeable membrane[/HIGHLIGHT] that surrounds all cells. Its primary function is to regulate the passage of substances into and out of the cell.
+
+Q: Describe the composition of the [HIGHLIGHT]cell membrane[/HIGHLIGHT].
+A: The [HIGHLIGHT]cell membrane[/HIGHLIGHT] is primarily composed of a [HIGHLIGHT]phospholipid bilayer[/HIGHLIGHT] with embedded [HIGHLIGHT]proteins[/HIGHLIGHT].
+
+Q: Why is the cell membrane's [HIGHLIGHT]selective permeability[/HIGHLIGHT] important?
+A: The [HIGHLIGHT]selective permeability[/HIGHLIGHT] controls the movement of [HIGHLIGHT]water[/HIGHLIGHT], [HIGHLIGHT]nutrients[/HIGHLIGHT], and [HIGHLIGHT]waste products[/HIGHLIGHT], maintaining the cell's internal environment.`
+        };
+        
+        if (structureType === 'qa') {
+            aiGeneratedQuestions = extractQuestionsFromAIContent(fallbackWithHighlights.qa);
+        }
+        
+        const highlightedFallback = processHighlightedContent(fallbackWithHighlights[structureType] || fallbackWithHighlights.qa, subject);
+        revealContentWithWordGlow(highlightedFallback);
+        showAlert('Using offline structure format with highlighting', 'info');
     }
 }
-        
+
 // Add this function after the callGeminiForStructure function
 function extractQuestionsFromAIContent(aiContent) {
     const questions = [];
@@ -21480,27 +19085,49 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAppState();
     loadSettings();
     
-    // Initialize authentication system
+    // Initialize authentication system (will show auth modal if not logged in)
     initAuthenticationSystem();
     
     // Initialize EmailJS
     initEmailJS();
     
-    // Migrate existing emails to lowercase
-    migrateExistingEmails();
-    
-    // Rest of initialization...
+    // Rest of your existing initialization code...
     const currentPage = appState.currentPage || 'home';
     
-    // Initialize upload after a delay to ensure DOM is ready
-    setTimeout(() => {
-        initHomeUpload();
-    }, 500);
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById(currentPage).classList.add('active');
     
-    // Handle days until exam change
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const sidebarItem = document.querySelector(`[onclick="showPage('${currentPage}')"]`);
+    if (sidebarItem) {
+        const closestItem = sidebarItem.closest('.sidebar-item');
+        if (closestItem) closestItem.classList.add('active');
+    }
+    
+    if (window.innerWidth <= 768) {
+        updateBottomNavigation(currentPage);
+    }
+    
+    if (userSettings.useTopTabBar && window.innerWidth > 768) {
+        setTimeout(() => {
+            updateTopTabActive();
+            initDragNavigation();
+
+        }, 100);
+    }
+    
+    toggleAIButtonVisibility(currentPage);
+    
+    setTimeout(initHomeUpload, 100);
+    handleDaysUntilExamChange();
+    
     setTimeout(() => {
-        handleDaysUntilExamChange();
-    }, 300);
+        updateDashboard();
+        updateProgress();
+    }, 100);
     
     setTimeout(() => {
         if (Object.keys(appState.schedules).length > 0) {
@@ -21688,190 +19315,90 @@ function deleteUploadedFile(fileId) {
     showAlert('File deleted', 'success');
 }
 
+// Add the viewUploadedFile function here:
 function viewUploadedFile(fileId) {
     const file = uploadedFiles.find(f => f.id == fileId);
     if (!file) return;
     
-    // Create full-screen modal
-    const modal = document.createElement('div');
-    modal.id = 'fileViewModal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.95);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    `;
-    
-    let content = '';
     if (file.type === 'application/pdf') {
-        content = `<embed src="${file.data}" type="application/pdf" style="width: 90%; height: 90%; border-radius: 8px;" />`;
+        // Open PDF in new window
+        const newWindow = window.open('', '_blank');
+        newWindow.document.write(`
+            <html>
+                <head><title>${file.name}</title></head>
+                <body style="margin:0;padding:0;">
+                    <embed src="${file.data}" type="application/pdf" width="100%" height="100%" />
+                </body>
+            </html>
+        `);
     } else {
-        content = `<img src="${file.data}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;" alt="${file.name}">`;
-    }
-    
-    modal.innerHTML = `
-        ${content}
-        <button onclick="closeFileView()" style="
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5rem;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 1000000;
-        " onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">×</button>
-        <div style="
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 8px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        ">${file.name} • ${file.size} • Press ESC to close</div>
-    `;
-    
-    // Add click outside to close
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeFileView();
-        }
-    });
-    
-    document.body.appendChild(modal);
-    
-    // Add ESC key listener
-    function handleEscape(event) {
-        if (event.key === 'Escape') {
-            closeFileView();
-        }
-    }
-    
-    document.addEventListener('keydown', handleEscape);
-    modal.escapeHandler = handleEscape; // Store reference for cleanup
-    
-    // Animate in
-    setTimeout(() => modal.style.opacity = '1', 50);
-}
-
-function closeFileView() {
-    const modal = document.getElementById('fileViewModal');
-    if (modal) {
-        // Remove ESC listener
-        if (modal.escapeHandler) {
-            document.removeEventListener('keydown', modal.escapeHandler);
-        }
-        
-        modal.style.opacity = '0';
-        setTimeout(() => modal.remove(), 300);
+        // Open image in new window
+        const newWindow = window.open('', '_blank');
+        newWindow.document.write(`
+            <html>
+                <head><title>${file.name}</title></head>
+                <body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;background:#000;">
+                    <img src="${file.data}" style="max-width:100%;max-height:100%;object-fit:contain;" />
+                </body>
+            </html>
+        `);
     }
 }
 
 function initHomeUpload() {
-    // Wait for DOM to be fully ready
-    if (document.readyState !== 'complete') {
-        setTimeout(initHomeUpload, 100);
-        return;
-    }
-    
     const uploadArea = document.getElementById('homeUploadArea');
     const fileInput = document.getElementById('homeFileUpload');
-    const uploadSection = document.getElementById('homeUploadSection');
     
-    if (!uploadSection) {
-        console.log('Upload section not found, retrying...');
+    if (!uploadArea || !fileInput) {
+        console.log('Upload elements not found, retrying...');
         setTimeout(initHomeUpload, 500);
         return;
     }
     
-    // If upload area doesn't exist but section does, create it
-    if (!uploadArea) {
-        updateHomeUploadDisplay();
-        setTimeout(initHomeUpload, 200);
-        return;
-    }
-    
-    if (!fileInput) {
-        console.log('File input not found, creating it...');
-        const newFileInput = document.createElement('input');
-        newFileInput.type = 'file';
-        newFileInput.id = 'homeFileUpload';
-        newFileInput.accept = 'image/*,application/pdf';
-        newFileInput.multiple = true;
-        newFileInput.style.display = 'none';
-        uploadSection.appendChild(newFileInput);
-        setTimeout(initHomeUpload, 200);
-        return;
-    }
-    
     // Remove existing listeners to prevent duplicates
-    const newUploadArea = uploadArea.cloneNode(true);
-    const newFileInput = fileInput.cloneNode(true);
+    uploadArea.replaceWith(uploadArea.cloneNode(true));
+    const newUploadArea = document.getElementById('homeUploadArea');
+    const newFileInput = document.getElementById('homeFileUpload');
     
-    uploadArea.parentNode.replaceChild(newUploadArea, uploadArea);
-    fileInput.parentNode.replaceChild(newFileInput, fileInput);
-    
-    // Add event listeners
-    setupUploadListeners(newUploadArea, newFileInput);
-    
-    console.log('Upload initialization complete');
-}
-
-function setupUploadListeners(uploadArea, fileInput) {
     // Drag and drop events
-    uploadArea.addEventListener('dragover', (e) => {
+    newUploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        uploadArea.classList.add('dragover');
+        newUploadArea.classList.add('dragover');
     });
     
-    uploadArea.addEventListener('dragleave', (e) => {
+    newUploadArea.addEventListener('dragleave', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        uploadArea.classList.remove('dragover');
+        newUploadArea.classList.remove('dragover');
     });
     
-    uploadArea.addEventListener('drop', (e) => {
+    newUploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        uploadArea.classList.remove('dragover');
+        newUploadArea.classList.remove('dragover');
         handleFiles(e.dataTransfer.files);
     });
     
-    uploadArea.addEventListener('click', (e) => {
+    newUploadArea.addEventListener('click', (e) => {
         e.preventDefault();
-        fileInput.click();
+        newFileInput.click();
     });
     
-    fileInput.addEventListener('change', (e) => {
+    newFileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             handleFiles(e.target.files);
         }
     });
+    
+    updateHomeUploadDisplay();
 }
+
+// Ensure this is called after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+    setTimeout(initHomeUpload, 100);
+});
 
 function updateHomeUploadDisplay() {
     const section = document.getElementById('homeUploadSection');
