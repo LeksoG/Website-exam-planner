@@ -9770,14 +9770,13 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+    
+<script>
+  // DO NOT redeclare const supabase
+  const supabaseUrl = 'YOUR_SUPABASE_URL';
+  const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-  
-
-  
-
-
-    <script>
-        // GCSE Revision Planner - Complete JavaScript Application
 
 // ===== GLOBAL STATE AND VARIABLES =====
 let appState = {
@@ -9815,10 +9814,6 @@ let GOOGLE_CLIENT_ID = 'your-google-client-id';
 let GOOGLE_API_KEY = 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-  const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
-  const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
         // EmailJS Configuration
 let EMAILJS_CONFIG = {
