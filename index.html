@@ -9665,6 +9665,181 @@ body.top-nav-active .main-content {
         align-items: stretch;
     }
 }
+
+/* Top Tab Bar Centering Fix */
+.top-tab-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--border-color);
+    z-index: 1000;
+    padding: 12px 0;
+    display: flex;
+    justify-content: center; /* Center the content */
+    align-items: center;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 1200px; /* Limit maximum width */
+    width: 100%;
+    justify-content: center; /* Center the tabs */
+    padding: 0 20px; /* Add some padding on sides */
+}
+
+.top-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.top-tab-item:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.top-tab-item.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+.top-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 8px; /* Add some space from the tabs */
+}
+
+.top-search-btn:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.top-search-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+/* Search Content Styling */
+.top-search-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 20px;
+    justify-content: center;
+}
+
+.top-search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.top-search-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.top-search-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.top-search-close:hover {
+    background: var(--accent-red, #ef4444);
+    color: white;
+    border-color: var(--accent-red, #ef4444);
+}
+
+/* Ensure body has proper top padding when top nav is active */
+body.top-nav-active {
+    padding-top: 70px; /* Adjust based on your top bar height */
+}
+
+body.top-nav-active .main-content {
+    margin-top: 0; /* Remove any existing margin */
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .top-tab-content {
+        padding: 0 12px;
+        gap: 6px;
+    }
+    
+    .top-tab-item {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .top-tab-item span {
+        display: none; /* Hide text on mobile, show only icons */
+    }
+    
+    .top-search-btn {
+        padding: 10px;
+    }
+    
+    body.top-nav-active {
+        padding-top: 60px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .top-tab-content {
+        justify-content: space-between;
+        padding: 0 8px;
+    }
+    
+    .top-tab-item {
+        padding: 8px 12px;
+        min-width: auto;
+    }
+}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -13522,12 +13697,6 @@ function createTopTabBar() {
     let existingBar = document.getElementById('topTabBar');
     if (existingBar) return;
     
-    // Create blur overlay
-    const blurOverlay = document.createElement('div');
-    blurOverlay.id = 'searchBlurOverlay';
-    blurOverlay.className = 'search-blur-overlay';
-    document.body.appendChild(blurOverlay);
-    
     const tabBar = document.createElement('div');
     tabBar.id = 'topTabBar';
     tabBar.className = 'top-tab-bar';
@@ -13570,7 +13739,7 @@ function createTopTabBar() {
             </div>
         </div>
         <div class="top-search-content" id="topSearchContent" style="display: none;">
-            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted); margin-left: 12px; width: 18px; height: 18px;">
+            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted); width: 18px; height: 18px;">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="M21 21l-4.35-4.35"/>
             </svg>
