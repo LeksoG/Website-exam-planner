@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCSE Revision Planner</title>
+    <title>Learnify</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Enhanced Theme System - Root Variables */
@@ -9050,7 +9050,7 @@ body {
                     <span></span>
                     <span></span>
                 </button>
-                <h1>GCSE Revision Planner</h1>
+                <h1>Learnify</h1>
             </div>
             <div class="header-right">
                 <button class="ai-assistant-btn dashboard-only" id="aiAssistantBtn" onclick="toggleAIChatbot()" title="AI Study Assistant">
@@ -9769,15 +9769,11 @@ body {
     <div class="ai-chatbot-overlay" id="aiChatbotOverlay" onclick="toggleAIChatbot()"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
-    <label for="subjectInput">Subject:</label>
-  <input type="text" id="subjectInput" placeholder="e.g., Biology">
+  
 
-  <br><br>
-
-  <label for="imageUpload">Upload Images:</label>
-  <input type="file" id="imageUpload" accept="image/*" multiple>
-
+  
 
 
     <script>
@@ -9819,6 +9815,10 @@ let GOOGLE_CLIENT_ID = 'your-google-client-id';
 let GOOGLE_API_KEY = 'your-google-api-key';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+  const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
         // EmailJS Configuration
 let EMAILJS_CONFIG = {
