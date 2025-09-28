@@ -9770,12 +9770,22 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-    
 <script>
-  // DO NOT redeclare const supabase
-  const supabaseUrl = 'YOUR_SUPABASE_URL';
-  const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
-  const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+  const supabaseUrl = 'https://your-project-ref.supabase.co';
+  const supabaseKey = 'your-anon-key';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function getData() {
+    try {
+      const { data, error } = await supabase.from('your_table').select('*');
+      if (error) throw error;
+      console.log(data);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    }
+  }
+
+  getData();
 
 
 // ===== GLOBAL STATE AND VARIABLES =====
