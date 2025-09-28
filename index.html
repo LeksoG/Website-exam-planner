@@ -8969,300 +8969,6 @@ body {
         padding: 6px 10px;
     }
 }
-
-/* Progress Chart Styles */
-#progressChart {
-    display: flex !important;
-    align-items: end !important;
-    justify-content: center !important;
-    gap: 20px !important;
-    padding: 20px !important;
-    min-height: 300px !important;
-    background: var(--bg-secondary) !important;
-    border-radius: 16px !important;
-    border: 2px solid var(--border-color) !important;
-    position: relative !important;
-    overflow: visible !important;
-}
-
-.chart-bar-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 80px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.chart-bar-wrapper:hover {
-    transform: translateY(-2px);
-}
-
-.chart-bar {
-    border-radius: 30px !important;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: bottom;
-    margin-bottom: 10px;
-    overflow: visible;
-}
-
-.chart-bar:hover {
-    transform: scale(1.05) !important;
-}
-
-.compare-button {
-    position: absolute;
-    top: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent-blue);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    opacity: 0;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    white-space: nowrap;
-    pointer-events: none;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    z-index: 10;
-}
-
-.chart-bar-wrapper:hover .compare-button {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transform: translateX(-50%) translateY(-5px);
-}
-
-.compare-button:hover {
-    background: var(--accent-blue-dark, #2563eb) !important;
-    transform: translateX(-50%) translateY(-7px) !important;
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
-}
-
-/* Comparison mode styles */
-.comparison-selected {
-    filter: brightness(1.1) !important;
-    transform: scale(1.05) !important;
-}
-
-.comparison-desaturated {
-    filter: grayscale(0.7) opacity(0.6) !important;
-}
-
-.comparison-highlight {
-    filter: brightness(1.15) !important;
-    transform: scale(1.08) !important;
-}
-
-/* Cancel comparison button */
-.cancel-comparison-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--accent-red, #ef4444);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.cancel-comparison-btn:hover {
-    background: #dc2626;
-    transform: translateY(-1px);
-}
-
-/* Comparison modal styles */
-.comparison-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100000;
-    opacity: 0;
-    transition: all 0.4s ease;
-}
-
-.comparison-modal-overlay.show {
-    opacity: 1;
-}
-
-.comparison-modal {
-    background: var(--bg-primary);
-    border-radius: 20px;
-    padding: 32px;
-    max-width: 700px;
-    width: 90%;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transform: scale(0.9);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.comparison-modal-overlay.show .comparison-modal {
-    transform: scale(1);
-}
-
-.comparison-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid var(--border-color);
-}
-
-.comparison-header h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-
-.comparison-close {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-primary);
-}
-
-.comparison-close:hover {
-    background: var(--accent-red, #ef4444);
-    color: white;
-    border-color: var(--accent-red, #ef4444);
-}
-
-.comparison-content {
-    display: flex;
-    gap: 24px;
-    align-items: stretch;
-}
-
-.comparison-side {
-    flex: 1;
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 24px;
-    border: 2px solid var(--border-color);
-}
-
-.subject-header {
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.subject-header.color-1 {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-}
-
-.subject-header.color-2 {
-    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-    color: white;
-}
-
-.subject-header h3 {
-    margin: 0;
-    font-size: 1.3rem;
-    font-weight: 700;
-}
-
-.comparison-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    background: var(--bg-primary);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.stat-label {
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
-.stat-value {
-    color: var(--text-primary);
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.comparison-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-}
-
-.vs-badge {
-    background: var(--accent-blue);
-    color: white;
-    padding: 12px 16px;
-    border-radius: 50%;
-    font-weight: 800;
-    font-size: 1rem;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    #progressChart {
-        gap: 15px !important;
-        padding: 15px !important;
-        min-height: 250px !important;
-    }
-    
-    .chart-bar-wrapper {
-        min-width: 60px;
-    }
-    
-    .chart-bar {
-        width: 45px !important;
-    }
-    
-    .comparison-content {
-        flex-direction: column;
-        gap: 16px;
-    }
-    
-    .comparison-divider {
-        width: 100%;
-        height: 40px;
-    }
-    
-    .vs-badge {
-        transform: rotate(90deg);
-    }
-}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -19993,141 +19699,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-function addProgressChartStyles() {
-    const style = document.createElement('style');
-    style.id = 'progressChartStyles';
-    style.textContent = `
-        /* Progress Chart Styles */
-        #progressChart {
-            display: flex !important;
-            align-items: end !important;
-            justify-content: center !important;
-            gap: 20px !important;
-            padding: 20px !important;
-            min-height: 300px !important;
-            background: var(--bg-secondary) !important;
-            border-radius: 16px !important;
-            border: 2px solid var(--border-color) !important;
-            position: relative !important;
-            overflow: visible !important;
-        }
-
-        .chart-bar-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 80px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .chart-bar-wrapper:hover {
-            transform: translateY(-2px);
-        }
-
-        .chart-bar {
-            border-radius: 30px !important;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: bottom;
-            margin-bottom: 10px;
-            overflow: visible;
-        }
-
-        .chart-bar:hover {
-            transform: scale(1.05) !important;
-        }
-
-        .compare-button {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-blue);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            opacity: 0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            white-space: nowrap;
-            pointer-events: none;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            z-index: 10;
-        }
-
-        .chart-bar-wrapper:hover .compare-button {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: translateX(-50%) translateY(-5px);
-        }
-
-        .compare-button:hover {
-            background: var(--accent-blue-dark, #2563eb) !important;
-            transform: translateX(-50%) translateY(-7px) !important;
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
-        }
-
-        .comparison-selected {
-            filter: brightness(1.1) !important;
-            transform: scale(1.05) !important;
-        }
-
-        .comparison-desaturated {
-            filter: grayscale(0.7) opacity(0.6) !important;
-        }
-
-        .comparison-highlight {
-            filter: brightness(1.15) !important;
-            transform: scale(1.08) !important;
-        }
-
-        .cancel-comparison-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent-red, #ef4444);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .cancel-comparison-btn:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-            #progressChart {
-                gap: 15px !important;
-                padding: 15px !important;
-                min-height: 250px !important;
-            }
-            
-            .chart-bar-wrapper {
-                min-width: 60px;
-            }
-            
-            .chart-bar {
-                width: 45px !important;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
 function completeTypingEffect(textarea, glowOverlay) {
     textarea.focus();
     autoSaveNotes();
@@ -22367,9 +21938,10 @@ function updateTaskStatus(date, subject, taskIndex, isCompleted) {
     }
 }
 
-// Fixed getActiveSubjects function
+// Updated data access functions that should work with your appState
 function getActiveSubjects() {
     try {
+        // Check if we have an active schedule
         if (!appState || !appState.activeSchedule || !appState.schedules) {
             console.log('No appState, activeSchedule, or schedules found');
             return [];
@@ -22383,8 +21955,8 @@ function getActiveSubjects() {
         
         // If subjects array exists, return it
         if (schedule.subjects && Array.isArray(schedule.subjects)) {
-            console.log('Found subjects array:', schedule.subjects);
-            return schedule.subjects.slice();
+            console.log('Found subjects:', schedule.subjects);
+            return schedule.subjects.slice(); // Return copy
         }
         
         // Otherwise, extract subjects from weeklySchedule
@@ -22410,7 +21982,6 @@ function getActiveSubjects() {
     }
 }
 
-// Fixed getSubjectTotalTasks function
 function getSubjectTotalTasks(subject) {
     try {
         if (!appState || !appState.activeSchedule || !appState.schedules) {
@@ -22433,6 +22004,7 @@ function getSubjectTotalTasks(subject) {
             }
         });
         
+        console.log('Total tasks for', subject + ':', totalTasks);
         return totalTasks;
     } catch (error) {
         console.error('Error in getSubjectTotalTasks:', error);
@@ -22440,7 +22012,6 @@ function getSubjectTotalTasks(subject) {
     }
 }
 
-// Fixed getSubjectCompletedTasks function
 function getSubjectCompletedTasks(subject) {
     try {
         if (!appState || !appState.activeSchedule || !appState.schedules) {
@@ -22454,6 +22025,7 @@ function getSubjectCompletedTasks(subject) {
         
         var completedTasks = 0;
         
+        // Generate task IDs the same way as in updateScheduleContent
         Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
             if (Array.isArray(dayTasks)) {
                 dayTasks.forEach(function(task, index) {
@@ -22467,6 +22039,7 @@ function getSubjectCompletedTasks(subject) {
             }
         });
         
+        console.log('Completed tasks for', subject + ':', completedTasks);
         return completedTasks;
     } catch (error) {
         console.error('Error in getSubjectCompletedTasks:', error);
@@ -22790,229 +22363,86 @@ function closeComparisonView() {
     }
 }
 
-// Fixed updateProgressChart function with proper multi-subject display
 function updateProgressChart() {
     try {
         var chartContainer = document.getElementById('progressChart');
         if (!chartContainer) return;
         
         var subjects = getActiveSubjects();
-        console.log('Active subjects for chart:', subjects);
         
         if (subjects.length === 0) {
-            chartContainer.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
-                    <h3>No schedule data found</h3>
-                    <p>Create a schedule in the Home page to see your progress here</p>
-                </div>
-            `;
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><h3>No schedule data found</h3><p>Create a schedule in the Home page to see your progress here</p></div>';
             return;
         }
         
-        // Clear container and add proper styling
         chartContainer.innerHTML = '';
-        chartContainer.style.cssText = `
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-            min-height: 300px;
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            border: 2px solid var(--border-color);
-            position: relative;
-        `;
-        
-        // Subject colors array
-        var subjectColors = [
-            '#3b82f6', '#7c3aed', '#059669', '#ea580c', 
-            '#db2777', '#0891b2', '#dc2626', '#65a30d'
-        ];
         
         subjects.forEach(function(subject, index) {
             var totalTasks = getSubjectTotalTasks(subject);
             var completedTasks = getSubjectCompletedTasks(subject);
             var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-            var color = subjectColors[index % subjectColors.length];
             
-            console.log('Subject:', subject, 'Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
-            
-            // Create bar container
-            var barWrapper = document.createElement('div');
-            barWrapper.className = 'chart-bar-wrapper';
-            barWrapper.setAttribute('data-subject', subject);
-            barWrapper.style.cssText = `
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                min-width: 80px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            `;
-            
-            // Calculate bar height (minimum 20px, maximum 200px)
-            var barHeight = Math.max(20, Math.min(200, (progress / 100) * 200));
-            
-            // Create the oval bar
             var barElement = document.createElement('div');
             barElement.className = 'chart-bar';
-            barElement.style.cssText = `
-                width: 60px;
-                height: ${barHeight}px;
-                background: linear-gradient(180deg, ${color} 0%, ${adjustColorBrightness(color, -20)} 100%);
-                border-radius: 30px;
-                position: relative;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                transform-origin: bottom;
-                margin-bottom: 10px;
-            `;
+            barElement.setAttribute('data-subject', subject);
             
-            // Add progress text inside bar
-            var progressText = document.createElement('div');
-            progressText.style.cssText = `
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: white;
-                font-weight: 700;
-                font-size: 12px;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            `;
-            progressText.textContent = progress + '%';
-            barElement.appendChild(progressText);
+            var compareButtonHTML = subjects.length > 1 ? 
+                '<div class="compare-button" onclick="startComparison(\'' + subject + '\')">' +
+                    '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+                        '<path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+                        '<path d="M19 11h-4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+                        '<path d="M12 2v20"/>' +
+                    '</svg>' +
+                    'Compare' +
+                '</div>' : '';
             
-            // Add task count tooltip
-            var taskInfo = document.createElement('div');
-            taskInfo.style.cssText = `
-                position: absolute;
-                top: -5px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: ${color};
-                color: white;
-                padding: 4px 8px;
-                border-radius: 12px;
-                font-size: 10px;
-                font-weight: 600;
-                white-space: nowrap;
-                opacity: 0;
-                transition: all 0.3s ease;
-                pointer-events: none;
-            `;
-            taskInfo.textContent = `${completedTasks}/${totalTasks} tasks`;
-            barElement.appendChild(taskInfo);
+            barElement.innerHTML = 
+                '<div class="bar-container" style="height: 5%; transition: height 1s ease;" data-progress="' + progress + '">' +
+                    '<div class="bar-value">' + completedTasks + '/' + totalTasks + ' tasks</div>' +
+                    '<div class="bar-progress-text">0%</div>' +
+                '</div>' +
+                '<div class="bar-label">' + subject + '</div>' +
+                compareButtonHTML;
             
-            // Create compare button (hidden initially)
-            var compareButton = document.createElement('div');
-            compareButton.className = 'compare-button';
-            compareButton.style.cssText = `
-                position: absolute;
-                top: -50px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--accent-blue);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 20px;
-                font-size: 11px;
-                font-weight: 600;
-                opacity: 0;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                white-space: nowrap;
-                pointer-events: none;
-                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            `;
-            compareButton.innerHTML = `
-                <svg style="width: 12px; height: 12px; margin-right: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
-                    <path d="M19 11h-4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
-                </svg>Compare
-            `;
+            chartContainer.appendChild(barElement);
             
-            // Create subject label
-            var subjectLabel = document.createElement('div');
-            subjectLabel.style.cssText = `
-                color: var(--text-primary);
-                font-weight: 600;
-                font-size: 13px;
-                text-align: center;
-                margin-top: 8px;
-                max-width: 80px;
-                word-wrap: break-word;
-            `;
-            subjectLabel.textContent = subject;
+            // Add event listeners for comparison
+            if (subjects.length > 1) {
+                (function(subjectName) {
+                    barElement.addEventListener('mouseenter', function() { handleBarHover(subjectName, true); });
+                    barElement.addEventListener('mouseleave', function() { handleBarHover(subjectName, false); });
+                    barElement.addEventListener('click', function() { handleBarClick(subjectName); });
+                })(subject);
+            }
             
-            // Add hover effects
-            barWrapper.addEventListener('mouseenter', function() {
-                barElement.style.transform = 'scale(1.05)';
-                barElement.style.boxShadow = `0 6px 20px ${color}40`;
-                taskInfo.style.opacity = '1';
-                
-                if (subjects.length > 1) {
-                    compareButton.style.opacity = '1';
-                    compareButton.style.pointerEvents = 'auto';
-                }
-            });
-            
-            barWrapper.addEventListener('mouseleave', function() {
-                barElement.style.transform = 'scale(1)';
-                barElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-                taskInfo.style.opacity = '0';
-                compareButton.style.opacity = '0';
-                compareButton.style.pointerEvents = 'none';
-            });
-            
-            // Add click handler for compare
-            compareButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                startComparison(subject);
-            });
-            
-            // Assemble the bar
-            barWrapper.appendChild(compareButton);
-            barWrapper.appendChild(barElement);
-            barWrapper.appendChild(subjectLabel);
-            chartContainer.appendChild(barWrapper);
-            
-            // Animate bar growth
+            // Animate bars with delay
             setTimeout(function() {
-                barElement.style.height = '20px';
-                setTimeout(function() {
-                    barElement.style.height = barHeight + 'px';
-                }, 100);
-            }, index * 150);
+                var barContainer = barElement.querySelector('.bar-container');
+                var progressText = barElement.querySelector('.bar-progress-text');
+                
+                // Ensure minimum height for visibility
+                var displayHeight = Math.max(progress, 8);
+                barContainer.style.height = displayHeight + '%';
+                
+                // Animate the percentage text
+                animateNumber(progressText, 0, progress, 1000, '%');
+                
+                // Apply subject color
+                barContainer.style.background = getSubjectGradient(subject);
+                
+                if (progress > 15) {
+                    barContainer.classList.add('show-text');
+                }
+                
+                console.log('Updated bar for', subject, '- Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
+            }, index * 200 + 300);
         });
         
         updateChartSummary();
         updateLastUpdatedTime();
-        
     } catch (error) {
         console.error('Error updating progress chart:', error);
     }
-}
-
-// Helper function to adjust color brightness
-function adjustColorBrightness(hex, percent) {
-    // Remove the hash if present
-    hex = hex.replace('#', '');
-    
-    // Convert to RGB
-    var r = parseInt(hex.substr(0, 2), 16);
-    var g = parseInt(hex.substr(2, 2), 16);
-    var b = parseInt(hex.substr(4, 2), 16);
-    
-    // Adjust brightness
-    r = Math.max(0, Math.min(255, r + (r * percent / 100)));
-    g = Math.max(0, Math.min(255, g + (g * percent / 100)));
-    b = Math.max(0, Math.min(255, b + (b * percent / 100)));
-    
-    // Convert back to hex
-    return '#' + ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1);
 }
 
 // Animated number counter
@@ -23154,83 +22584,6 @@ function updateStatsDisplay() {
         console.error('Error updating stats display:', error);
     }
 }
-
-// Enhanced initialization function
-function initializeProgressChart() {
-    // Add styles if not already added
-    if (!document.getElementById('progressChartStyles')) {
-        addProgressChartStyles();
-    }
-    
-    // Initialize chart if we're on progress page
-    if (document.getElementById('progressChart')) {
-        console.log('Initializing progress chart...');
-        updateProgressChart();
-        updateStatsDisplay();
-    }
-}
-
-// Enhanced DOMContentLoaded handler - add this to your existing one
-document.addEventListener('DOMContentLoaded', function() {
-    // Your existing initialization code...
-    
-    // Add progress chart initialization
-    setTimeout(() => {
-        initializeProgressChart();
-    }, 500);
-    
-    // Also initialize when switching to progress page
-    const originalShowPage = window.showPage;
-    window.showPage = function(pageId) {
-        const result = originalShowPage.call(this, pageId);
-        
-        if (pageId === 'progress') {
-            setTimeout(() => {
-                initializeProgressChart();
-            }, 300);
-        }
-        
-        return result;
-    };
-});
-
-// Enhanced tab switching for progress page
-function switchProgressTab(tabId) {
-    var tabs = document.querySelectorAll('.progress-tab-btn');
-    var contents = document.querySelectorAll('.progress-tab-content');
-    
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
-    for (var i = 0; i < contents.length; i++) {
-        contents[i].classList.remove('active');
-    }
-    
-    event.target.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
-    
-    if (tabId === 'analytics-stats') {
-        setTimeout(function() {
-            updateProgressChart();
-            updateStatsDisplay();
-        }, 100);
-    }
-}
-
-// Make sure the chart updates when tasks are completed
-window.addEventListener('load', function() {
-    // Listen for task completion events
-    document.addEventListener('click', function(event) {
-        if (event.target.closest('.revision-card-mini-menu')) {
-            // Task menu was clicked, chart might need updating
-            setTimeout(() => {
-                if (document.getElementById('progressChart')) {
-                    updateProgressChart();
-                }
-            }, 500);
-        }
-    });
-});
 
 function updateChartSummary() {
     try {
