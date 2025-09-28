@@ -9666,31 +9666,37 @@ body.top-nav-active .main-content {
     }
 }
 
-/* Top Tab Bar Centering Fix */
+/* Top Tab Bar - Proper Centering Fix */
 .top-tab-bar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    height: auto;
     background: var(--bg-primary);
     border-bottom: 2px solid var(--border-color);
     z-index: 1000;
     padding: 12px 0;
     display: flex;
-    justify-content: center; /* Center the content */
+    justify-content: center;
     align-items: center;
     backdrop-filter: blur(20px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .top-tab-content {
     display: flex;
     align-items: center;
-    gap: 8px;
-    max-width: 1200px; /* Limit maximum width */
-    width: 100%;
-    justify-content: center; /* Center the tabs */
-    padding: 0 20px; /* Add some padding on sides */
+    justify-content: center;
+    gap: 12px;
+    width: auto;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex-wrap: nowrap;
 }
 
 .top-tab-item {
@@ -9706,7 +9712,9 @@ body.top-nav-active .main-content {
     font-weight: 600;
     color: var(--text-primary);
     text-decoration: none;
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: auto;
 }
 
 .top-tab-item:hover {
@@ -9732,31 +9740,27 @@ body.top-nav-active .main-content {
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-left: 8px; /* Add some space from the tabs */
+    flex-shrink: 0;
 }
 
-.top-search-btn:hover {
+.top-search-btn:hover,
+.top-search-btn.active {
     background: var(--accent-blue);
     color: white;
     border-color: var(--accent-blue);
     transform: translateY(-1px);
 }
 
-.top-search-btn.active {
-    background: var(--accent-blue);
-    color: white;
-    border-color: var(--accent-blue);
-}
-
-/* Search Content Styling */
-.top-search-content {
+/* Search Mode Layout */
+.top-tab-bar.search-mode .top-search-content {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
+    margin: 0 auto;
     padding: 0 20px;
-    justify-content: center;
 }
 
 .top-search-input {
@@ -9769,6 +9773,7 @@ body.top-nav-active .main-content {
     font-size: 1rem;
     outline: none;
     transition: all 0.3s ease;
+    max-width: 400px;
 }
 
 .top-search-input:focus {
@@ -9786,6 +9791,7 @@ body.top-nav-active .main-content {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .top-search-close:hover {
@@ -9794,29 +9800,51 @@ body.top-nav-active .main-content {
     border-color: var(--accent-red, #ef4444);
 }
 
-/* Ensure body has proper top padding when top nav is active */
+/* Body adjustments for top nav */
 body.top-nav-active {
-    padding-top: 70px; /* Adjust based on your top bar height */
+    padding-top: 70px !important;
 }
 
 body.top-nav-active .main-content {
-    margin-top: 0; /* Remove any existing margin */
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 
-/* Mobile responsive adjustments */
+body.top-nav-active .container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Ensure all pages have consistent layout with top nav */
+body.top-nav-active #home,
+body.top-nav-active #dashboard,
+body.top-nav-active #progress,
+body.top-nav-active #settings {
+    margin-top: 0 !important;
+    padding-top: 20px;
+}
+
+/* Remove any conflicting positioning */
+.top-tab-bar * {
+    box-sizing: border-box;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .top-tab-content {
         padding: 0 12px;
-        gap: 6px;
+        gap: 8px;
+        max-width: 100%;
     }
     
     .top-tab-item {
-        padding: 10px 16px;
+        padding: 10px 14px;
         font-size: 0.9rem;
+        gap: 6px;
     }
     
     .top-tab-item span {
-        display: none; /* Hide text on mobile, show only icons */
+        display: none;
     }
     
     .top-search-btn {
@@ -9824,21 +9852,60 @@ body.top-nav-active .main-content {
     }
     
     body.top-nav-active {
-        padding-top: 60px;
+        padding-top: 60px !important;
+    }
+    
+    .top-tab-bar.search-mode .top-search-content {
+        padding: 0 12px;
+        max-width: 100%;
+    }
+    
+    .top-search-input {
+        max-width: 100%;
     }
 }
 
-/* Very small screens */
 @media (max-width: 480px) {
     .top-tab-content {
-        justify-content: space-between;
         padding: 0 8px;
+        gap: 6px;
     }
     
     .top-tab-item {
-        padding: 8px 12px;
-        min-width: auto;
+        padding: 8px 10px;
+        min-width: 44px;
     }
+    
+    .top-search-btn {
+        padding: 8px;
+        min-width: 44px;
+    }
+}
+
+/* Fix for search suggestions positioning */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    margin-top: 8px;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.search-suggestions.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
 }
     </style>
 </head>
@@ -13235,13 +13302,23 @@ function enableTopTabBar() {
     createTopTabBar();
     showTopTabBar();
     
-    // Ensure it's visible and properly positioned
+    // Force layout update
     setTimeout(() => {
         const topTabBar = document.getElementById('topTabBar');
         if (topTabBar) {
-            topTabBar.style.display = 'block';
+            topTabBar.style.display = 'flex';
+            topTabBar.style.justifyContent = 'center';
+            topTabBar.style.alignItems = 'center';
             topTabBar.style.visibility = 'visible';
             topTabBar.style.opacity = '1';
+        }
+        
+        // Update active tab
+        updateTopTabActive();
+        
+        // Initialize drag navigation
+        if (typeof initDragNavigation === 'function') {
+            initDragNavigation();
         }
     }, 100);
 }
@@ -13700,6 +13777,18 @@ function createTopTabBar() {
     const tabBar = document.createElement('div');
     tabBar.id = 'topTabBar';
     tabBar.className = 'top-tab-bar';
+    tabBar.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
     tabBar.innerHTML = `
         <div class="top-tab-content" id="topTabContent">
             <div class="top-tab-item" onclick="animatePageFromTab(this, 'home')" data-page="home">
