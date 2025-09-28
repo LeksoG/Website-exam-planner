@@ -9800,6 +9800,7 @@ let limits = {
     flashcards: 50    // Free tier flashcard limit
 };
 
+
 // Google Calendar Integration
 let isGoogleCalendarConnected = JSON.parse(localStorage.getItem('gcseGoogleCalendarConnected') || 'false');
 let googleCalendarAccessToken = null;
@@ -9818,50 +9819,75 @@ let EMAILJS_CONFIG = {
     publicKey: 'your-public-key'
 };
         
-// Fetch configuration from API
+// Update your loadConfig function to properly set the flag
 async function loadConfig() {
-  try {
-    console.log('Loading configuration from /api/config...');
-    const response = await fetch('/api/config');
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Config API Error:', response.status, errorText);
-      throw new Error(`Config API returned ${response.status}: ${errorText}`);
+    try {
+        console.log('Loading configuration from /api/config...');
+        const response = await fetch('/api/config');
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Config API Error:', response.status, errorText);
+            throw new Error(`Config API returned ${response.status}: ${errorText}`);
+        }
+        
+        const config = await response.json();
+        console.log('Raw config received:', config);
+        
+        // Update Google Calendar config
+        if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
+            GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+            GOOGLE_API_KEY = config.GOOGLE_API_KEY;
+        }
+        
+        // Update Gemini API key
+        if (config.GEMINI_API_KEY) {
+            GEMINI_API_KEY = config.GEMINI_API_KEY;
+            console.log('✅ Gemini API key loaded successfully');
+        } else {
+            console.warn('⚠️ Gemini API key not found in config response');
+            console.log('Available config keys:', Object.keys(config));
+        }
+        
+        // Update EmailJS config
+        if (config.EMAILJS_SERVICE_ID) {
+            EMAILJS_CONFIG = {
+                serviceID: config.EMAILJS_SERVICE_ID,
+                templateID: config.EMAILJS_TEMPLATE_ID,
+                publicKey: config.EMAILJS_PUBLIC_KEY
+            };
+        }
+        
+        configLoaded = true;
+        console.log('Configuration loaded successfully');
+        console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
+        console.log('Google API Key set:', !!GOOGLE_API_KEY);
+        console.log('Gemini API Key set:', !!GEMINI_API_KEY);
+        console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
+        
+        return config;
+        
+    } catch (error) {
+        console.error('Failed to load configuration:', error);
+        configLoaded = false;
+        
+        // Don't throw error - use fallback values
+        console.log('Using fallback configuration...');
+        return {};
     }
-    
-    const config = await response.json();
-    console.log('Raw config received:', config);
-    
-    // Validate that we got the required fields
-    if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_API_KEY) {
-      throw new Error('Missing Google API credentials in config');
+}
+
+// Create a function to ensure config is loaded before using APIs
+async function ensureConfigLoaded() {
+    if (!configLoaded) {
+        console.log('Config not loaded yet, loading now...');
+        try {
+            await loadConfig();
+        } catch (error) {
+            console.error('Failed to load config:', error);
+        }
     }
-    
-    // Update Google Calendar config
-    GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
-    GOOGLE_API_KEY = config.GOOGLE_API_KEY;
-    
-    // Update EmailJS config
-    EMAILJS_CONFIG = {
-      serviceID: config.EMAILJS_SERVICE_ID,
-      templateID: config.EMAILJS_TEMPLATE_ID,
-      publicKey: config.EMAILJS_PUBLIC_KEY
-    };
-    
-    configLoaded = true;
-    console.log('Configuration loaded successfully');
-    console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
-    console.log('Google API Key set:', !!GOOGLE_API_KEY);
-    console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
-    
-    return config;
-    
-  } catch (error) {
-    console.error('Failed to load configuration:', error);
-    configLoaded = false;
-    throw error;
-  }
+    return configLoaded;
 }
 
 // Initialize configuration (fallback to hardcoded values if API fails)
@@ -9881,39 +9907,6 @@ async function initializeApp() {
     }
     
     console.log('All configurations loaded');
-}
-
-// Also update the loadConfig function to not throw errors
-async function loadConfig() {
-    try {
-        console.log('Attempting to load configuration from /api/config...');
-        const response = await fetch('/api/config');
-        
-        if (!response.ok) {
-            throw new Error(`Config API returned ${response.status}`);
-        }
-        
-        const config = await response.json();
-        
-        // Only update if we got valid config from API
-        if (config.GOOGLE_CLIENT_ID && config.GOOGLE_API_KEY) {
-            // Update the global variables
-            window.GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
-            window.GOOGLE_API_KEY = config.GOOGLE_API_KEY;
-            
-            if (config.EMAILJS_SERVICE_ID) {
-                window.EMAILJS_CONFIG = {
-                    serviceID: config.EMAILJS_SERVICE_ID,
-                    templateID: config.EMAILJS_TEMPLATE_ID,
-                    publicKey: config.EMAILJS_PUBLIC_KEY
-                };
-            }
-        }
-        
-    } catch (error) {
-        console.log('Failed to load API config, using defaults:', error.message);
-        throw error; // Re-throw so initializeApp can catch it
-    }
 }
 
 // Initialize the app
@@ -9937,8 +9930,8 @@ let currentAISubject = 'General';
 let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
-// API Configuration
-const GEMINI_API_KEY = 'your-gemini-api-key';
+let configLoaded = false;
+let GEMINI_API_KEY = null;
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -10548,9 +10541,31 @@ function handleFlashcardClick(event) {
     showFlashcardLoading(flashcardElement, flashcardId, event);
 }
 
+// Modify the displayFlashcards function to add the control buttons
 function displayFlashcards() {
     const grid = document.getElementById('flashcardsGrid');
     if (!grid) return;
+    
+    // Add control buttons container before the grid
+    let controlsContainer = document.getElementById('flashcardControls');
+    if (!controlsContainer) {
+        controlsContainer = document.createElement('div');
+        controlsContainer.id = 'flashcardControls';
+        controlsContainer.className = 'flashcard-controls';
+        controlsContainer.style.cssText = `
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        `;
+        grid.parentNode.insertBefore(controlsContainer, grid);
+    }
+    
+    // Update controls based on current state
+    updateFlashcardControls();
     
     if (flashcards.length === 0) {
         grid.innerHTML = `
@@ -10559,19 +10574,21 @@ function displayFlashcards() {
                 <p>Create your first flashcard to start studying!</p>
             </div>
         `;
+        controlsContainer.style.display = 'none';
         return;
     }
     
+    controlsContainer.style.display = 'flex';
     grid.innerHTML = '';
     
     flashcards.forEach((flashcard, index) => {
         const colorIndex = (index % 4) + 1;
         
         const flashcardElement = document.createElement('div');
-        flashcardElement.className = `flashcard color-${colorIndex} flashcard-hoverable`;
+        flashcardElement.className = `flashcard color-${colorIndex} flashcard-hoverable ${isSelectionMode ? 'selectable' : ''}`;
         flashcardElement.dataset.flashcardId = flashcard.id;
         flashcardElement.style.position = 'relative';
-        flashcardElement.style.cursor = 'pointer';
+        flashcardElement.style.cursor = isSelectionMode ? 'pointer' : 'pointer';
         
         // Choose what to display - image thumbnail or text preview
         let contentDisplay = '';
@@ -10608,86 +10625,126 @@ function displayFlashcards() {
         }
         
         flashcardElement.innerHTML = `
+            ${isSelectionMode ? `
+                <div class="flashcard-checkbox" style="
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    width: 24px;
+                    height: 24px;
+                    border: 2px solid var(--accent-blue);
+                    border-radius: 6px;
+                    background: ${selectedFlashcards.has(flashcard.id) ? 'var(--accent-blue)' : 'var(--bg-primary)'};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10;
+                    transition: all 0.3s ease;
+                ">
+                    ${selectedFlashcards.has(flashcard.id) ? `
+                        <svg style="width: 14px; height: 14px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                    ` : ''}
+                </div>
+            ` : ''}
+            
             <div class="flashcard-content">
                 <div class="flashcard-subject">${flashcard.subject}</div>
                 <div class="flashcard-topic">${flashcard.topic}</div>
                 ${contentDisplay}
             </div>
             
-            <!-- Hover buttons container -->
-            <div class="flashcard-hover-buttons" style="
-                position: absolute;
-                bottom: 12px;
-                left: 12px;
-                right: 12px;
-                display: flex;
-                gap: 8px;
-                opacity: 0;
-                transform: translateY(20px);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            ">
-                <button class="flashcard-hover-btn open-btn" onclick="event.stopPropagation(); openFlashcardInterface('${flashcard.id}', event)" style="
-                    flex: 1;
-                    background: var(--accent-blue);
-                    color: white;
-                    border: none;
-                    padding: 10px 16px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 0.8rem;
-                    transition: all 0.2s ease;
+            ${!isSelectionMode ? `
+                <!-- Hover buttons container -->
+                <div class="flashcard-hover-buttons" style="
+                    position: absolute;
+                    bottom: 12px;
+                    left: 12px;
+                    right: 12px;
                     display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 6px;
-                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                    gap: 8px;
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 ">
-                    <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    Open Notes
-                </button>
-                <button class="flashcard-hover-btn delete-btn" onclick="event.stopPropagation(); deleteFlashcardWithConfirmation('${flashcard.id}')" style="
-                    background: var(--accent-red, #ef4444);
-                    color: white;
-                    border: none;
-                    padding: 10px 12px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 0.8rem;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-                ">
-                    <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3,6 5,6 21,6"/>
-                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
-                    </svg>
-                </button>
-            </div>
+                    <button class="flashcard-hover-btn open-btn" onclick="event.stopPropagation(); openFlashcardInterface('${flashcard.id}', event)" style="
+                        flex: 1;
+                        background: var(--accent-blue);
+                        color: white;
+                        border: none;
+                        padding: 10px 16px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.8rem;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 6px;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                    ">
+                        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Open Notes
+                    </button>
+                    <button class="flashcard-hover-btn delete-btn" onclick="event.stopPropagation(); deleteFlashcardWithConfirmation('${flashcard.id}')" style="
+                        background: var(--accent-red, #ef4444);
+                        color: white;
+                        border: none;
+                        padding: 10px 12px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.8rem;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                    ">
+                        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3,6 5,6 21,6"/>
+                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                        </svg>
+                    </button>
+                </div>
+            ` : ''}
         `;
         
-        // Add hover events for buttons
-        flashcardElement.addEventListener('mouseenter', function() {
-            const hoverButtons = this.querySelector('.flashcard-hover-buttons');
-            if (hoverButtons) {
-                hoverButtons.style.opacity = '1';
-                hoverButtons.style.transform = 'translateY(0)';
-            }
-        });
+        // Add event listeners
+        if (isSelectionMode) {
+            flashcardElement.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleFlashcardSelection(flashcard.id);
+            });
+        } else {
+            // Add hover events for buttons
+            flashcardElement.addEventListener('mouseenter', function() {
+                const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+                if (hoverButtons) {
+                    hoverButtons.style.opacity = '1';
+                    hoverButtons.style.transform = 'translateY(0)';
+                }
+            });
 
-        flashcardElement.addEventListener('mouseleave', function() {
-            const hoverButtons = this.querySelector('.flashcard-hover-buttons');
-            if (hoverButtons) {
-                hoverButtons.style.opacity = '0';
-                hoverButtons.style.transform = 'translateY(20px)';
-            }
-        });
+            flashcardElement.addEventListener('mouseleave', function() {
+                const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+                if (hoverButtons) {
+                    hoverButtons.style.opacity = '0';
+                    hoverButtons.style.transform = 'translateY(20px)';
+                }
+            });
+            
+            flashcardElement.addEventListener('click', function(event) {
+                if (!event.target.closest('.flashcard-hover-btn')) {
+                    openFlashcardInterface(flashcard.id, event);
+                }
+            });
+        }
         
         grid.appendChild(flashcardElement);
     });
@@ -16034,9 +16091,14 @@ async function callGeminiAPI(userMessage, context) {
     }
 }
 
-// ✅ Gemini Vision API - Returns structured JSON output
+// Update your analyzeImageWithGemini function to check if API key is loaded
 async function analyzeImageWithGemini(imageData, subject) {
     try {
+        // Check if API key is available
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key') {
+            throw new Error('Gemini API key not configured. Please check your environment variables.');
+        }
+
         // --- Detect MIME type from base64 header ---
         const mimeMatch = imageData.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/);
         if (!mimeMatch) throw new Error('Invalid image data format. Missing MIME type.');
@@ -16069,10 +16131,9 @@ Do not include any text outside the JSON.`
                                 },
                                 {
                                     inline_data: {
-  mime_type: file.type,   // e.g. "image/png"
-  data: base64.split(',')[1] // remove prefix
-}
-
+                                        mime_type: mimeType,
+                                        data: base64Data
+                                    }
                                 }
                             ]
                         }
@@ -16871,76 +16932,223 @@ function toBase64(file) {
     });
 }
 
-// ✅ Main processing function
-async function processUploadedImagesForFlashcards(files, subject) {
-    const flashcards = [];
-
-    for (const file of files) {
-        try {
-            // 1️⃣ Convert image to Base64
-            const base64 = await toBase64(file);
-
-            // 2️⃣ Send image to Gemini Vision API for analysis
-            const analysis = await analyzeImageWithGemini(base64, subject);
-
-            // 3️⃣ Build flashcard object (text only — no base64)
-            const flashcard = {
-                id: Date.now() + Math.random(),
-                subject,
-                topic: analysis.topic,
-                keyConcepts: analysis.keyConcepts,
-                explanation: analysis.detailedExplanation,
-                studyQuestions: analysis.studyQuestions,
-                memoryTips: analysis.memoryTips
-            };
-
-            flashcards.push(flashcard);
-
-        } catch (err) {
-            console.error(`❌ Error analyzing ${file.name}:`, err);
-        }
+// Update your processUploadedImagesForFlashcards function
+async function processUploadedImagesForFlashcards(subjects) {
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+        console.log('No uploaded files to process');
+        return [];
     }
-
-    // 4️⃣ Save flashcards to localStorage — safely
+    
+    // Ensure config is loaded before processing
+    console.log('Ensuring configuration is loaded...');
+    await ensureConfigLoaded();
+    
+    if (!GEMINI_API_KEY) {
+        console.warn('Gemini API key still not available after config load. Skipping AI analysis.');
+        showAlert('AI analysis unavailable. Creating basic flashcards instead.', 'info');
+        
+        // Create basic flashcards without AI analysis
+        return createBasicFlashcardsFromImages(subjects);
+    }
+    
+    const processedFlashcards = [];
+    
     try {
-        const existing = JSON.parse(localStorage.getItem("gcseFlashcards") || "[]");
-        const allFlashcards = [...existing, ...flashcards];
-
-        localStorage.setItem("gcseFlashcards", JSON.stringify(allFlashcards));
-        console.log(`✅ Saved ${flashcards.length} flashcards to localStorage.`);
-    } catch (e) {
-        if (e.name === 'QuotaExceededError') {
-            console.warn("⚠️ localStorage is full. Cleaning up oldest flashcards...");
-            // Simple cleanup strategy: keep only the latest 20 cards
-            const truncated = flashcards.slice(-20);
-            localStorage.setItem("gcseFlashcards", JSON.stringify(truncated));
-        } else {
-            console.error("❌ Failed to save flashcards:", e);
+        for (let i = 0; i < uploadedFiles.length; i++) {
+            const file = uploadedFiles[i];
+            
+            // Skip non-image files
+            if (!file.type || !file.type.startsWith('image/')) {
+                console.log('Skipping non-image file:', file.name);
+                continue;
+            }
+            
+            console.log(`Processing image ${i + 1}/${uploadedFiles.length}: ${file.name}`);
+            
+            // Determine best subject for this file
+            let subject = subjects[0]; // Default to first subject
+            
+            // Try to match file name to subjects
+            for (const subj of subjects) {
+                if (file.name.toLowerCase().includes(subj.toLowerCase())) {
+                    subject = subj;
+                    break;
+                }
+            }
+            
+            try {
+                // Call Gemini API to analyze the image
+                console.log(`Analyzing ${file.name} with Gemini API for ${subject}...`);
+                const analysis = await analyzeImageWithGemini(file.data, subject);
+                
+                // Create flashcard with AI analysis
+                const flashcard = {
+                    id: Date.now() + Math.random() + i,
+                    subject: subject,
+                    topic: analysis.topic || `${subject} Study Material`,
+                    notes: formatAnalysisForNotes(analysis),
+                    imageData: file.data,
+                    keyConcepts: analysis.keyConcepts || [],
+                    studyQuestions: analysis.studyQuestions || [],
+                    memoryTips: analysis.memoryTips || [],
+                    created: new Date().toISOString(),
+                    source: 'ai_analyzed_image',
+                    originalFileName: file.name
+                };
+                
+                processedFlashcards.push(flashcard);
+                console.log(`✅ Created AI flashcard: ${flashcard.topic}`);
+                
+            } catch (analysisError) {
+                console.warn(`Failed to analyze ${file.name} with AI:`, analysisError);
+                
+                // Fallback: create basic flashcard
+                const fallbackFlashcard = createBasicFlashcardFromImage(file, subject);
+                processedFlashcards.push(fallbackFlashcard);
+                console.log(`⚠️ Created fallback flashcard: ${fallbackFlashcard.topic}`);
+            }
+            
+            // Add small delay to avoid rate limiting
+            if (i < uploadedFiles.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
         }
+        
+        // Save flashcards
+        if (processedFlashcards.length > 0) {
+            flashcards.push(...processedFlashcards);
+            localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+            
+            console.log(`Successfully created ${processedFlashcards.length} flashcards from uploaded images`);
+            
+            if (typeof updateSidebarStats === 'function') {
+                updateSidebarStats();
+            }
+            
+            const aiCount = processedFlashcards.filter(f => f.source === 'ai_analyzed_image').length;
+            const fallbackCount = processedFlashcards.length - aiCount;
+            
+            let message = `Created ${processedFlashcards.length} flashcard${processedFlashcards.length !== 1 ? 's' : ''}`;
+            if (aiCount > 0) {
+                message += ` (${aiCount} AI-analyzed`;
+                if (fallbackCount > 0) {
+                    message += `, ${fallbackCount} basic)`;
+                } else {
+                    message += `)`;
+                }
+            }
+            
+            showAlert(message, 'success');
+        }
+        
+        return processedFlashcards;
+        
+    } catch (error) {
+        console.error('Error processing uploaded images for flashcards:', error);
+        showAlert('Failed to process some images. Check console for details.', 'error');
+        return [];
     }
-
-    return flashcards;
 }
 
-const fileInput = document.getElementById("imageUpload");
-fileInput.addEventListener("change", async (e) => {
-    const files = e.target.files;
-    if (!files.length) return;
 
-    // Get the subject from user input dynamically
-    const subjectInput = document.getElementById("subjectInput");
-    const subject = subjectInput.value.trim(); 
-
-    if (!subject) {
-        alert("Please enter a subject before uploading images!");
-        return;
+// Helper function to format AI analysis into readable notes
+function formatAnalysisForNotes(analysis) {
+    let notes = '';
+    
+    // Add main explanation
+    if (analysis.detailedExplanation) {
+        notes += `${analysis.detailedExplanation}\n\n`;
     }
+    
+    // Add key concepts
+    if (analysis.keyConcepts && analysis.keyConcepts.length > 0) {
+        notes += `**Key Concepts:**\n`;
+        analysis.keyConcepts.forEach(concept => {
+            notes += `• ${concept}\n`;
+        });
+        notes += '\n';
+    }
+    
+    // Add study questions
+    if (analysis.studyQuestions && analysis.studyQuestions.length > 0) {
+        notes += `**Study Questions:**\n`;
+        analysis.studyQuestions.forEach((question, index) => {
+            notes += `${index + 1}. ${question}\n`;
+        });
+        notes += '\n';
+    }
+    
+    // Add memory tips
+    if (analysis.memoryTips && analysis.memoryTips.length > 0) {
+        notes += `**Memory Tips:**\n`;
+        analysis.memoryTips.forEach(tip => {
+            notes += `💡 ${tip}\n`;
+        });
+    }
+    
+    return notes.trim() || 'AI analysis completed. Add your own notes here.';
+}
 
-    // Call the processing function with dynamic subject
-    const results = await processUploadedImagesForFlashcards(files, subject);
-    console.log("✅ Flashcards created:", results);
-    alert(`✅ Created ${results.length} flashcards for ${subject}`);
-});
+// Helper function to extract topic from filename (fallback)
+function extractTopicFromFilename(filename) {
+    if (!filename) return null;
+    
+    // Remove file extension
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+    
+    // Clean up the name
+    const cleanName = nameWithoutExt
+        .replace(/[_-]/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase())
+        .trim();
+    
+    return cleanName.length > 3 ? cleanName : null;
+}
+
+// Helper function to get subject variations (reuse existing function if available)
+function getSubjectVariations(subject) {
+    const variations = [subject];
+    
+    // Common subject abbreviations and alternatives
+    const subjectMappings = {
+        'mathematics': ['math', 'maths', 'mathematics'],
+        'math': ['mathematics', 'maths', 'math'],
+        'maths': ['mathematics', 'math', 'maths'],
+        'biology': ['bio', 'biology', 'life science'],
+        'bio': ['biology', 'life science', 'bio'],
+        'chemistry': ['chem', 'chemistry'],
+        'chem': ['chemistry', 'chem'],
+        'physics': ['physics', 'phy'],
+        'phy': ['physics', 'phy'],
+        'english literature': ['english lit', 'literature', 'english', 'lit'],
+        'english language': ['english lang', 'english', 'language'],
+        'english': ['english language', 'english literature', 'english lit', 'english lang'],
+        'literature': ['english literature', 'english lit', 'lit'],
+        'computer science': ['computing', 'comp sci', 'cs', 'computer', 'ict'],
+        'computing': ['computer science', 'comp sci', 'cs', 'computer', 'ict'],
+        'ict': ['computer science', 'computing', 'information technology'],
+        'geography': ['geo', 'geography'],
+        'geo': ['geography', 'geo'],
+        'history': ['hist', 'history'],
+        'hist': ['history', 'hist']
+    };
+    
+    // Get variations for the subject
+    if (subjectMappings[subject]) {
+        variations.push(...subjectMappings[subject]);
+    }
+    
+    // Add partial matches (first few characters)
+    if (subject.length > 4) {
+        variations.push(subject.substring(0, 4));
+    }
+    if (subject.length > 3) {
+        variations.push(subject.substring(0, 3));
+    }
+    
+    // Remove duplicates and return
+    return [...new Set(variations)];
+}
 
 
 // Helper function to extract topic from filename
@@ -18080,6 +18288,12 @@ function revealContentWithWordGlow(content) {
 
 async function callGeminiForStructure(content, structureType, subject) {
     try {
+
+        // Check if API key is available
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key') {
+            throw new Error('Gemini API key not configured. Using fallback response.');
+        }
+
         const enhancedPrompts = {
             bullet: `Transform the following ${subject} study notes into a well-organized bullet point format with HIGHLIGHTED KEY TERMS. Create clear, scannable bullet points with:
 
@@ -20163,57 +20377,685 @@ function cancelFlashcardDelete(modal) {
     setTimeout(() => modal.remove(), 400);
 }
 
-function confirmFlashcardDelete(flashcardId, modal) {
-    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+// Add these variables at the top with other global variables
+let isSelectionMode = false;
+let selectedFlashcards = new Set();
+
+// Modify the displayFlashcards function to add the control buttons
+function displayFlashcards() {
+    const grid = document.getElementById('flashcardsGrid');
+    if (!grid) return;
     
-    // Animate flashcard out
-    if (flashcardElement) {
-        flashcardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-        flashcardElement.style.transform = 'scale(0.8) translateY(-20px)';
-        flashcardElement.style.opacity = '0';
+    // Add control buttons container before the grid
+    let controlsContainer = document.getElementById('flashcardControls');
+    if (!controlsContainer) {
+        controlsContainer = document.createElement('div');
+        controlsContainer.id = 'flashcardControls';
+        controlsContainer.className = 'flashcard-controls';
+        controlsContainer.style.cssText = `
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        `;
+        grid.parentNode.insertBefore(controlsContainer, grid);
     }
     
-    // Remove from array and localStorage
-    flashcards = flashcards.filter(f => f.id != flashcardId);
-    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    // Update controls based on current state
+    updateFlashcardControls();
     
-    // Close modal
-    modal.classList.remove('show');
-    setTimeout(() => modal.remove(), 400);
+    if (flashcards.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                <h3 style="color: var(--text-primary); margin-bottom: 12px;">No flashcards yet</h3>
+                <p>Create your first flashcard to start studying!</p>
+            </div>
+        `;
+        controlsContainer.style.display = 'none';
+        return;
+    }
     
-    // Update display after animation
+    controlsContainer.style.display = 'flex';
+    grid.innerHTML = '';
+    
+    flashcards.forEach((flashcard, index) => {
+        const colorIndex = (index % 4) + 1;
+        
+        const flashcardElement = document.createElement('div');
+        flashcardElement.className = `flashcard color-${colorIndex} flashcard-hoverable ${isSelectionMode ? 'selectable' : ''}`;
+        flashcardElement.dataset.flashcardId = flashcard.id;
+        flashcardElement.style.position = 'relative';
+        flashcardElement.style.cursor = isSelectionMode ? 'pointer' : 'pointer';
+        
+        // Choose what to display - image thumbnail or text preview
+        let contentDisplay = '';
+        if (flashcard.imageData) {
+            contentDisplay = `
+                <div class="flashcard-image-preview" style="
+                    width: 100%;
+                    height: 120px;
+                    background-image: url('${flashcard.imageData}');
+                    background-size: cover;
+                    background-position: center;
+                    border-radius: 8px;
+                    margin-bottom: 12px;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+                        color: white;
+                        padding: 8px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                    ">📷 Image Study Material</div>
+                </div>
+            `;
+        } else {
+            contentDisplay = `
+                <div class="flashcard-preview">${flashcard.notes ? flashcard.notes.substring(0, 100) + (flashcard.notes.length > 100 ? '...' : '') : 'Click to add notes...'}</div>
+            `;
+        }
+        
+        flashcardElement.innerHTML = `
+            ${isSelectionMode ? `
+                <div class="flashcard-checkbox" style="
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    width: 24px;
+                    height: 24px;
+                    border: 2px solid var(--accent-blue);
+                    border-radius: 6px;
+                    background: ${selectedFlashcards.has(flashcard.id) ? 'var(--accent-blue)' : 'var(--bg-primary)'};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10;
+                    transition: all 0.3s ease;
+                ">
+                    ${selectedFlashcards.has(flashcard.id) ? `
+                        <svg style="width: 14px; height: 14px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                    ` : ''}
+                </div>
+            ` : ''}
+            
+            <div class="flashcard-content">
+                <div class="flashcard-subject">${flashcard.subject}</div>
+                <div class="flashcard-topic">${flashcard.topic}</div>
+                ${contentDisplay}
+            </div>
+            
+            ${!isSelectionMode ? `
+                <!-- Hover buttons container -->
+                <div class="flashcard-hover-buttons" style="
+                    position: absolute;
+                    bottom: 12px;
+                    left: 12px;
+                    right: 12px;
+                    display: flex;
+                    gap: 8px;
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                ">
+                    <button class="flashcard-hover-btn open-btn" onclick="event.stopPropagation(); openFlashcardInterface('${flashcard.id}', event)" style="
+                        flex: 1;
+                        background: var(--accent-blue);
+                        color: white;
+                        border: none;
+                        padding: 10px 16px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.8rem;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 6px;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                    ">
+                        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Open Notes
+                    </button>
+                    <button class="flashcard-hover-btn delete-btn" onclick="event.stopPropagation(); deleteFlashcardWithConfirmation('${flashcard.id}')" style="
+                        background: var(--accent-red, #ef4444);
+                        color: white;
+                        border: none;
+                        padding: 10px 12px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.8rem;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                    ">
+                        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3,6 5,6 21,6"/>
+                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                        </svg>
+                    </button>
+                </div>
+            ` : ''}
+        `;
+        
+        // Add event listeners
+        if (isSelectionMode) {
+            flashcardElement.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleFlashcardSelection(flashcard.id);
+            });
+        } else {
+            // Add hover events for buttons
+            flashcardElement.addEventListener('mouseenter', function() {
+                const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+                if (hoverButtons) {
+                    hoverButtons.style.opacity = '1';
+                    hoverButtons.style.transform = 'translateY(0)';
+                }
+            });
+
+            flashcardElement.addEventListener('mouseleave', function() {
+                const hoverButtons = this.querySelector('.flashcard-hover-buttons');
+                if (hoverButtons) {
+                    hoverButtons.style.opacity = '0';
+                    hoverButtons.style.transform = 'translateY(20px)';
+                }
+            });
+            
+            flashcardElement.addEventListener('click', function(event) {
+                if (!event.target.closest('.flashcard-hover-btn')) {
+                    openFlashcardInterface(flashcard.id, event);
+                }
+            });
+        }
+        
+        grid.appendChild(flashcardElement);
+    });
+}
+
+// Update control buttons based on current state
+function updateFlashcardControls() {
+    const controlsContainer = document.getElementById('flashcardControls');
+    if (!controlsContainer) return;
+    
+    if (isSelectionMode) {
+        controlsContainer.innerHTML = `
+            <button onclick="exitSelectionMode()" style="
+                padding: 10px 16px;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            " onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                Cancel
+            </button>
+            
+            <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--text-primary); font-weight: 600;">
+                    ${selectedFlashcards.size} selected
+                </span>
+                ${selectedFlashcards.size < flashcards.length ? `
+                    <button onclick="selectAllFlashcards()" style="
+                        padding: 6px 12px;
+                        background: var(--accent-blue);
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">Select All</button>
+                ` : `
+                    <button onclick="deselectAllFlashcards()" style="
+                        padding: 6px 12px;
+                        background: var(--bg-tertiary);
+                        color: var(--text-primary);
+                        border: 1px solid var(--border-color);
+                        border-radius: 6px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">Deselect All</button>
+                `}
+            </div>
+            
+            <button onclick="deleteSelectedFlashcards()" 
+                    ${selectedFlashcards.size === 0 ? 'disabled' : ''}
+                    style="
+                        padding: 10px 16px;
+                        background: ${selectedFlashcards.size === 0 ? 'var(--bg-tertiary)' : 'var(--accent-red, #ef4444)'};
+                        color: ${selectedFlashcards.size === 0 ? 'var(--text-muted)' : 'white'};
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: ${selectedFlashcards.size === 0 ? 'not-allowed' : 'pointer'};
+                        transition: all 0.3s ease;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                </svg>
+                Delete Selected (${selectedFlashcards.size})
+            </button>
+        `;
+    } else {
+        controlsContainer.innerHTML = `
+            <button onclick="enterSelectionMode()" style="
+                padding: 10px 16px;
+                background: var(--accent-blue);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            " onmouseover="this.style.background='var(--accent-blue-dark, #2563eb)'" onmouseout="this.style.background='var(--accent-blue)'">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,11 12,14 22,4"/>
+                    <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5a2,2,0,0,1,2-2h11"/>
+                </svg>
+                Select
+            </button>
+            
+            <button onclick="showDeleteAllConfirmation()" style="
+                padding: 10px 16px;
+                background: var(--accent-red, #ef4444);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='var(--accent-red, #ef4444)'">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                </svg>
+                Delete All
+            </button>
+        `;
+    }
+}
+
+// Selection mode functions
+function enterSelectionMode() {
+    isSelectionMode = true;
+    selectedFlashcards.clear();
+    displayFlashcards();
+}
+
+function exitSelectionMode() {
+    isSelectionMode = false;
+    selectedFlashcards.clear();
+    displayFlashcards();
+}
+
+function toggleFlashcardSelection(flashcardId) {
+    if (selectedFlashcards.has(flashcardId)) {
+        selectedFlashcards.delete(flashcardId);
+    } else {
+        selectedFlashcards.add(flashcardId);
+    }
+    
+    // Update the checkbox for this specific flashcard
+    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+    const checkbox = flashcardElement?.querySelector('.flashcard-checkbox');
+    
+    if (checkbox) {
+        const isSelected = selectedFlashcards.has(flashcardId);
+        checkbox.style.background = isSelected ? 'var(--accent-blue)' : 'var(--bg-primary)';
+        checkbox.innerHTML = isSelected ? `
+            <svg style="width: 14px; height: 14px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+            </svg>
+        ` : '';
+    }
+    
+    updateFlashcardControls();
+}
+
+function selectAllFlashcards() {
+    flashcards.forEach(flashcard => {
+        selectedFlashcards.add(flashcard.id);
+    });
+    displayFlashcards();
+}
+
+function deselectAllFlashcards() {
+    selectedFlashcards.clear();
+    displayFlashcards();
+}
+
+// Delete functions
+function showDeleteAllConfirmation() {
+    const modal = document.createElement('div');
+    modal.className = 'delete-all-modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100001;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    modal.innerHTML = `
+        <div class="delete-all-modal" style="
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--accent-red, #ef4444);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        ">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 20px;
+                    border-radius: 50%;
+                    background: var(--accent-red, #ef4444);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                ">
+                    <svg style="width: 40px; height: 40px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                    </svg>
+                </div>
+                <h2 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 800;">
+                    Delete All Flashcards?
+                </h2>
+                <p style="margin: 0; color: var(--text-muted); font-size: 1rem;">
+                    This will permanently delete all ${flashcards.length} flashcards. This action cannot be undone.
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 16px;">
+                <button onclick="closeDeleteAllModal()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                    Cancel
+                </button>
+                <button onclick="confirmDeleteAll()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: var(--accent-red, #ef4444);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='var(--accent-red, #ef4444)'">
+                    Delete All Flashcards
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
     setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.querySelector('.delete-all-modal').style.transform = 'scale(1)';
+    }, 100);
+}
+
+function closeDeleteAllModal() {
+    const modal = document.querySelector('.delete-all-modal-overlay');
+    if (modal) {
+        modal.style.opacity = '0';
+        modal.querySelector('.delete-all-modal').style.transform = 'scale(0.9)';
+        setTimeout(() => modal.remove(), 400);
+    }
+}
+
+function confirmDeleteAll() {
+    // Animate all flashcards out
+    const flashcardElements = document.querySelectorAll('.flashcard');
+    flashcardElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            element.style.transform = 'scale(0.8) translateY(-20px)';
+            element.style.opacity = '0';
+        }, index * 50);
+    });
+    
+    setTimeout(() => {
+        // Clear all flashcards
+        flashcards = [];
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Reset selection mode
+        isSelectionMode = false;
+        selectedFlashcards.clear();
+        
+        // Close modal
+        closeDeleteAllModal();
+        
+        // Update display
         displayFlashcards();
         updateSidebarStats();
-    }, 400);
-    
-    showAlert('Flashcard deleted successfully', 'success');
+        
+        showAlert('All flashcards deleted successfully', 'success');
+    }, flashcardElements.length * 50 + 200);
 }
 
-// Auto-save functionality
-let autoSaveTimer = null;
-
-function autoSaveNotes() {
-    clearTimeout(autoSaveTimer);
-    updateWordCount();
+function deleteSelectedFlashcards() {
+    if (selectedFlashcards.size === 0) return;
     
-    autoSaveTimer = setTimeout(() => {
-        if (window.currentFlashcardId) {
-            const textarea = document.getElementById('flashcardNotesTextarea');
-            if (textarea) {
-                const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
-                if (flashcard) {
-                    flashcard.notes = textarea.value;
-                    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-                    updateLastSavedTime();
-                    
-                    // Update the main flashcard display
-                    updateFlashcardPreview(window.currentFlashcardId, textarea.value);
-                }
-            }
+    const modal = document.createElement('div');
+    modal.className = 'delete-selected-modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100001;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    modal.innerHTML = `
+        <div class="delete-selected-modal" style="
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--accent-red, #ef4444);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        ">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 20px;
+                    border-radius: 50%;
+                    background: var(--accent-red, #ef4444);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                ">
+                    <svg style="width: 40px; height: 40px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                    </svg>
+                </div>
+                <h2 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 800;">
+                    Delete Selected Flashcards?
+                </h2>
+                <p style="margin: 0; color: var(--text-muted); font-size: 1rem;">
+                    This will permanently delete ${selectedFlashcards.size} selected flashcard${selectedFlashcards.size !== 1 ? 's' : ''}. This action cannot be undone.
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 16px;">
+                <button onclick="closeDeleteSelectedModal()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                    Cancel
+                </button>
+                <button onclick="confirmDeleteSelected()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: var(--accent-red, #ef4444);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='var(--accent-red, #ef4444)'">
+                    Delete Selected
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.querySelector('.delete-selected-modal').style.transform = 'scale(1)';
+    }, 100);
+}
+
+function closeDeleteSelectedModal() {
+    const modal = document.querySelector('.delete-selected-modal-overlay');
+    if (modal) {
+        modal.style.opacity = '0';
+        modal.querySelector('.delete-selected-modal').style.transform = 'scale(0.9)';
+        setTimeout(() => modal.remove(), 400);
+    }
+}
+
+function confirmDeleteSelected() {
+    // Animate selected flashcards out
+    selectedFlashcards.forEach((flashcardId, index) => {
+        const element = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+        if (element) {
+            setTimeout(() => {
+                element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                element.style.transform = 'scale(0.8) translateY(-20px)';
+                element.style.opacity = '0';
+            }, index * 30);
         }
-    }, 1000);
+    });
+    
+    setTimeout(() => {
+        // Remove selected flashcards from array
+        flashcards = flashcards.filter(flashcard => !selectedFlashcards.has(flashcard.id));
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        const deletedCount = selectedFlashcards.size;
+        
+        // Reset selection
+        selectedFlashcards.clear();
+        isSelectionMode = false;
+        
+        // Close modal
+        closeDeleteSelectedModal();
+        
+        // Update display
+        displayFlashcards();
+        updateSidebarStats();
+        
+        showAlert(`${deletedCount} flashcard${deletedCount !== 1 ? 's' : ''} deleted successfully`, 'success');
+    }, selectedFlashcards.size * 30 + 200);
 }
+
+// Add CSS for selection mode
+const selectionModeStyles = `
+.flashcard.selectable {
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+}
+
+.flashcard.selectable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.flashcard-checkbox {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.delete-all-modal-overlay.show,
+.delete-selected-modal-overlay.show {
+    opacity: 1;
+}
+
+.delete-all-modal-overlay.show .delete-all-modal,
+.delete-selected-modal-overlay.show .delete-selected-modal {
+    transform: scale(1);
+}
+`;
 
 function setupAutoSave() {
     setInterval(() => {
