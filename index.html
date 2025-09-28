@@ -9770,22 +9770,23 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+    
 <script>
-  const supabaseUrl = 'https://your-project-ref.supabase.co';
-  const supabaseKey = 'your-anon-key';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // Create a client variable (avoid naming conflict)
+  const supabaseClient = supabase.createClient(
+    'https://your-project-ref.supabase.co',
+    'your-anon-key'
+  );
 
   async function getData() {
-    try {
-      const { data, error } = await supabase.from('your_table').select('*');
-      if (error) throw error;
-      console.log(data);
-    } catch (err) {
-      console.error('Error fetching data:', err);
-    }
+    const { data, error } = await supabaseClient.from('your_table').select('*');
+    console.log(data, error);
   }
 
   getData();
+</script>
+
+<script>
 
 
 // ===== GLOBAL STATE AND VARIABLES =====
@@ -21787,6 +21788,7 @@ function onTaskStatusChangeForAppState(subject, taskId, isCompleted) {
     </script>
 </body>
 </html>
+
 
 
 
