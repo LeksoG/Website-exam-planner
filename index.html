@@ -16104,8 +16104,8 @@ async function analyzeImageWithGemini(imageData, subject) {
             base64Image = imageData.split(',')[1];
         }
         
-        // Use the correct model name for image analysis
-        const model = 'gemini-1.5-flash'; // Remove '-latest' suffix
+        // Use the correct model name for image analysis (gemini-pro-vision for v1beta)
+        const model = 'gemini-pro-vision';
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
         
         const requestBody = {
@@ -16167,6 +16167,262 @@ async function analyzeImageWithGemini(imageData, subject) {
     } catch (error) {
         console.error('Image Analysis Error:', error);
         throw error;
+    }
+}
+
+// Helper function to parse Gemini's response into structured data
+function parseGeminiResponse(text, subject) {
+    const analysis = {
+        topic: `${subject} Study Material`,
+        detailedExplanation: '',
+        keyConcepts: [],
+        studyQuestions: [],
+        memoryTips: []
+    };
+    
+    try {
+        // Split the response into sections
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        
+        let currentSection = 'explanation';
+        let currentContent = [];
+        
+        for (const line of lines) {
+            // Check for section headers
+            if (line.toLowerCase().includes('key concept') || line.toLowerCase().includes('concepts:')) {
+                if (currentSection === 'explanation' && currentContent.length > 0) {
+                    analysis.detailedExplanation = currentContent.join(' ');
+                }
+                currentSection = 'concepts';
+                currentContent = [];
+                continue;
+            } else if (line.toLowerCase().includes('study question') || line.toLowerCase().includes('questions:')) {
+                if (currentSection === 'concepts' && currentContent.length > 0) {
+                    analysis.keyConcepts = currentContent;
+                }
+                currentSection = 'questions';
+                currentContent = [];
+                continue;
+            } else if (line.toLowerCase().includes('memory tip') || line.toLowerCase().includes('tips:')) {
+                if (currentSection === 'questions' && currentContent.length > 0) {
+                    analysis.studyQuestions = currentContent;
+                }
+                currentSection = 'tips';
+                currentContent = [];
+                continue;
+            }
+            
+            // Add content to current section
+            if (!line.match(/^\d+\.|^-|^•|^\*/)) {
+                if (currentSection === 'explanation') {
+                    currentContent.push(line);
+                }
+            } else {
+                // This is a list item
+                const cleanLine = line.replace(/^\d+\.|^-|^•|^\*/, '').trim();
+                if (cleanLine) {
+                    currentContent.push(cleanLine);
+                }
+            }
+        }
+        
+        // Handle the last section
+        if (currentSection === 'explanation' && currentContent.length > 0) {
+            analysis.detailedExplanation = currentContent.join(' ');
+        } else if (currentSection === 'concepts' && currentContent.length > 0) {
+            analysis.keyConcepts = currentContent;
+        } else if (currentSection === 'questions' && currentContent.length > 0) {
+            analysis.studyQuestions = currentContent;
+        } else if (currentSection === 'tips' && currentContent.length > 0) {
+            analysis.memoryTips = currentContent;
+        }
+        
+        // If we couldn't parse sections, use the whole text as explanation
+        if (!analysis.detailedExplanation && !analysis.keyConcepts.length && !analysis.studyQuestions.length) {
+            analysis.detailedExplanation = text;
+        }
+        
+        // Extract topic from the explanation if possible
+        const firstSentence = analysis.detailedExplanation.split('.')[0];
+        if (firstSentence && firstSentence.length < 100) {
+            analysis.topic = firstSentence;
+        }
+        
+    } catch (parseError) {
+        console.warn('Failed to parse Gemini response, using raw text:', parseError);
+        analysis.detailedExplanation = text;
+    }
+    
+    return analysis;
+}
+
+// Alternative function to try different models if one fails
+async function analyzeImageWithGeminiWithFallback(imageData, subject) {
+    // Use models that are actually available for v1beta API with image support
+    const models = ['gemini-pro-vision'];
+    
+    for (const model of models) {
+        try {
+            console.log(`Trying model: ${model}`);
+            return await analyzeImageWithGeminiModel(imageData, subject, model);
+        } catch (error) {
+            console.warn(`Model ${model} failed:`, error.message);
+            if (model === models[models.length - 1]) {
+                // If this was the last model, throw the error
+                throw error;
+            }
+        }
+    }
+}
+
+async function analyzeImageWithGeminiModel(imageData, subject, model) {
+    if (!GEMINI_API_KEY) {
+        throw new Error('Gemini API key not available');
+    }
+    
+    let base64Image = imageData;
+    if (imageData.startsWith('data:')) {
+        base64Image = imageData.split(',')[1];
+    }
+    
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const requestBody = {
+        contents: [{
+            parts: [
+                {
+                    text: `Analyze this ${subject} study material image. Provide:
+                    1. A detailed explanation of what's shown
+                    2. Key concepts to remember
+                    3. Study questions based on the content
+                    4. Memory tips for better retention
+                    
+                    Focus on GCSE level understanding for ${subject}.`
+                },
+                {
+                    inline_data: {
+                        mime_type: "image/jpeg",
+                        data: base64Image
+                    }
+                }
+            ]
+        }],
+        generationConfig: {
+            temperature: 0.4,
+            topK: 32,
+            topP: 1,
+            maxOutputTokens: 2048,
+        }
+    };
+    
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+    });
+    
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API Error for model ${model}:`, response.status, errorText);
+        throw new Error(`API request failed for ${model}: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error(`Invalid response format from ${model}`);
+    }
+    
+    const analysisText = data.candidates[0].content.parts[0].text;
+    return parseGeminiResponse(analysisText, subject);
+}
+
+// Missing fallback functions that your code needs
+function createBasicFlashcardFromImage(file, subject) {
+    return {
+        id: Date.now() + Math.random(),
+        subject: subject,
+        topic: `${subject} Study Material - ${file.name}`,
+        notes: `Study material image: ${file.name}\n\nAdd your own notes about this image here.`,
+        imageData: file.data,
+        keyConcepts: [],
+        studyQuestions: [],
+        memoryTips: [],
+        created: new Date().toISOString(),
+        source: 'basic_image',
+        originalFileName: file.name
+    };
+}
+
+function createBasicFlashcardsFromImages(subjects) {
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+        return [];
+    }
+    
+    const basicFlashcards = [];
+    
+    for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i];
+        
+        // Skip non-image files
+        if (!file.type || !file.type.startsWith('image/')) {
+            continue;
+        }
+        
+        // Determine best subject for this file
+        let subject = subjects[0]; // Default to first subject
+        
+        // Try to match file name to subjects
+        for (const subj of subjects) {
+            if (file.name.toLowerCase().includes(subj.toLowerCase())) {
+                subject = subj;
+                break;
+            }
+        }
+        
+        const flashcard = createBasicFlashcardFromImage(file, subject);
+        basicFlashcards.push(flashcard);
+    }
+    
+    return basicFlashcards;
+}
+
+// Test function to verify API access
+async function testGeminiAPI() {
+    if (!GEMINI_API_KEY) {
+        console.error('GEMINI_API_KEY not found');
+        return false;
+    }
+    
+    try {
+        const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const response = await fetch(testUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ 
+                    parts: [{ text: "Hello, can you respond with just 'API working'?" }] 
+                }]
+            })
+        });
+        
+        console.log('Test API Status:', response.status);
+        const result = await response.json();
+        console.log('Test API Response:', result);
+        
+        if (response.ok && result.candidates && result.candidates[0]) {
+            console.log('✅ Gemini API is working!');
+            return true;
+        } else {
+            console.error('❌ Gemini API test failed');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Gemini API test error:', error);
+        return false;
     }
 }
 
