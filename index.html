@@ -16091,112 +16091,82 @@ async function callGeminiAPI(userMessage, context) {
     }
 }
 
-// Update your analyzeImageWithGemini function to check if API key is loaded
+// Fixed analyzeImageWithGemini function
 async function analyzeImageWithGemini(imageData, subject) {
+    if (!GEMINI_API_KEY) {
+        throw new Error('Gemini API key not available');
+    }
+    
     try {
-        // Check if API key is available
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key') {
-            throw new Error('Gemini API key not configured. Please check your environment variables.');
+        // Convert image data to base64 if it's not already
+        let base64Image = imageData;
+        if (imageData.startsWith('data:')) {
+            base64Image = imageData.split(',')[1];
         }
-
-        // --- Detect MIME type from base64 header ---
-        const mimeMatch = imageData.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/);
-        if (!mimeMatch) throw new Error('Invalid image data format. Missing MIME type.');
-
-        const mimeType = mimeMatch[1];
-        const base64Data = imageData.split(',')[1];
-
-        // --- Send request to Gemini ---
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                {
-                                    text: `You are a GCSE study assistant. Analyze this ${subject} image and respond ONLY in **valid JSON** with the following structure:
-
-{
-  "topic": "Main topic",
-  "keyConcepts": ["Concept1", "Concept2", "..."],
-  "detailedExplanation": "200-300 word explanation",
-  "studyQuestions": ["Q1", "Q2", "Q3", "Q4", "Q5"],
-  "memoryTips": ["Tip1", "Tip2", "Tip3"]
-}
-
-Do not include any text outside the JSON.`
-                                },
-                                {
-                                    inline_data: {
-                                        mime_type: mimeType,
-                                        data: base64Data
-                                    }
-                                }
-                            ]
+        
+        // Use the correct model name for image analysis
+        const model = 'gemini-1.5-flash'; // Remove '-latest' suffix
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const requestBody = {
+            contents: [{
+                parts: [
+                    {
+                        text: `Analyze this ${subject} study material image. Provide:
+                        1. A detailed explanation of what's shown
+                        2. Key concepts to remember
+                        3. Study questions based on the content
+                        4. Memory tips for better retention
+                        
+                        Focus on GCSE level understanding for ${subject}.`
+                    },
+                    {
+                        inline_data: {
+                            mime_type: "image/jpeg", // Adjust based on actual image type
+                            data: base64Image
                         }
-                    ],
-                    generationConfig: {
-                        temperature: 0.4,
-                        topP: 0.8,
-                        maxOutputTokens: 1500
                     }
-                })
+                ]
+            }],
+            generationConfig: {
+                temperature: 0.4,
+                topK: 32,
+                topP: 1,
+                maxOutputTokens: 2048,
             }
-        );
-
-        if (!response.ok) throw new Error(`API request failed: ${response.status}`);
-
+        };
+        
+        console.log('Making request to:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            console.error('API Response Status:', response.status);
+            console.error('API Response Text:', await response.text());
+            throw new Error(`API request failed: ${response.status}`);
+        }
+        
         const data = await response.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-        if (!rawText) throw new Error('No response text received');
-
-        // --- Parse JSON safely ---
-        let parsed;
-        try {
-            parsed = JSON.parse(rawText);
-        } catch (e) {
-            console.error('JSON parse error:', e, 'Raw text:', rawText);
-            throw new Error('Gemini did not return valid JSON');
+        console.log('Gemini API Response:', data);
+        
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            throw new Error('Invalid response format from Gemini API');
         }
-
-        // --- Validate structure ---
-        if (!parsed.topic || !parsed.keyConcepts || !parsed.detailedExplanation) {
-            throw new Error('JSON structure incomplete');
-        }
-
-        return parsed;
-
+        
+        const analysisText = data.candidates[0].content.parts[0].text;
+        
+        // Parse the analysis into structured data
+        return parseGeminiResponse(analysisText, subject);
+        
     } catch (error) {
         console.error('Image Analysis Error:', error);
-
-        // --- Fallback structured response ---
-        return {
-            topic: `General ${subject} Content`,
-            keyConcepts: [
-                `Visual learning material for ${subject}`,
-                "Important diagrams and illustrations",
-                "Core subject concepts",
-                "Study reference material"
-            ],
-            detailedExplanation: `This image contains educational content related to ${subject}. 
-The visual elements help illustrate important concepts that are easier to understand through diagrams and illustrations rather than text alone.`,
-            studyQuestions: [
-                "What are the main elements shown in this image?",
-                `How do these concepts relate to your ${subject} curriculum?`,
-                "What patterns or relationships can you identify?",
-                "How would you explain this to someone else?",
-                "What additional information would help you understand this better?"
-            ],
-            memoryTips: [
-                "Create mental associations with the visual elements",
-                "Draw similar diagrams to reinforce learning",
-                "Connect this image to other topics you've studied"
-            ]
-        };
+        throw error;
     }
 }
 
