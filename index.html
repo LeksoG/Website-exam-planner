@@ -64,12 +64,6 @@
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
 }
 
-/* Ensure only 4 tab colors work consistently */
-.tab.color-1 { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6; }
-.tab.color-2 { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-color: #7c3aed; }
-.tab.color-3 { background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: #059669; }
-.tab.color-4 { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border-color: #ea580c; }
-
 /* Smooth theme transitions */
 * {
     transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
@@ -466,122 +460,6 @@
             color: var(--accent-blue);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-        }
-
-        /* Enhanced Tab Container with Carousel */
-        .tab-carousel {
-            position: relative;
-            margin-bottom: 32px;
-            padding: 20px;
-            border-radius: 30px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-
-        .tab-viewport {
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .tab-container {
-            display: flex;
-            gap: 16px;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 100%;
-        }
-
-        .tab {
-            border: 2px solid;
-            color: white;
-            padding: 16px 28px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-            min-width: 200px;
-            justify-content: center;
-        }
-
-        .tab.color-1 { background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%); border-color: var(--accent-blue); }
-        .tab.color-2 { background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%); border-color: var(--accent-purple); }
-        .tab.color-3 { background: linear-gradient(135deg, var(--accent-green) 0%, #047857 100%); border-color: var(--accent-green); }
-        .tab.color-4 { background: linear-gradient(135deg, var(--accent-orange) 0%, #c2410c 100%); border-color: var(--accent-orange); }
-        .tab.color-5 { background: linear-gradient(135deg, var(--accent-pink) 0%, #be185d 100%); border-color: var(--accent-pink); }
-        .tab.color-6 { background: linear-gradient(135deg, var(--accent-yellow) 0%, #a16207 100%); border-color: var(--accent-yellow); }
-
-        .tab::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.4s ease;
-        }
-
-        .tab:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-        }
-
-        .tab:hover::before {
-            left: 100%;
-        }
-
-        .tab.active {
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        /* Carousel Navigation */
-        .carousel-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--bg-secondary);
-            border: 2px solid var(--glass-border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-md);
-            z-index: 10;
-        }
-
-        .carousel-nav:hover {
-            background: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .carousel-nav.prev {
-            left: -10px;
-        }
-
-        .carousel-nav.next {
-            right: -10px;
-        }
-
-        .carousel-nav:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: translateY(-50%);
         }
 
         /* New Schedule Grid Layout */
@@ -1136,23 +1014,6 @@
             }
         }
 
-        /* Enhanced Tab Carousel with Hover Navigation */
-.tab-carousel {
-    position: relative;
-    margin-bottom: 32px;
-    padding: 20px 60px; /* Add space for arrows */
-    border-radius: 30px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.tab-carousel:hover .carousel-nav {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-}
 
 /* Smooth Carousel Navigation */
 .carousel-nav {
@@ -1342,73 +1203,6 @@
     background: var(--accent-blue-hover);
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-}
-
-/* Centered Tab Carousel */
-.tab-carousel {
-    position: relative;
-    margin-bottom: 32px;
-    padding: 20px 80px; /* More space for arrows */
-    border-radius: 30px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tab-viewport {
-    width: 300px; /* Fixed width to show one tab */
-    overflow: hidden;
-    position: relative;
-}
-
-.tab-container {
-    display: flex;
-    gap: 20px;
-    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-    will-change: transform;
-}
-
-/* Centered Tab Styling */
-.tab {
-    border: 2px solid;
-    color: white;
-    padding: 20px 32px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 700;
-    backdrop-filter: blur(12px);
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-    width: 280px; /* Fixed width */
-    justify-content: center;
-    opacity: 0.6;
-    transform: scale(0.85);
-    filter: blur(1px);
-}
-
-.tab.active {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-}
-
-.tab.prev-tab,
-.tab.next-tab {
-    opacity: 0.4;
-    transform: scale(0.75);
-    filter: blur(2px);
 }
 
 /* Enhanced Navigation Arrows */
@@ -2323,45 +2117,6 @@
     width: 100%;
 }
 
-/* Enhanced Floating Sidebar */
-.sidebar {
-    position: fixed;
-    left: -280px;
-    top: 20px;
-    bottom: 20px;
-    width: 280px;
-    background: var(--sidebar-bg);
-    backdrop-filter: blur(30px);
-    border: 2px solid var(--glass-border);
-    border-radius: 32px;
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    box-shadow: 
-        8px 0 32px rgba(0, 0, 0, 0.12),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    overflow: hidden;
-}
-
-.sidebar.open {
-    left: 20px;
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.25),
-        0 0 80px rgba(59, 130, 246, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.sidebar-header {
-    padding: 32px 28px;
-    border-bottom: 2px solid var(--glass-border);
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.1) 0%, 
-        rgba(59, 130, 246, 0.05) 50%, 
-        transparent 100%);
-    border-radius: 30px 30px 0 0;
-}
-
 /* Enhanced Sidebar Overlay with Gradient */
 .sidebar-overlay {
     position: fixed;
@@ -2397,40 +2152,6 @@
     background: 
         radial-gradient(circle at 20% 50%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
         rgba(0, 0, 0, 0.6);
-}
-
-/* Enhanced Sidebar - Attached with Right Curves */
-.sidebar {
-    position: fixed;
-    left: -280px;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    background: var(--sidebar-bg);
-    backdrop-filter: blur(30px);
-    border: 2px solid var(--glass-border);
-    border-left: none;
-    border-radius: 0 32px 32px 0;
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-}
-
-.sidebar.open {
-    left: 0;
-    box-shadow: 
-        8px 0 32px rgba(0, 0, 0, 0.2),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-.sidebar-header {
-    padding: 32px 28px;
-    border-bottom: 2px solid var(--glass-border);
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.1) 0%, 
-        rgba(59, 130, 246, 0.05) 50%, 
-        transparent 100%);
 }
 
 /* Simple Dim Overlay */
@@ -2527,33 +2248,6 @@
 /* Better contrast for delete button */
 .tab-dropdown-item:hover svg {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-/* Enhanced Floating Sidebar with Top/Bottom Spacing */
-.sidebar {
-    position: fixed;
-    left: -280px;
-    top: 20px;
-    bottom: 20px;
-    width: 280px;
-    height: calc(100vh - 40px);
-    background: var(--sidebar-bg);
-    backdrop-filter: blur(30px);
-    border: 2px solid var(--glass-border);
-    border-radius: 0 32px 32px 0;
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-}
-
-.sidebar.open {
-    left: 0;
-    box-shadow: 
-        8px 0 32px rgba(0, 0, 0, 0.2),
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        0 -8px 32px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 /* Dark theme floating sidebar */
@@ -5128,26 +4822,6 @@ body.sidebar-open-mobile {
     }
 }
 
-/* Hide AI button by default */
-.ai-assistant-btn {
-    display: none;
-}
-
-/* Show AI button only on dashboard page */
-.page.active#dashboard ~ * .ai-assistant-btn,
-body.dashboard-active .ai-assistant-btn {
-    display: flex;
-}
-
-/* Alternative approach - show when dashboard is active */
-.ai-assistant-btn.dashboard-only {
-    display: none;
-}
-
-.ai-assistant-btn.dashboard-only.show {
-    display: flex;
-}
-
 /* Vertical Suggestion Pills */
 .ai-suggested-prompts {
     display: flex;
@@ -6687,404 +6361,6 @@ body.dashboard-active .ai-assistant-btn {
     }
 }
 
-/* Top Tab Bar Styles */
-.top-tab-bar {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    border-radius: 50px;
-    padding: 8px;
-    box-shadow: var(--shadow-xl);
-    z-index: 1000;
-    display: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.top-tab-bar.show {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.top-tab-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.top-tab-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--accent-blue);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 40px;
-}
-
-.top-tab-item:hover {
-    color: var(--accent-blue);
-    background: var(--accent-blue-light);
-}
-
-.top-tab-item.active {
-    color: white;
-    background: var(--accent-blue);
-}
-
-.top-tab-item.active::before {
-    opacity: 1;
-}
-
-.top-tab-item .icon {
-    width: 18px;
-    height: 18px;
-    z-index: 1;
-    position: relative;
-}
-
-.top-tab-item span {
-    z-index: 1;
-    position: relative;
-}
-
-/* Search Container */
-.top-search-container {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    border-radius: 50px;
-    padding: 8px 16px;
-    box-shadow: var(--shadow-xl);
-    z-index: 1000;
-    display: none;
-    min-width: 400px;
-}
-
-.top-search-container.show {
-    display: block;
-}
-
-.search-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    padding: 12px 16px;
-    font-size: 16px;
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.search-input::placeholder {
-    color: var(--text-muted);
-}
-
-.search-close-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--text-muted);
-    padding: 8px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.search-close-btn:hover {
-    background: var(--accent-red);
-    color: white;
-}
-
-.search-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    border-radius: 20px;
-    margin-top: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-}
-
-.search-suggestions.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-}
-
-.search-suggestion-item {
-    padding: 16px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-suggestion-item:last-child {
-    border-bottom: none;
-}
-
-.search-suggestion-item:hover {
-    background: var(--accent-blue-light);
-    color: var(--accent-blue);
-}
-
-.search-suggestion-type {
-    background: var(--accent-blue);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-/* Hide on mobile */
-@media (max-width: 768px) {
-    .top-tab-bar,
-    .top-search-container {
-        display: none !important;
-    }
-    
-    .settings-card:has(#topTabBarToggle) {
-        display: none !important;
-    }
-}
-
-/* Enhanced Top Tab Bar Styles */
-.top-tab-bar {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--glass-border);
-    border-radius: 50px;
-    padding: 8px;
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    z-index: 1000;
-    display: none;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 60px;
-    align-items: center;
-}
-
-.top-tab-bar.show {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.top-tab-bar.search-mode {
-    min-width: 500px;
-    padding: 8px 16px;
-}
-
-/* Dark theme support */
-[data-theme="black"] .top-tab-bar {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: rgba(71, 85, 105, 0.4);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.top-tab-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 16px 20px;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.95rem;
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    background: transparent;
-}
-
-.top-tab-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, var(--accent-blue) 0%, #3b82f6 100%);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 40px;
-    transform: scale(0.8);
-}
-
-.top-tab-item:hover {
-    color: var(--accent-blue);
-    background: var(--accent-blue-light);
-    transform: translateY(-2px);
-}
-
-.top-tab-item.active {
-    color: white;
-    background: var(--accent-blue);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-}
-
-.top-tab-item.active::before {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.top-tab-item .icon {
-    width: 20px;
-    height: 20px;
-    z-index: 1;
-    position: relative;
-}
-
-.top-tab-item span {
-    z-index: 1;
-    position: relative;
-}
-
-.top-search-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-secondary);
-    background: transparent;
-    position: relative;
-    overflow: hidden;
-}
-
-.top-search-btn::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--accent-blue);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
-    transform: scale(0.8);
-}
-
-.top-search-btn:hover {
-    background: var(--accent-blue-light);
-    color: var(--accent-blue);
-    transform: scale(1.1);
-}
-
-.top-search-btn.active {
-    color: white;
-    background: var(--accent-blue);
-}
-
-.top-search-btn.active::before {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.top-search-btn .icon {
-    width: 20px;
-    height: 20px;
-    z-index: 1;
-    position: relative;
-}
-
-/* Search Input Styling */
-.top-search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    padding: 12px 16px;
-    font-size: 16px;
-    color: var(--text-primary);
-    font-weight: 500;
-    placeholder-color: var(--text-muted);
-}
-
-.top-search-close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-muted);
-    background: transparent;
-}
-
-.top-search-close:hover {
-    background: var(--accent-red);
-    color: white;
-    transform: scale(1.1);
-}
-
-/* Tab content animation origin */
-.page {
-    transform-origin: top center;
-}
-
-/* Hide on mobile */
-@media (max-width: 768px) {
-    .top-tab-bar {
-        display: none !important;
-    }
-}
-
 /* Fixed Top Tab Bar Styles */
 .top-tab-bar {
     position: fixed;
@@ -7564,10 +6840,6 @@ body {
     }
 }
 
-@media (max-width: 768px) {
-    .ai-trigger-area {
-        display: none !important;
-    }
     
     .container.ai-open {
         margin-right: 0;
@@ -8222,177 +7494,6 @@ body {
     }
 }
 
-/* Enhanced Professional Schedule Grid */
-.schedule-grid-container {
-    padding: 24px;
-    border-radius: 20px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    margin-top: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.schedule-grid {
-    display: grid;
-    grid-template-columns: 120px repeat(7, 1fr);
-    gap: 12px;
-    width: 100%;
-    height: auto; /* Remove fixed height */
-}
-
-.grid-header {
-    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
-    color: white;
-    padding: 12px 8px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
-    transition: all 0.3s ease;
-    height: 50px; /* Fixed height for headers */
-}
-
-.grid-header.today {
-    background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-    transform: scale(1.02);
-}
-
-.subject-label {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 8px;
-    font-weight: 700;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 0.75rem;
-    transition: all 0.3s ease;
-    min-height: 120px; /* Minimum height for subject cells */
-}
-
-.schedule-cell {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    min-height: 120px; /* Fixed minimum height */
-    max-height: 300px; /* Maximum height to prevent excessive growth */
-}
-
-.schedule-cell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.schedule-cell:hover::before {
-    opacity: 1;
-}
-
-.schedule-cell.today {
-    border-color: var(--accent-green);
-    background: linear-gradient(135deg, var(--bg-secondary), rgba(16, 185, 129, 0.05));
-}
-
-.schedule-cell.today::before {
-    background: var(--accent-green);
-    opacity: 1;
-}
-
-.revision-card-mini {
-    background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.08));
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 8px;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    margin-bottom: 4px;
-}
-
-.revision-card-mini:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent-blue);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
-}
-
-.revision-card-mini-content {
-    position: relative;
-    z-index: 2;
-}
-
-.revision-card-mini-title {
-    font-weight: 600;
-    font-size: 0.65rem;
-    color: var(--accent-blue);
-    margin-bottom: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.revision-card-mini-topic {
-    font-weight: 600;
-    font-size: 0.75rem;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-    line-height: 1.2;
-}
-
-.revision-card-mini-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-/* Remove extra container heights */
-.dashboard-container {
-    width: 100%;
-    height: auto; /* Remove fixed height */
-}
-
-.schedule-grid-container.desktop-layout {
-    height: auto; /* Remove fixed height */
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.flashcard-loading {
-    transition: all 0.3s ease;
-}
-
-.flashcard {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Enhanced Settings Interface */
 .settings-main-grid {
     display: grid;
@@ -8862,1074 +7963,1010 @@ body {
     color: white;
 }
 
-.top-tab-bar {
-    position: relative;
-    overflow: hidden; /* Prevent any content overflow */
-}
-
-.top-tab-content {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-.top-search-content {
-    width: 100%;
-    height: 50px;
-    border-radius: 25px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    padding: 0 4px; /* Minimal padding for perfect fit */
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    box-sizing: border-box; /* Ensure perfect sizing */
-    position: relative;
-}
-
-.top-search-input {
-    flex: 1;
+/* Dashboard AI Button */
+.dashboard-ai-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
     border: none;
-    background: transparent;
-    outline: none;
-    padding: 0 12px;
-    font-size: 1rem;
-    color: var(--text-primary);
-    font-weight: 500;
-    height: 100%;
-    border-radius: 25px;
-    box-sizing: border-box;
+    padding: 14px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    font-size: 0.9rem;
 }
 
-.top-search-content > .icon {
-    margin-left: 12px;
-    flex-shrink: 0;
+.dashboard-ai-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.dashboard-ai-button .icon {
     width: 20px;
     height: 20px;
 }
 
-.top-search-close {
-    margin-right: 8px;
-    flex-shrink: 0;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-tertiary);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-/* Search suggestions positioning */
-.search-suggestions {
+.dashboard-ai-button::before {
+    content: '';
     position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--bg-primary);
-    border: 2px solid var(--accent-blue);
-    border-radius: 16px;
-    margin-top: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    z-index: 1000;
-    box-sizing: border-box;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
 }
 
-/* AI Bounce Effects */
-@keyframes aiPulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.7;
-        transform: scale(1.2);
-    }
+.dashboard-ai-button:hover::before {
+    left: 100%;
 }
 
-.ai-bounce-active {
-    animation: aiBounceGlow 0.8s ease-out;
-    position: relative;
+/* Progress Section Tabs */
+.progress-section {
+    margin-top: 32px;
 }
 
-@keyframes aiBounceGlow {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
-    }
-    25% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 8px rgba(139, 92, 246, 0.4);
-    }
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 16px rgba(139, 92, 246, 0.2);
-    }
-    75% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 24px rgba(139, 92, 246, 0.1);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 32px rgba(139, 92, 246, 0);
-    }
-}
-
-.glowing {
-    background: linear-gradient(270deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
-    animation: subtleGlow 3s ease-in-out infinite;
-}
-
-@keyframes subtleGlow {
-    0%, 100% {
-        opacity: 0.8;
-    }
-    50% {
-        opacity: 1;
-    }
-}
-
-/* Enhanced AI trigger hover */
-#aiTriggerArea.dashboard-active:hover {
-    background: linear-gradient(270deg, rgba(139, 92, 246, 0.25) 0%, transparent 100%) !important;
-    transition: all 0.3s ease;
-}
-
-/* Enhanced floating tab bar */
-.top-tab-bar {
-    position: fixed !important;
-    top: 8px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: auto !important;
-    background: rgba(var(--bg-primary-rgb, 255, 255, 255), 0.95) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 25px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-    z-index: 1000 !important;
-    padding: 6px !important;
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-.top-tab-content {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 4px !important;
-    width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    flex-wrap: nowrap !important;
-}
-
-/* Icon styling for tabs */
-.top-tab-item .icon {
-    width: 18px !important;
-    height: 18px !important;
-    stroke-width: 2 !important;
-}
-
-.top-search-btn .icon {
-    width: 16px !important;
-    height: 16px !important;
-    stroke-width: 2 !important;
-}
-
-/* Body adjustment for floating tab bar */
-body.top-nav-active {
-    padding-top: 80px !important;
-}
-
-/* Mobile responsive for floating tabs */
-@media (max-width: 768px) {
-    .top-tab-bar {
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: auto !important;
-        max-width: calc(100vw - 16px) !important;
-        padding: 4px !important;
-    }
-    
-    .top-tab-content {
-        gap: 2px !important;
-        overflow-x: auto !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-    }
-    
-    .top-tab-content::-webkit-scrollbar {
-        display: none !important;
-    }
-    
-    .top-tab-item {
-        padding: 10px 16px !important;
-        min-width: 44px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .top-tab-item span {
-        display: none !important;
-    }
-    
-    .top-search-btn {
-        width: 40px !important;
-        height: 40px !important;
-        padding: 10px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    body.top-nav-active {
-        padding-top: 65px !important;
-    }
-}
-
-.top-tab-bar {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: auto;
-    max-width: 600px;
-    min-width: 400px;
-    height: 50px;
+.progress-tab-container {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--border-color);
-    border-radius: 25px;
-    z-index: 1000;
-    opacity: 0;
-    transform: translateX(-50%) translateY(-100%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: none;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    padding: 4px;
-}
-
-.top-tab-bar.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    display: block;
-}
-
-.top-tab-bar:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
-    border-color: var(--accent-blue);
-}
-
-body.top-nav-active {
-    padding-top: 90px; /* Increased to account for floating position */
-}
-
-body.top-nav-active .main-content {
-    margin-top: 0;
-}
-
-.top-tab-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 100%;
-    padding: 0 8px;
-    gap: 8px;
-}
-
-.top-tab-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: transparent;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.top-tab-item:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    transform: translateY(-2px);
-}
-
-.top-tab-item.active {
-    background: var(--accent-blue);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.top-tab-item .icon {
-    width: 16px;
-    height: 16px;
-}
-
-.top-search-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.top-search-btn:hover {
-    background: var(--accent-blue);
-    color: white;
-    border-color: var(--accent-blue);
-    transform: scale(1.1);
-}
-
-.top-search-btn.active {
-    background: var(--accent-blue);
-    color: white;
-    border-color: var(--accent-blue);
-}
-
-.top-search-content {
-    width: 100%;
-    height: 42px;
-    border-radius: 21px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    padding: 0 4px;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+    border: 2px solid var(--glass-border);
+    border-radius: 40px;
     overflow: hidden;
-    box-sizing: border-box;
+    backdrop-filter: blur(20px);
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-lg);
     position: relative;
 }
 
-.top-search-content:focus-within {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.progress-tab-carousel {
+    padding: 24px 80px;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.03) 0%, 
+        rgba(124, 58, 237, 0.03) 50%, 
+        rgba(5, 150, 105, 0.03) 100%);
+    border-bottom: 2px solid var(--glass-border);
+    position: relative;
 }
 
-.top-search-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    outline: none;
-    padding: 0 12px;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    font-weight: 500;
-    height: 100%;
-    border-radius: 21px;
-    box-sizing: border-box;
-}
-
-.top-search-close {
-    margin-right: 6px;
-    flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-tertiary);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.top-search-close:hover {
-    background: var(--accent-red, #ef4444);
-    color: white;
-    transform: scale(1.1);
-}
-
-/* Enhanced Settings Styles */
-.settings-container {
-    max-width: 1200px;
+.progress-tab-viewport {
+    width: 350px;
+    overflow: hidden;
     margin: 0 auto;
-    padding: 20px;
+    position: relative;
 }
 
-.settings-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--border-color);
+.progress-tab-list {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: transform;
 }
 
-.settings-header h1 {
-    margin: 0 0 8px 0;
-    color: var(--text-primary);
-    font-size: 2.2rem;
-    font-weight: 800;
-}
-
-.settings-header p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-}
-
-.settings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 24px;
-}
-
-.settings-section {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 24px;
-    transition: all 0.3s ease;
-}
-
-.settings-section:hover {
-    border-color: var(--accent-blue);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-}
-
-.section-header {
+.progress-tab {
+    border: 2px solid;
+    color: white;
+    padding: 18px 32px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.section-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--accent-blue);
-    stroke-width: 2;
-}
-
-.section-header h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.3rem;
     font-weight: 700;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 280px;
+    justify-content: center;
+    opacity: 0.4;
+    transform: scale(0.8);
+    filter: blur(1.5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.user-profile-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: var(--bg-primary);
-    border-radius: 12px;
-    margin-bottom: 20px;
+.progress-tab.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.user-avatar-large {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+.progress-tab.color-1 { 
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
+    border-color: #3b82f6; 
+}
+.progress-tab.color-2 { 
+    background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+    border-color: #059669; 
+}
+
+.progress-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     background: var(--accent-blue);
     color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.user-info h3 {
-    margin: 0 0 4px 0;
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.user-email {
-    margin: 0 0 4px 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-}
-
-.member-since {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-
-.account-actions {
-    display: flex;
-    gap: 12px;
-}
-
-.settings-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    z-index: 20;
+    opacity: 0.8;
 }
 
-.settings-btn.primary {
-    background: var(--accent-blue);
-    color: white;
-    flex: 1;
+.progress-nav:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6);
 }
 
-.settings-btn.primary:hover {
-    background: var(--accent-blue-dark, #2563eb);
-    transform: translateY(-1px);
+.progress-nav.prev {
+    left: 20px;
 }
 
-.settings-btn.secondary {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    flex: 1;
+.progress-nav.next {
+    right: 20px;
 }
 
-.settings-btn.secondary:hover {
-    border-color: var(--accent-blue);
-    background: var(--accent-blue);
-    color: white;
+/* Progress Content Areas */
+.progress-content {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.settings-btn.connected {
-    background: var(--accent-green, #10b981);
-    color: white;
+.progress-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.setting-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--bg-primary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+/* Subject Progress Chart */
+.subject-progress-chart {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-lg);
 }
 
-.setting-info h4 {
-    margin: 0 0 4px 0;
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.setting-info p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.setting-select {
-    padding: 8px 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.setting-toggle {
-    width: 50px;
-    height: 26px;
-    background: var(--border-color);
-    border-radius: 13px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.setting-toggle.active {
-    background: var(--accent-blue);
-}
-
-.toggle-slider {
-    width: 22px;
-    height: 22px;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.setting-toggle.active .toggle-slider {
-    transform: translateX(24px);
-}
-
-.theme-selector {
-    display: flex;
-    gap: 12px;
-}
-
-.theme-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 80px;
-}
-
-.theme-option.active {
-    border-color: var(--accent-blue);
-    background: var(--accent-blue);
-    color: white;
-}
-
-.theme-preview {
-    width: 40px;
-    height: 30px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-}
-
-.theme-preview.light {
-    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
-}
-
-.theme-preview.dark {
-    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-}
-
-.data-actions {
-    display: flex;
-    gap: 12px;
-}
-
-.reminder-panel {
-    background: var(--bg-primary);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.reminder-panel h5 {
-    margin: 0 0 16px 0;
-    color: var(--text-primary);
-    font-weight: 700;
-}
-
-/* Progress Tab Styles */
-.progress-header {
+.chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     padding-bottom: 16px;
     border-bottom: 2px solid var(--border-color);
 }
 
-.progress-header h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.8rem;
+.chart-title {
+    font-size: 1.6rem;
     font-weight: 800;
-}
-
-.progress-container {
-    position: relative;
-}
-
-.progress-tab-content {
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.4s ease;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-}
-
-.progress-tab-content.active {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-    position: relative;
-}
-
-/* Oval Progress Bars */
-.oval-progress-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    padding: 20px 0;
-}
-
-.oval-progress-item {
-    text-align: center;
-    padding: 20px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    transition: all 0.3s ease;
-}
-
-.oval-progress-item:hover {
-    border-color: var(--accent-blue);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-}
-
-.subject-name {
-    margin: 0 0 20px 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-.oval-progress-container {
-    margin-bottom: 20px;
-}
-
-.oval-progress {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-    position: relative;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        var(--color) calc(var(--progress) * 1%),
-        var(--border-color) calc(var(--progress) * 1%)
-    );
+    color: var(--accent-blue);
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 8px;
+    gap: 12px;
 }
 
-.oval-progress-inner {
-    width: 100%;
-    height: 100%;
-    background: var(--bg-primary);
-    border-radius: 50%;
+.chart-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.chart-container {
+    display: flex;
+    align-items: end;
+    gap: 20px;
+    height: 300px;
+    padding: 20px;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.02) 0%, 
+        rgba(124, 58, 237, 0.02) 50%, 
+        rgba(5, 150, 105, 0.02) 100%);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.chart-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    flex: 1;
+    height: 100%;
+    justify-content: end;
+    position: relative;
 }
 
-.progress-percentage {
-    font-size: 1.5rem;
-    font-weight: 800;
+.bar-container {
+    width: 100%;
+    max-width: 60px;
+    height: 0%;
+    background: linear-gradient(180deg, 
+        var(--accent-blue) 0%, 
+        var(--accent-blue-hover) 100%);
+    border-radius: 30px 30px 8px 8px;
+    position: relative;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.bar-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        transparent 50%);
+    border-radius: inherit;
+}
+
+.bar-container.animated {
+    animation: barGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes barGlow {
+    0% {
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    }
+    100% {
+        box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+    }
+}
+
+.bar-label {
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 4px;
-}
-
-.progress-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.subject-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 16px;
-}
-
-.stat-item {
+    font-size: 0.85rem;
     text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.stat-value {
-    display: block;
+.bar-percentage {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-blue);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.bar-container:hover .bar-percentage {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* Different bar colors for subjects */
+.chart-bar:nth-child(1) .bar-container {
+    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+}
+.chart-bar:nth-child(2) .bar-container {
+    background: linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%);
+}
+.chart-bar:nth-child(3) .bar-container {
+    background: linear-gradient(180deg, #059669 0%, #047857 100%);
+}
+.chart-bar:nth-child(4) .bar-container {
+    background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%);
+}
+.chart-bar:nth-child(5) .bar-container {
+    background: linear-gradient(180deg, #db2777 0%, #be185d 100%);
+}
+.chart-bar:nth-child(6) .bar-container {
+    background: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* Deep Stats Content */
+.deep-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.stats-card {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stats-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--accent-blue);
+}
+
+.stats-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stats-card-title {
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-primary);
 }
 
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+.stats-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.analytics-empty {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
+.stats-metric:last-child {
+    border-bottom: none;
 }
 
-.analytics-header {
-    text-align: center;
-    margin-bottom: 32px;
+.stats-metric-label {
+    color: var(--text-secondary);
+    font-weight: 600;
 }
 
-.analytics-header h3 {
-    margin: 0 0 8px 0;
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.analytics-header p {
-    margin: 0;
-    color: var(--text-muted);
+.stats-metric-value {
+    color: var(--accent-blue);
+    font-weight: 800;
+    font-size: 1.1rem;
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .settings-grid {
+    .progress-tab-carousel {
+        padding: 20px 40px;
+    }
+    
+    .progress-tab-viewport {
+        width: 250px;
+    }
+    
+    .progress-tab {
+        width: 220px;
+        padding: 14px 24px;
+    }
+    
+    .chart-container {
+        height: 250px;
+        gap: 12px;
+        padding: 16px;
+    }
+    
+    .bar-container {
+        max-width: 40px;
+    }
+    
+    .deep-stats-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
-    
-    .account-actions {
+}
+
+/* Enhanced Progress Tab System */
+.progress-tab-header {
+    display: flex;
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 8px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+}
+
+.progress-tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.progress-tab-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.progress-tab-btn:hover:not(.active) {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.progress-tab-content {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-tab-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Enhanced Grid Chart */
+.chart-grid-container {
+    display: flex;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.chart-y-axis {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    height: 320px;
+    padding: 20px 0;
+}
+
+.y-axis-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: right;
+    padding-right: 8px;
+}
+
+.chart-main-area {
+    flex: 1;
+    position: relative;
+    height: 320px;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.02) 0%, 
+        rgba(124, 58, 237, 0.02) 50%, 
+        rgba(5, 150, 105, 0.02) 100%);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    padding: 20px;
+}
+
+.chart-grid-lines {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grid-line {
+    height: 1px;
+    background: var(--border-color);
+    opacity: 0.5;
+}
+
+.chart-container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: end;
+    gap: 20px;
+    z-index: 2;
+}
+
+.chart-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: end;
+    position: relative;
+}
+
+.bar-container {
+    width: 100%;
+    max-width: 80px;
+    height: 0%;
+    background: linear-gradient(180deg, 
+        var(--accent-blue) 0%, 
+        var(--accent-blue-hover) 100%);
+    border-radius: 8px 8px 4px 4px;
+    position: relative;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    overflow: hidden;
+    margin-bottom: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bar-value {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: var(--bg-secondary);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bar-container:hover .bar-value {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+.bar-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.bar-container.show-text .bar-progress-text {
+    opacity: 1;
+}
+
+.bar-label {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Chart Summary */
+.chart-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--calendar-day);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.summary-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+}
+
+.chart-refresh-btn {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.chart-refresh-btn:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+    transform: rotate(180deg);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .chart-grid-container {
         flex-direction: column;
-    }
-    
-    .data-actions {
-        flex-direction: column;
-    }
-    
-    .setting-item {
-        flex-direction: column;
-        align-items: stretch;
         gap: 12px;
     }
     
-    .oval-progress-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
+    .chart-y-axis {
+        flex-direction: row;
+        height: auto;
+        justify-content: space-between;
+        padding: 0 20px;
     }
     
-    .progress-header {
+    .chart-main-area {
+        height: 250px;
+    }
+    
+    .chart-summary {
         flex-direction: column;
         gap: 16px;
-        align-items: stretch;
+    }
+    
+    .progress-tab-btn {
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
 }
 
-.top-tab-bar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: auto !important;
-    height: auto !important;
-    background: var(--bg-primary) !important;
-    border-bottom: 2px solid var(--border-color) !important;
-    z-index: 1000 !important;
-    padding: 12px 0 !important;
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    backdrop-filter: blur(20px) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-    border-radius: 25px !important;
-    margin-top: 8px !important;
+/* Animated Numbers */
+.animated-number {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-blue);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    opacity: 0;
+    animation: numberSlideIn 0.5s ease-out 1.5s forwards;
 }
 
-.top-tab-content {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    width: auto !important;
-    margin: 0 !important;
-    padding: 0 16px !important;
-    flex-wrap: nowrap !important;
-    position: relative !important;
+@keyframes numberSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
-.top-tab-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    padding: 12px 20px !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 25px !important; /* Make it oval */
-    cursor: pointer !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    font-weight: 600 !important;
-    color: var(--text-secondary) !important;
-    text-decoration: none !important;
-    white-space: nowrap !important;
-    flex-shrink: 0 !important;
-    min-width: auto !important;
-    position: relative !important;
-    transform: none !important;
+/* Compare Button */
+.compare-button {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    z-index: 10;
 }
 
-.top-tab-item:hover {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: var(--accent-blue) !important;
-    transform: translateY(-1px) scale(1.02) !important;
+.compare-button:hover {
+    background: var(--accent-blue-hover);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
-.top-tab-item.active {
-    background: var(--accent-blue) !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-    transform: translateY(-1px) scale(1.02) !important;
+.compare-button .icon {
+    width: 14px;
+    height: 14px;
 }
 
-.top-search-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 50% !important; /* Make search button circular */
-    cursor: pointer !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    color: var(--text-secondary) !important;
-    width: 44px !important;
-    height: 44px !important;
+/* Comparison States */
+.chart-bar.comparison-desaturated {
+    opacity: 0.3;
+    filter: grayscale(70%);
+    transition: all 0.4s ease;
 }
 
-.top-search-btn:hover {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: var(--accent-blue) !important;
-    transform: translateY(-1px) scale(1.1) !important;
+.chart-bar.comparison-selected {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
 }
 
-.top-search-btn.active {
-    background: var(--accent-blue) !important;
-    color: white !important;
-    transform: translateY(-1px) scale(1.1) !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+.chart-bar.comparison-highlight {
+    opacity: 0.8 !important;
+    filter: grayscale(0%) !important;
+    transform: scale(1.02);
+    cursor: pointer;
 }
 
-/* Override any conflicting positioning */
-.top-tab-bar,
-.top-tab-content,
-.top-tab-item,
-.top-search-btn {
-    position: relative;
-    left: auto;
-    right: auto;
-    top: auto;
-    bottom: auto;
-    margin-left: auto;
-    margin-right: auto;
+.chart-bar.comparison-highlight .bar-container {
+    border: 3px solid var(--accent-blue);
 }
 
-.top-tab-bar {
-    position: fixed !important;
-    top: 0 !important;
+/* Cancel Comparison Button */
+.cancel-comparison-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
 }
 
-/* Search Mode */
-.top-tab-bar.search-mode .top-search-content {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    padding: 0 20px !important;
+.cancel-comparison-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
 }
 
-.top-search-input {
-    flex: 1 !important;
-    padding: 12px 16px !important;
-    border: 2px solid var(--border-color) !important;
-    border-radius: 25px !important;
-    background: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-    font-size: 1rem !important;
-    outline: none !important;
-    transition: all 0.3s ease !important;
-    max-width: 400px !important;
+/* Comparison Modal */
+.comparison-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 15000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
 }
 
-.top-search-close {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 8px !important;
-    background: var(--bg-tertiary) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 50% !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    flex-shrink: 0 !important;
+.comparison-modal-overlay.show {
+    opacity: 1;
 }
 
-/* Body spacing for top nav */
-body.top-nav-active {
-    padding-top: 70px !important;
-    margin-top: 0 !important;
+.comparison-modal {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 800px;
+    width: 90%;
+    margin: 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-body.top-nav-active .main-content,
-body.top-nav-active .container,
-body.top-nav-active #home,
-body.top-nav-active #dashboard,
-body.top-nav-active #progress,
-body.top-nav-active #settings {
-    margin-top: 0 !important;
-    padding-top: 20px !important;
+.comparison-modal-overlay.show .comparison-modal {
+    transform: scale(1) translateY(0);
 }
 
-/* Mobile responsive */
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.comparison-header h2 {
+    color: var(--accent-blue);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.comparison-close {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.comparison-close:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+.comparison-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.comparison-side {
+    padding: 24px;
+    border-radius: 20px;
+    background: var(--calendar-day);
+    border: 2px solid var(--border-color);
+}
+
+.subject-header {
+    text-align: center;
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    color: white;
+    font-weight: 800;
+}
+
+.subject-header.color-1 {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.subject-header.color-2 {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.comparison-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+}
+
+.comparison-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vs-badge {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    animation: vsRotate 2s ease-in-out infinite;
+}
+
+@keyframes vsRotate {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(5deg) scale(1.05); }
+}
+
+.comparison-summary {
+    background: var(--accent-blue-light);
+    border: 2px solid var(--accent-blue);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.comparison-summary h4 {
+    color: var(--accent-blue);
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+}
+
+.summary-point {
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-    .top-tab-content {
-        padding: 0 12px !important;
-        gap: 8px !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        justify-content: flex-start !important;
-        width: 100% !important;
+    .comparison-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
     
-    .top-tab-item {
-        padding: 10px 14px !important;
-        font-size: 0.9rem !important;
-        gap: 6px !important;
-        min-width: 44px !important;
-        flex-shrink: 0 !important;
+    .comparison-divider {
+        order: 2;
     }
     
-    .top-tab-item span {
-        display: none !important;
+    .vs-badge {
+        padding: 12px 16px;
+        font-size: 1rem;
     }
     
-    .top-search-btn {
-        padding: 10px !important;
-        min-width: 44px !important;
-        flex-shrink: 0 !important;
+    .comparison-modal {
+        width: 95%;
+        padding: 20px;
     }
     
-    body.top-nav-active {
-        padding-top: 60px !important;
+    .animated-number {
+        font-size: 1rem;
+        padding: 6px 10px;
     }
 }
     </style>
@@ -10169,77 +9206,265 @@ body.top-nav-active #settings {
             </div>
 
             <!-- Dashboard Page -->
-            <div id="dashboard" class="page">
-                <div class="main-tab-switches">
-                    <button class="main-tab-switch active" onclick="switchMainTab('schedule')">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
+<div id="dashboard" class="page">
+    <!-- AI Button for Dashboard -->
+    <button class="dashboard-ai-button" onclick="toggleAIChatbot()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+        <span>AI Assistant</span>
+    </button>
+
+    <div class="main-tab-switches">
+        <button class="main-tab-switch active" onclick="switchMainTab('schedule')">
+            <svg class="icon" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+            </svg>
+            Schedule
+        </button>
+        <button class="main-tab-switch" onclick="switchMainTab('flashcards')">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+            </svg>
+            Flashcards
+        </button>
+    </div>
+
+    <div id="scheduleContainer" class="schedule-container active">
+        <div class="tab-carousel" id="scheduleTabsCarousel">
+            <!-- Subject tabs will be here -->
+        </div>
+        
+        <div class="loading-container" id="loadingContainer">
+            <h3 style="color: var(--accent-blue); margin-bottom: 24px; text-align: center; font-weight: 800; font-size: 1.6rem;">
+                Generating your personalized revision schedule...
+            </h3>
+            <div class="loading-grid" id="loadingGrid">
+                <!-- Loading cards will be generated here -->
+            </div>
+        </div>
+        
+        <div id="scheduleContent">
+            <div class="empty-state">
+                <h3>No schedules created yet</h3>
+                <p>Go to the Home page to create your first revision schedule</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="flashcardContainer" class="flashcard-container">
+        <div class="flashcard-header">
+            <h2 class="flashcard-title">Study Flashcards</h2>
+            <button class="create-flashcard-btn" onclick="createFlashcard()">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Create Flashcard
+            </button>
+        </div>
+        
+        <div class="flashcards-grid" id="flashcardsGrid">
+            <!-- Flashcards will be displayed here -->
+        </div>
+    </div>
+</div>
+
+<!-- Progress Page -->
+<div id="progress" class="page">
+    <!-- Move tabs to the very top -->
+    <div class="progress-tab-header">
+        <button class="progress-tab-btn active" onclick="switchProgressTab('simple-progress')">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Subject Progress
+        </button>
+        <button class="progress-tab-btn" onclick="switchProgressTab('analytics-stats')">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Analytics & Stats
+        </button>
+    </div>
+
+    <!-- Simple Progress Tab Content (your current progress cards) -->
+    <div class="progress-tab-content active" id="simple-progress">
+        <div class="card">
+            <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Your Progress</h2>
+            <div id="progressContent">
+                <div class="empty-state">
+                    <h3>No progress data yet</h3>
+                    <p>Complete some revision tasks to see your progress here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics & Stats Tab Content (detailed charts) -->
+    <div class="progress-tab-content" id="analytics-stats">
+        <div class="subject-progress-chart">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    Subject Progress Overview
+                </div>
+                <div class="chart-info">
+                    <span id="lastUpdated">Updated just now</span>
+                    <button class="chart-refresh-btn" onclick="updateProgressChart()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="23,4 23,10 17,10"/>
+                            <polyline points="1,20 1,14 7,14"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
                         </svg>
-                        Schedule
-                    </button>
-                    <button class="main-tab-switch" onclick="switchMainTab('flashcards')">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                        </svg>
-                        Flashcards
                     </button>
                 </div>
-
-                <div id="scheduleContainer" class="schedule-container active">
-                    <div class="tab-carousel" id="scheduleTabsCarousel">
-                        <!-- Subject tabs will be here -->
-                    </div>
-                    
-                    <div class="loading-container" id="loadingContainer">
-                        <h3 style="color: var(--accent-blue); margin-bottom: 24px; text-align: center; font-weight: 800; font-size: 1.6rem;">
-                            Generating your personalized revision schedule...
-                        </h3>
-                        <div class="loading-grid" id="loadingGrid">
-                            <!-- Loading cards will be generated here -->
-                        </div>
-                    </div>
-                    
-                    <div id="scheduleContent">
-                        <div class="empty-state">
-                            <h3>No schedules created yet</h3>
-                            <p>Go to the Home page to create your first revision schedule</p>
-                        </div>
-                    </div>
+            </div>
+            
+            <!-- Enhanced Grid Chart Container -->
+            <div class="chart-grid-container">
+                <div class="chart-y-axis">
+                    <div class="y-axis-label">100%</div>
+                    <div class="y-axis-label">75%</div>
+                    <div class="y-axis-label">50%</div>
+                    <div class="y-axis-label">25%</div>
+                    <div class="y-axis-label">0%</div>
                 </div>
-
-                <div id="flashcardContainer" class="flashcard-container">
-                    <div class="flashcard-header">
-                        <h2 class="flashcard-title">Study Flashcards</h2>
-                        <button class="create-flashcard-btn" onclick="createFlashcard()">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Create Flashcard
-                        </button>
+                
+                <div class="chart-main-area">
+                    <div class="chart-grid-lines">
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
                     </div>
                     
-                    <div class="flashcards-grid" id="flashcardsGrid">
-                        <!-- Flashcards will be displayed here -->
+                    <div class="chart-container" id="progressChart">
+                        <!-- Chart bars will be generated dynamically -->
                     </div>
                 </div>
             </div>
-
-            <!-- Progress Page -->
-            <div id="progress" class="page">
-                <div class="card">
-                    <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Your Progress</h2>
-                    <div id="progressContent">
-                        <div class="empty-state">
-                            <h3>No progress data yet</h3>
-                            <p>Complete some revision tasks to see your progress here</p>
-                        </div>
-                    </div>
+            
+            <div class="chart-summary">
+                <div class="summary-item">
+                    <span class="summary-label">Overall Progress:</span>
+                    <span class="summary-value" id="overallProgress">0%</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Best Performing:</span>
+                    <span class="summary-value" id="bestSubject">--</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Needs Attention:</span>
+                    <span class="summary-value" id="needsAttention">--</span>
                 </div>
             </div>
+        </div>
+
+        <!-- Deep Stats Grid -->
+        <div class="deep-stats-grid" style="margin-top: 32px;">
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    <div class="stats-card-title">Study Time Analytics</div>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Total Study Time</span>
+                    <span class="stats-metric-value" id="totalStudyTime">0h 0m</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Average Session</span>
+                    <span class="stats-metric-value" id="avgSession">0h 0m</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Today's Focus Time</span>
+                    <span class="stats-metric-value" id="todayFocus">0h 0m</span>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    <div class="stats-card-title">Performance Metrics</div>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Completion Rate</span>
+                    <span class="stats-metric-value" id="completionRate">0%</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Tasks Completed Today</span>
+                    <span class="stats-metric-value" id="tasksCompletedToday">0</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Weekly Streak</span>
+                    <span class="stats-metric-value" id="weeklyStreak">0 days</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    </svg>
+                    <div class="stats-card-title">Task Statistics</div>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Total Tasks</span>
+                    <span class="stats-metric-value" id="totalTasks">0</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Completed</span>
+                    <span class="stats-metric-value" id="completedTasks">0</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Remaining</span>
+                    <span class="stats-metric-value" id="remainingTasks">0</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-card-header">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                    </svg>
+                    <div class="stats-card-title">Recent Activity</div>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Last Completed Task</span>
+                    <span class="stats-metric-value" id="lastCompletedTask">--</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Most Active Subject</span>
+                    <span class="stats-metric-value" id="mostActiveSubject">--</span>
+                </div>
+                <div class="stats-metric">
+                    <span class="stats-metric-label">Productivity Score</span>
+                    <span class="stats-metric-value" id="productivityScore">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Settings Page -->
             <div id="settings" class="page">
@@ -10731,8 +9956,6 @@ let swipeStartX = 0;
 let swipeStartY = 0;
 let activeSwipeElement = null;
 let selectedBackupItems = new Set(['account', 'settings']);
-
-let currentProgressTab = 'subjects';
 
 
 // ===== CORE NAVIGATION AND SIDEBAR FUNCTIONS =====
@@ -12202,6 +11425,16 @@ if (isMobile) {
 setTimeout(() => {
     addRemindersToSchedule();
 }, 100);
+
+// Add this at the end to trigger progress updates
+    setTimeout(function() {
+        if (document.getElementById('progressChart') && 
+            document.getElementById('analytics-stats') && 
+            document.getElementById('analytics-stats').classList.contains('active')) {
+            updateProgressChart();
+            updateStatsDisplay();
+        }
+    }, 100);
 }
 
 function switchToSchedule(scheduleId) {
@@ -12212,38 +11445,36 @@ function switchToSchedule(scheduleId) {
     updateProgress();
 }
 
-// ===== TASK MANAGEMENT =====
-function toggleTaskComplete(taskId) {
-    const schedule = appState.schedules[appState.activeSchedule];
-    if (!schedule) return;
-    
-    const wasCompleted = schedule.completedTasks[taskId];
-    schedule.completedTasks[taskId] = !wasCompleted;
-    
-    const hasCompletedTasks = Object.values(schedule.completedTasks).some(completed => completed);
-    const hadCompletedTasks = document.getElementById('completedTab') !== null;
-    
+// Modified progress update function for your data structure
+function onTaskStatusChangeForAppState(subject, taskId, isCompleted) {
+    // Save the state
     saveAppState();
     
-    if (hasCompletedTasks && !hadCompletedTasks) {
-        updateScheduleContent();
-    } else if (!hasCompletedTasks && hadCompletedTasks) {
-        appState.showingCompleted = false;
-        updateScheduleContent();
-    } else {
-        const card = document.querySelector(`[data-task-id="${taskId}"]`);
-        if (card) {
-            card.classList.toggle('completed', !wasCompleted);
-            card.dataset.completed = !wasCompleted;
-            
-            if (appState.showingCompleted) {
-                filterCompletedTasks(true);
-            }
+    // Update progress displays if they're visible
+    setTimeout(function() {
+        if (document.getElementById('progressChart')) {
+            updateProgressChart();
+        }
+        if (document.getElementById('analytics-stats') && 
+            document.getElementById('analytics-stats').classList.contains('active')) {
+            updateStatsDisplay();
+        }
+    }, 100);
+    
+    // Update last completed task
+    if (isCompleted) {
+        var taskDetails = findTaskById(taskId);
+        if (taskDetails) {
+            localStorage.setItem('lastCompletedTask', taskDetails.title);
+            localStorage.setItem('lastCompletedTime', new Date().toISOString());
         }
     }
     
-    closeAllDropdowns();
-    updateProgress();
+    // Show notification
+    showNotification(
+        isCompleted ? 'Task completed! ✅' : 'Task unmarked ↩️', 
+        isCompleted ? 'success' : 'info'
+    );
 }
 
 function toggleDropdown(event, taskId, isCompleted) {
@@ -12866,6 +12097,7 @@ function viewScheduleFromProgress(scheduleId) {
     }, 150);
 }
 
+// ===== PROGRESS MANAGEMENT =====
 function updateProgress() {
     const content = document.getElementById('progressContent');
     
@@ -12879,59 +12111,6 @@ function updateProgress() {
         return;
     }
     
-    // Create tab interface similar to dashboard
-    let html = `
-        <div class="progress-header">
-            <h2>Your Study Progress</h2>
-            <div class="main-tab-switches">
-                <button class="main-tab-switch ${currentProgressTab === 'subjects' ? 'active' : ''}" onclick="switchProgressTab('subjects')">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                    </svg>
-                    Subjects
-                </button>
-                <button class="main-tab-switch ${currentProgressTab === 'analytics' ? 'active' : ''}" onclick="switchProgressTab('analytics')">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <line x1="18" y1="20" x2="18" y2="10"/>
-                        <line x1="12" y1="20" x2="12" y2="4"/>
-                        <line x1="6" y1="20" x2="6" y2="14"/>
-                    </svg>
-                    Deep Analytics
-                </button>
-            </div>
-        </div>
-        
-        <div class="progress-container">
-            <div class="progress-tab-content ${currentProgressTab === 'subjects' ? 'active' : ''}" id="subjectsContainer">
-                ${generateSubjectsProgressHTML()}
-            </div>
-            <div class="progress-tab-content ${currentProgressTab === 'analytics' ? 'active' : ''}" id="analyticsContainer">
-                ${generateAnalyticsHTML()}
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-}
-
-function switchProgressTab(tab) {
-    currentProgressTab = tab;
-    
-    // Update button states
-    document.querySelectorAll('.main-tab-switch').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`[onclick="switchProgressTab('${tab}')"]`).classList.add('active');
-    
-    // Update content visibility
-    document.querySelectorAll('.progress-tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    document.getElementById(`${tab}Container`).classList.add('active');
-}
-
-function generateSubjectsProgressHTML() {
     let html = '';
     
     Object.values(appState.schedules).forEach(schedule => {
@@ -12943,6 +12122,7 @@ function generateSubjectsProgressHTML() {
         });
         
         completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
+        
         const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
         
         html += `
@@ -12971,88 +12151,7 @@ function generateSubjectsProgressHTML() {
         `;
     });
     
-    return html;
-}
-
-function generateAnalyticsHTML() {
-    const allSubjects = new Set();
-    const subjectData = {};
-    
-    // Collect all subjects and their progress data
-    Object.values(appState.schedules).forEach(schedule => {
-        schedule.subjects.forEach(subject => {
-            allSubjects.add(subject);
-            if (!subjectData[subject]) {
-                subjectData[subject] = { total: 0, completed: 0 };
-            }
-            
-            // Count tasks for this subject
-            Object.entries(schedule.weeklySchedule).forEach(([day, dayTasks]) => {
-                dayTasks.forEach((task, index) => {
-                    if (task.subject === subject) {
-                        subjectData[subject].total++;
-                        const taskId = `${schedule.id}_${day}_${index}`;
-                        if (schedule.completedTasks[taskId]) {
-                            subjectData[subject].completed++;
-                        }
-                    }
-                });
-            });
-        });
-    });
-    
-    const subjectColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
-    const subjectsArray = Array.from(allSubjects);
-    
-    if (subjectsArray.length === 0) {
-        return `
-            <div class="analytics-empty">
-                <h3>No subjects found</h3>
-                <p>Create a schedule with subjects to see detailed analytics</p>
-            </div>
-        `;
-    }
-    
-    let html = `
-        <div class="analytics-header">
-            <h3>Subject Performance Overview</h3>
-            <p>Track your progress across all subjects with detailed analytics</p>
-        </div>
-        <div class="oval-progress-grid">
-    `;
-    
-    subjectsArray.forEach((subject, index) => {
-        const data = subjectData[subject];
-        const percentage = data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0;
-        const color = subjectColors[index % subjectColors.length];
-        
-        html += `
-            <div class="oval-progress-item">
-                <h4 class="subject-name">${subject}</h4>
-                <div class="oval-progress-container">
-                    <div class="oval-progress" style="--progress: ${percentage}; --color: ${color};">
-                        <div class="oval-progress-inner">
-                            <span class="progress-percentage">${percentage}%</span>
-                            <span class="progress-label">${data.completed}/${data.total}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="subject-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">${data.total}</span>
-                        <span class="stat-label">Total Tasks</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">${data.completed}</span>
-                        <span class="stat-label">Completed</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    return html;
+    content.innerHTML = html;
 }
 
 // ===== SETTINGS FUNCTIONS =====
@@ -13087,10 +12186,7 @@ function applySettings() {
     // Apply top tab bar setting on desktop only
     if (window.innerWidth > 768) {
         if (userSettings.useTopTabBar) {
-            // Force enable with delay to ensure DOM is ready
-            setTimeout(() => {
-                enableTopTabBar();
-            }, 200);
+            enableTopTabBar();
         } else {
             disableTopTabBar();
         }
@@ -13319,33 +12415,8 @@ function enableTopTabBar() {
     if (sidebarTrigger) sidebarTrigger.style.display = 'none';
     
     document.body.classList.add('top-nav-active');
-    
-    // Remove any existing top tab bar first
-    const existingBar = document.getElementById('topTabBar');
-    if (existingBar) existingBar.remove();
-    
     createTopTabBar();
     showTopTabBar();
-    
-    // Force layout update
-    setTimeout(() => {
-        const topTabBar = document.getElementById('topTabBar');
-        if (topTabBar) {
-            topTabBar.style.display = 'flex';
-            topTabBar.style.justifyContent = 'center';
-            topTabBar.style.alignItems = 'center';
-            topTabBar.style.visibility = 'visible';
-            topTabBar.style.opacity = '1';
-        }
-        
-        // Update active tab
-        updateTopTabActive();
-        
-        // Initialize drag navigation
-        if (typeof initDragNavigation === 'function') {
-            initDragNavigation();
-        }
-    }, 100);
 }
 
 function disableTopTabBar() {
@@ -13796,51 +12867,36 @@ function removeSubjectReminder(subject) {
 }
 
 function createTopTabBar() {
-    const existingBar = document.getElementById('topTabBar');
-    if (existingBar) existingBar.remove();
+    let existingBar = document.getElementById('topTabBar');
+    if (existingBar) return;
+    
+    // Create blur overlay
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = 'searchBlurOverlay';
+    blurOverlay.className = 'search-blur-overlay';
+    document.body.appendChild(blurOverlay);
     
     const tabBar = document.createElement('div');
     tabBar.id = 'topTabBar';
     tabBar.className = 'top-tab-bar';
-    
-    // Perfect centering with inline styles
-    tabBar.style.cssText = `
-        position: fixed !important;
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: auto !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(20px) saturate(180%) !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 25px !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-        z-index: 1000 !important;
-        padding: 6px !important;
-        margin: 0 !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-    `;
-    
     tabBar.innerHTML = `
-        <div class="top-tab-content" style="display: flex !important; align-items: center !important; gap: 4px !important; padding: 0 !important;">
+        <div class="top-tab-content" id="topTabContent">
             <div class="top-tab-item" onclick="animatePageFromTab(this, 'home')" data-page="home">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="icon" viewBox="0 0 24 24">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22"/>
                 </svg>
                 <span>Home</span>
             </div>
             <div class="top-tab-item" onclick="animatePageFromTab(this, 'dashboard')" data-page="dashboard">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="icon" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                 </svg>
                 <span>Dashboard</span>
             </div>
             <div class="top-tab-item" onclick="animatePageFromTab(this, 'progress')" data-page="progress">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="icon" viewBox="0 0 24 24">
                     <line x1="18" y1="20" x2="18" y2="10"/>
                     <line x1="12" y1="20" x2="12" y2="4"/>
                     <line x1="6" y1="20" x2="6" y2="14"/>
@@ -13848,74 +12904,43 @@ function createTopTabBar() {
                 <span>Progress</span>
             </div>
             <div class="top-tab-item" onclick="animatePageFromTab(this, 'settings')" data-page="settings">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="3"/>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
                 </svg>
                 <span>Settings</span>
             </div>
             <div class="top-search-btn" onclick="toggleTopSearch()">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class="icon" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="M21 21l-4.35-4.35"/>
                 </svg>
             </div>
         </div>
+        <div class="top-search-content" id="topSearchContent">
+    <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted);">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input type="text" class="top-search-input" placeholder="Search schedules, flashcards..." id="topSearchInput" onkeyup="enhancedHandleTopSearch(event)" oninput="enhancedHandleTopSearch(event)">
+    <div class="top-search-close" onclick="toggleTopSearch()">
+        <svg class="icon" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </div>
+    <div class="search-suggestions" id="topSearchSuggestions">
+        <!-- Search suggestions will be populated here -->
+    </div>
+</div>
     `;
     
     document.body.appendChild(tabBar);
 }
 
-function enableTopTabBar() {
-    const sidebarTrigger = document.querySelector('.sidebar-trigger');
-    if (sidebarTrigger) sidebarTrigger.style.display = 'none';
-    
-    document.body.classList.add('top-nav-active');
-    
-    // Remove any existing top tab bar
-    const existingBar = document.getElementById('topTabBar');
-    if (existingBar) existingBar.remove();
-    
-    // Force recreation
-    setTimeout(() => {
-        createTopTabBar();
-        
-        // Double-check positioning
-        const topTabBar = document.getElementById('topTabBar');
-        if (topTabBar) {
-            topTabBar.style.position = 'fixed';
-            topTabBar.style.top = '0';
-            topTabBar.style.left = '0';
-            topTabBar.style.right = '0';
-            topTabBar.style.width = '100vw';
-            topTabBar.style.display = 'flex';
-            topTabBar.style.justifyContent = 'center';
-            topTabBar.style.alignItems = 'center';
-            topTabBar.style.zIndex = '1000';
-            topTabBar.style.visibility = 'visible';
-            topTabBar.style.opacity = '1';
-        }
-        
-        updateTopTabActive();
-    }, 100);
-}
-
 function showTopTabBar() {
     const tabBar = document.getElementById('topTabBar');
-    if (!tabBar) {
-        console.log('Tab bar not found, recreating...');
-        createTopTabBar();
-        return;
-    }
-    
-    // Ensure proper display
-    tabBar.style.display = 'block';
-    tabBar.style.visibility = 'visible';
-    tabBar.style.position = 'fixed';
-    tabBar.style.top = '0';
-    tabBar.style.left = '0';
-    tabBar.style.right = '0';
-    tabBar.style.zIndex = '1000';
+    if (!tabBar) return;
     
     tabBar.classList.add('show');
     
@@ -13932,7 +12957,7 @@ function showTopTabBar() {
         }, index * 120);
     });
     
-    updateTopTabActive();
+    updateTopTabActive(); // ADD THIS LINE
 }
 
 function hideTopTabBar() {
@@ -15738,114 +14763,30 @@ function updateSettingsWithUserInfo() {
 function renderConsistentSettingsInterface(settingsPage) {
     if (!currentUser) return;
     
+    // Clear existing content to prevent duplication
     settingsPage.innerHTML = '';
     
+    // Create the consistent settings interface
     const settingsContainer = document.createElement('div');
-    settingsContainer.className = 'settings-container';
+    settingsContainer.className = 'card';
     settingsContainer.innerHTML = `
-        <div class="settings-header">
-            <h1>Settings & Preferences</h1>
-            <p>Customize your study experience and manage your account</p>
-        </div>
+        <h2 style="color: var(--accent-blue); margin-bottom: 24px; font-size: 1.8rem; font-weight: 800;">Settings & Preferences</h2>
         
-        <div class="settings-grid">
-            <!-- Account Section -->
-            <div class="settings-section account-section">
-                <div class="section-header">
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    <h2>Account</h2>
-                </div>
-                <div class="user-profile-card">
-                    <div class="user-avatar-large">${currentUser.name.charAt(0).toUpperCase()}</div>
-                    <div class="user-info">
-                        <h3>${currentUser.name}</h3>
-                        <p class="user-email">${currentUser.email}</p>
-                        <p class="member-since">Member since ${new Date(currentUser.joinDate).toLocaleDateString('en-GB', { 
-                            day: 'numeric', 
-                            month: 'long', 
-                            year: 'numeric' 
-                        })}</p>
-                    </div>
-                </div>
-                <div class="account-actions">
-                    <button class="settings-btn primary" onclick="changePassword()">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <circle cx="12" cy="16" r="1"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        Change Password
-                    </button>
-                    <button class="settings-btn secondary" onclick="logout()">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16,17 21,12 16,7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Sign Out
-                    </button>
-                </div>
-            </div>
-
-            <!-- Study Preferences -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9l-5 4.87L18.18 22 12 18.77 5.82 22 7 13.87 2 9l6.91-.74L12 2z"/>
-                    </svg>
-                    <h2>Study Preferences</h2>
-                </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Study Session Length</h4>
-                        <p>Default length for focused study sessions</p>
-                    </div>
-                    <select id="sessionLength" class="setting-select" onchange="updateSessionLength(this.value)">
-                        <option value="25">25 minutes</option>
-                        <option value="45" selected>45 minutes</option>
-                        <option value="60">60 minutes</option>
-                        <option value="90">90 minutes</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Break Length</h4>
-                        <p>Duration of breaks between study sessions</p>
-                    </div>
-                    <select id="breakLength" class="setting-select" onchange="updateBreakLength(this.value)">
-                        <option value="5">5 minutes</option>
-                        <option value="10" selected>10 minutes</option>
-                        <option value="15">15 minutes</option>
-                        <option value="20">20 minutes</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Notifications & Reminders -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" viewBox="0 0 24 24">
+        <div class="settings-main-grid">
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                     </svg>
-                    <h2>Notifications & Reminders</h2>
+                    Study Reminders
+                </h4>
+                <p>Set up intelligent study reminders for your subjects</p>
+                <div class="settings-control">
+                    <label style="color: var(--text-secondary); font-weight: 600;">Enable Study Reminders:</label>
+                    <div class="settings-toggle" id="studyNotifications" onclick="toggleStudyReminders()"></div>
                 </div>
                 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Study Reminders</h4>
-                        <p>Get notified when it's time to study</p>
-                    </div>
-                    <div class="setting-toggle" id="studyNotifications" onclick="toggleStudyReminders()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-
                 <div id="reminderOptions" style="
                     margin-top: 20px; 
                     opacity: 0; 
@@ -15853,92 +14794,129 @@ function renderConsistentSettingsInterface(settingsPage) {
                     overflow: hidden; 
                     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
                 ">
-                    <div class="reminder-panel">
-                        <h5>Subject Reminders</h5>
+                    <div style="padding: 20px; background: var(--bg-primary); border-radius: 12px; border: 2px solid var(--border-color);">
+                        <h5 style="margin: 0 0 16px 0; color: var(--text-primary); font-weight: 700;">Subject Reminders</h5>
                         <div id="subjectRemindersList"></div>
-                        <button class="settings-btn secondary" onclick="addNewReminder()">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Add Subject Reminder
-                        </button>
+                        <button onclick="addNewReminder()" style="
+                            width: 100%;
+                            margin-top: 16px;
+                            padding: 12px;
+                            background: var(--accent-blue);
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">+ Add Subject Reminder</button>
                     </div>
                 </div>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Google Calendar Integration</h4>
-                        <p>Sync study reminders with your calendar</p>
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9l-5 4.87L18.18 22 12 18.77 5.82 22 7 13.87 2 9l6.91-.74L12 2z"/>
+                    </svg>
+                    Connected Services
+                </h4>
+                <p>Connect external services for enhanced functionality</p>
+                
+                <div class="connected-service" style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px;
+                    background: var(--bg-secondary);
+                    border: 2px solid var(--border-color);
+                    border-radius: 12px;
+                    margin-top: 16px;
+                ">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            background: #4285f4;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            <svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M15.5,12L14,10.5V9H13V10.5H12V9H11V10.5L9.5,12L11,13.5V15H12V13.5H13V15H14V13.5L15.5,12Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h6 style="margin: 0; color: var(--text-primary); font-weight: 700;">Google Calendar</h6>
+                            <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">Sync study reminders with your calendar</p>
+                        </div>
                     </div>
-                    <button id="googleCalendarBtn" onclick="toggleGoogleCalendarConnection()" class="settings-btn ${isGoogleCalendarConnected ? 'connected' : 'secondary'}">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        ${isGoogleCalendarConnected ? 'Connected' : 'Connect'}
+                    
+                    <button id="googleCalendarBtn" onclick="toggleGoogleCalendarConnection()" style="
+                        padding: 10px 20px;
+                        background: var(--accent-blue);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">
+                        Connect
                     </button>
                 </div>
             </div>
 
-            <!-- Appearance -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6"/>
+                        <path d="M1 12h6m6 0h6"/>
                     </svg>
-                    <h2>Appearance</h2>
-                </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Theme</h4>
-                        <p>Choose your preferred color scheme</p>
+                    Theme Options
+                </h4>
+                <p>Choose between Light or Dark theme</p>
+                <div class="theme-selector">
+                    <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
+                        <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; color: #374151; font-weight: 800; font-size: 10px;">Light</div>
                     </div>
-                    <div class="theme-selector">
-                        <div class="theme-option theme-white active" onclick="changeTheme('white')" title="Light Theme">
-                            <div class="theme-preview light"></div>
-                            <span>Light</span>
-                        </div>
-                        <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
-                            <div class="theme-preview dark"></div>
-                            <span>Dark</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Navigation Style</h4>
-                        <p>Choose between sidebar or top tab navigation</p>
-                    </div>
-                    <div class="setting-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()">
-                        <div class="toggle-slider"></div>
+                    <div class="theme-option theme-black" onclick="changeTheme('black')" title="Dark Theme">
+                        <div style="width: 100%; height: 100%; border-radius: 9px; background: linear-gradient(135deg, #0f172a 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #f1f5f9; font-weight: 800; font-size: 10px;">Dark</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Data Management -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14,2 14,8 20,8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                        <polyline points="10,9 9,9 8,9"/>
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9,22 9,12 15,12 15,22"/>
                     </svg>
-                    <h2>Data Management</h2>
+                    Navigation Style
+                </h4>
+                <p>Choose between sidebar or top tab bar navigation</p>
+                <div class="settings-control">
+                    <label style="color: var(--text-secondary); font-weight: 600;">Use Top Tab Bar:</label>
+                    <div class="settings-toggle" id="topTabBarToggle" onclick="toggleTopTabBar()"></div>
                 </div>
-                
-                <div class="data-actions">
-                    <button class="settings-btn secondary" onclick="createBackup()">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+                    Note: This feature is disabled on mobile devices
+                </p>
+            </div>
+
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <polyline points="1 20 1 14 7 14"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                    </svg>
+                    Backup & Sync
+                </h4>
+                <p>Sync your data across devices and create automatic backups</p>
+                <div class="settings-control">
+                    <button class="btn-secondary" onclick="createBackup()">
                         <svg class="icon" viewBox="0 0 24 24">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="17,8 12,3 7,8"/>
@@ -15946,7 +14924,7 @@ function renderConsistentSettingsInterface(settingsPage) {
                         </svg>
                         Create Backup
                     </button>
-                    <button class="settings-btn secondary" onclick="restoreBackup()">
+                    <button class="btn-secondary" onclick="restoreBackup()">
                         <svg class="icon" viewBox="0 0 24 24">
                             <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
                             <polyline points="7,10 12,15 17,10"/>
@@ -15956,11 +14934,50 @@ function renderConsistentSettingsInterface(settingsPage) {
                     </button>
                 </div>
             </div>
+
+            <div class="settings-card">
+                <h4>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Account Management
+                </h4>
+                <div class="user-info">
+                    <div class="user-avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
+                    <div class="user-details">
+                        <h4>${currentUser.name}</h4>
+                        <p>${currentUser.email}</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">
+                            Member since ${new Date(currentUser.joinDate).toLocaleDateString()}
+                        </p>
+                    </div>
+                </div>
+                <div class="settings-control" style="gap: 8px;">
+                    <button class="btn-secondary" onclick="changePassword()" style="flex: 1;">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <circle cx="12" cy="16" r="1"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Change Password
+                    </button>
+                    <button class="btn-secondary" onclick="logout()" style="flex: 1;">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16,17 21,12 16,7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Sign Out
+                    </button>
+                </div>
+            </div>
         </div>
     `;
     
     settingsPage.appendChild(settingsContainer);
     
+    // Apply settings after rendering
     setTimeout(() => {
         applySettings();
     }, 100);
@@ -17446,10 +16463,12 @@ function getActionIcon(actionType) {
     return icons[actionType] || '<circle cx="12" cy="12" r="10"/>';
 }
 
+// Replace the existing toggleAIButtonVisibility function
 function toggleAIButtonVisibility(pageId) {
     const aiTrigger = document.getElementById('aiTriggerArea');
     const aiButton = document.getElementById('aiAssistantBtn');
     
+    // Hide the old button
     if (aiButton) {
         aiButton.style.display = 'none';
     }
@@ -17457,19 +16476,18 @@ function toggleAIButtonVisibility(pageId) {
     if (aiTrigger) {
         if (pageId === 'dashboard') {
             aiTrigger.classList.add('dashboard-active');
-            
-            // Show enhanced AI available effect once when switching to dashboard
-            if (!sessionStorage.getItem('aiGlowShown') || sessionStorage.getItem('lastDashboardVisit') !== Date.now().toString().slice(0, -5)) {
+            // Show glow effect once when first visiting dashboard
+            if (!sessionStorage.getItem('aiGlowShown')) {
                 setTimeout(() => {
-                    showEnhancedAIAvailableEffect();
+                    showAIGlowEffect();
                     sessionStorage.setItem('aiGlowShown', 'true');
-                    sessionStorage.setItem('lastDashboardVisit', Date.now().toString().slice(0, -5));
-                }, 800);
+                }, 1000);
             } else {
+                // Keep subtle glow for returning users
                 aiTrigger.classList.add('glowing');
             }
         } else {
-            aiTrigger.classList.remove('dashboard-active', 'glowing', 'ai-bounce-active');
+            aiTrigger.classList.remove('dashboard-active', 'glowing');
             if (aiChatbotOpen) {
                 toggleAIChatbot();
             }
@@ -17477,103 +16495,54 @@ function toggleAIButtonVisibility(pageId) {
     }
 }
 
-function showEnhancedAIAvailableEffect() {
+// Add these new functions
+function showAIGlowEffect() {
     const aiTrigger = document.getElementById('aiTriggerArea');
     if (!aiTrigger) return;
     
-    // Dim the background
-    const dimOverlay = document.createElement('div');
-    dimOverlay.id = 'aiDimOverlay';
-    dimOverlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 1500;
-        opacity: 0;
-        transition: opacity 0.6s ease;
-        pointer-events: none;
-    `;
-    document.body.appendChild(dimOverlay);
+    // Create elegant introduction glow
+    aiTrigger.style.background = 'linear-gradient(270deg, rgba(139, 92, 246, 0.2) 0%, transparent 100%)';
+    aiTrigger.style.width = '60px';
+    aiTrigger.classList.add('glowing');
     
-    // Create smaller AI text bounce effect on the right
-    const aiText = document.createElement('div');
-    aiText.id = 'aiTextBounce';
-    aiText.style.cssText = `
+    // Create a temporary tooltip
+    const tooltip = document.createElement('div');
+    tooltip.style.cssText = `
         position: fixed;
-        right: 20px;
+        right: 70px;
         top: 50%;
-        transform: translateY(-50%) scale(0);
-        background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
-        color: white;
-        padding: 10px 16px;
+        transform: translateY(-50%);
+        background: var(--glass-bg);
+        border: 2px solid var(--accent-blue);
         border-radius: 16px;
+        padding: 12px 16px;
+        color: var(--accent-blue);
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-xl);
         z-index: 1600;
         opacity: 0;
-        transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        max-width: 180px;
+        transition: all 0.4s ease;
+        pointer-events: none;
     `;
-    aiText.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="
-                width: 8px;
-                height: 8px;
-                background: #10b981;
-                border-radius: 50%;
-                animation: aiPulse 2s ease-in-out infinite;
-            "></div>
-            <span style="font-size: 0.8rem;">AI Available</span>
-        </div>
-    `;
-    document.body.appendChild(aiText);
-    
-    // Enhanced glow for AI trigger
-    aiTrigger.style.background = 'linear-gradient(270deg, rgba(139, 92, 246, 0.3) 0%, transparent 100%)';
-    aiTrigger.style.width = '80px';
-    aiTrigger.classList.add('ai-bounce-active');
-    
-    // Animate everything in sequence
-    setTimeout(() => {
-        dimOverlay.style.opacity = '1';
-    }, 200);
+    tooltip.textContent = 'AI Assistant Available - Hover here';
+    document.body.appendChild(tooltip);
     
     setTimeout(() => {
-        aiText.style.opacity = '1';
-        aiText.style.transform = 'translateY(-50%) scale(1)';
-    }, 400);
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(-50%) translateX(-10px)';
+    }, 500);
     
-    // Quick bounce animation for AI text
     setTimeout(() => {
-        aiText.style.transform = 'translateY(-50%) scale(1.08)';
-        setTimeout(() => {
-            aiText.style.transform = 'translateY(-50%) scale(1)';
-        }, 120);
-    }, 600);
+        tooltip.style.opacity = '0';
+        setTimeout(() => tooltip.remove(), 400);
+    }, 4000);
     
-    // Fade out after showing
     setTimeout(() => {
-        aiText.style.opacity = '0';
-        aiText.style.transform = 'translateY(-50%) scale(0.9)';
-        dimOverlay.style.opacity = '0';
-    }, 2500);
-    
-    // Clean up
-    setTimeout(() => {
-        if (aiText.parentNode) aiText.remove();
-        if (dimOverlay.parentNode) dimOverlay.remove();
-        
         aiTrigger.style.background = '';
         aiTrigger.style.width = '';
-        aiTrigger.classList.remove('ai-bounce-active');
-        aiTrigger.classList.add('glowing');
-    }, 3100);
+    }, 5000);
 }
 
 function showAIPreview() {
@@ -21796,6 +20765,966 @@ function viewAllUploadedFiles() {
     
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 100);
+}
+
+// Global variables for progress tracking
+var progressStats = {
+    totalTasks: 0,
+    completedTasks: 0,
+    subjectProgress: {},
+    studyTime: 0,
+    tasksCompletedToday: 0,
+    lastCompletedTask: '',
+    streakDays: 0
+};
+
+// Global comparison state
+var comparisonMode = false;
+var selectedSubjectForComparison = null;
+var hoveredSubject = null;
+
+// Real data functions
+function getAllScheduleData() {
+    var scheduleData = {};
+    
+    // Get all schedule data from localStorage
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key && key.startsWith('scheduleData_')) {
+            try {
+                var data = JSON.parse(localStorage.getItem(key));
+                if (data && typeof data === 'object') {
+                    scheduleData[key] = data;
+                }
+            } catch (e) {
+                console.warn('Invalid schedule data found:', key);
+            }
+        }
+    }
+    
+    return scheduleData;
+}
+
+function getScheduleData(date) {
+    var key = 'scheduleData_' + date;
+    try {
+        var data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : {};
+    } catch (e) {
+        console.warn('Error parsing schedule data for date:', date);
+        return {};
+    }
+}
+
+function updateTaskStatus(date, subject, taskIndex, isCompleted) {
+    var key = 'scheduleData_' + date;
+    var scheduleData = getScheduleData(date);
+    
+    if (scheduleData[subject] && scheduleData[subject][taskIndex]) {
+        scheduleData[subject][taskIndex].completed = isCompleted;
+        localStorage.setItem(key, JSON.stringify(scheduleData));
+    }
+}
+
+// Updated data access functions that should work with your appState
+function getActiveSubjects() {
+    try {
+        // Check if we have an active schedule
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            console.log('No appState, activeSchedule, or schedules found');
+            return [];
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule) {
+            console.log('No active schedule found');
+            return [];
+        }
+        
+        // If subjects array exists, return it
+        if (schedule.subjects && Array.isArray(schedule.subjects)) {
+            console.log('Found subjects:', schedule.subjects);
+            return schedule.subjects.slice(); // Return copy
+        }
+        
+        // Otherwise, extract subjects from weeklySchedule
+        var subjects = new Set();
+        if (schedule.weeklySchedule) {
+            Object.values(schedule.weeklySchedule).forEach(function(dayTasks) {
+                if (Array.isArray(dayTasks)) {
+                    dayTasks.forEach(function(task) {
+                        if (task.subject) {
+                            subjects.add(task.subject);
+                        }
+                    });
+                }
+            });
+        }
+        
+        var subjectsArray = Array.from(subjects);
+        console.log('Extracted subjects from weeklySchedule:', subjectsArray);
+        return subjectsArray;
+    } catch (error) {
+        console.error('Error in getActiveSubjects:', error);
+        return [];
+    }
+}
+
+function getSubjectTotalTasks(subject) {
+    try {
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            return 0;
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule || !schedule.weeklySchedule) {
+            return 0;
+        }
+        
+        var totalTasks = 0;
+        Object.values(schedule.weeklySchedule).forEach(function(dayTasks) {
+            if (Array.isArray(dayTasks)) {
+                dayTasks.forEach(function(task) {
+                    if (task.subject === subject) {
+                        totalTasks++;
+                    }
+                });
+            }
+        });
+        
+        console.log('Total tasks for', subject + ':', totalTasks);
+        return totalTasks;
+    } catch (error) {
+        console.error('Error in getSubjectTotalTasks:', error);
+        return 0;
+    }
+}
+
+function getSubjectCompletedTasks(subject) {
+    try {
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            return 0;
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule || !schedule.weeklySchedule || !schedule.completedTasks) {
+            return 0;
+        }
+        
+        var completedTasks = 0;
+        
+        // Generate task IDs the same way as in updateScheduleContent
+        Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
+            if (Array.isArray(dayTasks)) {
+                dayTasks.forEach(function(task, index) {
+                    if (task.subject === subject) {
+                        var taskId = `${schedule.id}_${day}_${index}`;
+                        if (schedule.completedTasks[taskId]) {
+                            completedTasks++;
+                        }
+                    }
+                });
+            }
+        });
+        
+        console.log('Completed tasks for', subject + ':', completedTasks);
+        return completedTasks;
+    } catch (error) {
+        console.error('Error in getSubjectCompletedTasks:', error);
+        return 0;
+    }
+}
+
+function findTaskById(taskId) {
+    if (!appState.schedules || !appState.activeSchedule) return null;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    
+    // Parse the task ID to get day and index
+    var parts = taskId.split('_');
+    if (parts.length >= 3) {
+        var day = parts[1];
+        var index = parseInt(parts[2]);
+        
+        if (schedule.weeklySchedule[day] && schedule.weeklySchedule[day][index]) {
+            var task = schedule.weeklySchedule[day][index];
+            return {
+                subject: task.subject,
+                title: task.topic || task.title || 'Task',
+                day: day
+            };
+        }
+    }
+    return null;
+}
+
+// Function to get subject color from your schedule
+function getSubjectColor(subject) {
+    try {
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            return '#3b82f6'; // Default blue
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule || !schedule.subjects) {
+            return '#3b82f6';
+        }
+        
+        // Find the subject in the subjects array and get its color
+        for (var i = 0; i < schedule.subjects.length; i++) {
+            if (schedule.subjects[i] === subject) {
+                // Use the same color system as your tabs
+                var colors = ['#3b82f6', '#7c3aed', '#059669', '#ea580c', '#db2777', '#0891b2'];
+                return colors[i % colors.length];
+            }
+        }
+        
+        return '#3b82f6'; // Default if not found
+    } catch (error) {
+        return '#3b82f6';
+    }
+}
+
+// Function to get subject gradient
+function getSubjectGradient(subject) {
+    var color = getSubjectColor(subject);
+    
+    // Create gradients based on the base color
+    switch (color) {
+        case '#3b82f6': return 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)';
+        case '#7c3aed': return 'linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%)';
+        case '#059669': return 'linear-gradient(180deg, #059669 0%, #047857 100%)';
+        case '#ea580c': return 'linear-gradient(180deg, #ea580c 0%, #c2410c 100%)';
+        case '#db2777': return 'linear-gradient(180deg, #db2777 0%, #be185d 100%)';
+        case '#0891b2': return 'linear-gradient(180deg, #0891b2 0%, #0e7490 100%)';
+        default: return 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)';
+    }
+}
+
+function calculateTotalTasks() {
+    try {
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            return 0;
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule || !schedule.weeklySchedule) {
+            return 0;
+        }
+        
+        var total = 0;
+        Object.values(schedule.weeklySchedule).forEach(function(dayTasks) {
+            if (Array.isArray(dayTasks)) {
+                total += dayTasks.length;
+            }
+        });
+        
+        return total;
+    } catch (error) {
+        console.error('Error in calculateTotalTasks:', error);
+        return 0;
+    }
+}
+
+function calculateCompletedTasks() {
+    try {
+        if (!appState || !appState.activeSchedule || !appState.schedules) {
+            return 0;
+        }
+        
+        var schedule = appState.schedules[appState.activeSchedule];
+        if (!schedule || !schedule.completedTasks) {
+            return 0;
+        }
+        
+        var completed = 0;
+        Object.values(schedule.completedTasks).forEach(function(isCompleted) {
+            if (isCompleted === true) {
+                completed++;
+            }
+        });
+        
+        return completed;
+    } catch (error) {
+        console.error('Error in calculateCompletedTasks:', error);
+        return 0;
+    }
+}
+
+// Comparison functionality - ADD THESE MISSING FUNCTIONS
+function handleBarHover(subject, isEntering) {
+    var barElement = document.querySelector('[data-subject="' + subject + '"]');
+    if (!barElement) return;
+    
+    var compareButton = barElement.querySelector('.compare-button');
+    if (!compareButton) return;
+    
+    if (isEntering && !comparisonMode) {
+        compareButton.style.opacity = '1';
+        compareButton.style.transform = 'translateY(0)';
+    } else if (!isEntering && !comparisonMode) {
+        compareButton.style.opacity = '0';
+        compareButton.style.transform = 'translateY(10px)';
+    }
+    
+    if (comparisonMode && selectedSubjectForComparison !== subject) {
+        if (isEntering) {
+            barElement.classList.add('comparison-highlight');
+            hoveredSubject = subject;
+        } else {
+            barElement.classList.remove('comparison-highlight');
+            hoveredSubject = null;
+        }
+    }
+}
+
+function handleBarClick(subject) {
+    if (comparisonMode && selectedSubjectForComparison && subject !== selectedSubjectForComparison) {
+        // Start comparison between two subjects
+        showComparisonView(selectedSubjectForComparison, subject);
+    }
+}
+
+function startComparison(subject) {
+    comparisonMode = true;
+    selectedSubjectForComparison = subject;
+    
+    // Desaturate all bars except selected
+    var allBars = document.querySelectorAll('.chart-bar');
+    for (var i = 0; i < allBars.length; i++) {
+        var bar = allBars[i];
+        var barSubject = bar.getAttribute('data-subject');
+        if (barSubject !== subject) {
+            bar.classList.add('comparison-desaturated');
+        } else {
+            bar.classList.add('comparison-selected');
+        }
+        
+        // Hide compare buttons
+        var compareBtn = bar.querySelector('.compare-button');
+        if (compareBtn) compareBtn.style.display = 'none';
+    }
+    
+    // Show cancel comparison button
+    showCancelComparisonButton();
+}
+
+function cancelComparison() {
+    comparisonMode = false;
+    selectedSubjectForComparison = null;
+    hoveredSubject = null;
+    
+    // Reset all bars
+    var allBars = document.querySelectorAll('.chart-bar');
+    for (var i = 0; i < allBars.length; i++) {
+        var bar = allBars[i];
+        bar.classList.remove('comparison-desaturated', 'comparison-selected', 'comparison-highlight');
+        var compareBtn = bar.querySelector('.compare-button');
+        if (compareBtn) compareBtn.style.display = 'flex';
+    }
+    
+    // Hide cancel button
+    hideCancelComparisonButton();
+}
+
+function showCancelComparisonButton() {
+    var chartHeader = document.querySelector('.chart-header');
+    if (!chartHeader) return;
+    
+    var cancelButton = document.createElement('button');
+    cancelButton.className = 'cancel-comparison-btn';
+    cancelButton.innerHTML = 
+        '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+            '<line x1="18" y1="6" x2="6" y2="18"/>' +
+            '<line x1="6" y1="6" x2="18" y2="18"/>' +
+        '</svg>' +
+        'Cancel Comparison';
+    cancelButton.onclick = cancelComparison;
+    
+    chartHeader.appendChild(cancelButton);
+}
+
+function hideCancelComparisonButton() {
+    var cancelButton = document.querySelector('.cancel-comparison-btn');
+    if (cancelButton) {
+        cancelButton.remove();
+    }
+}
+
+function showComparisonView(subject1, subject2) {
+    var data1 = getSubjectComparisonData(subject1);
+    var data2 = getSubjectComparisonData(subject2);
+    
+    var modal = document.createElement('div');
+    modal.className = 'comparison-modal-overlay';
+    modal.innerHTML = 
+        '<div class="comparison-modal">' +
+            '<div class="comparison-header">' +
+                '<h2>Subject Comparison</h2>' +
+                '<button class="comparison-close" onclick="closeComparisonView()">' +
+                    '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+                        '<line x1="18" y1="6" x2="6" y2="18"/>' +
+                        '<line x1="6" y1="6" x2="18" y2="18"/>' +
+                    '</svg>' +
+                '</button>' +
+            '</div>' +
+            '<div class="comparison-content">' +
+                '<div class="comparison-side left-side">' +
+                    '<div class="subject-header color-1">' +
+                        '<h3>' + subject1 + '</h3>' +
+                    '</div>' +
+                    '<div class="comparison-stats">' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Total Tasks</span>' +
+                            '<span class="stat-value">' + data1.totalTasks + '</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Completed</span>' +
+                            '<span class="stat-value">' + data1.completedTasks + '</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Progress</span>' +
+                            '<span class="stat-value">' + data1.progress + '%</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Remaining</span>' +
+                            '<span class="stat-value">' + (data1.totalTasks - data1.completedTasks) + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="comparison-divider">' +
+                    '<div class="vs-badge">VS</div>' +
+                '</div>' +
+                '<div class="comparison-side right-side">' +
+                    '<div class="subject-header color-2">' +
+                        '<h3>' + subject2 + '</h3>' +
+                    '</div>' +
+                    '<div class="comparison-stats">' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Total Tasks</span>' +
+                            '<span class="stat-value">' + data2.totalTasks + '</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Completed</span>' +
+                            '<span class="stat-value">' + data2.completedTasks + '</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Progress</span>' +
+                            '<span class="stat-value">' + data2.progress + '%</span>' +
+                        '</div>' +
+                        '<div class="stat-item">' +
+                            '<span class="stat-label">Remaining</span>' +
+                            '<span class="stat-value">' + (data2.totalTasks - data2.completedTasks) + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    
+    document.body.appendChild(modal);
+    
+    setTimeout(function() {
+        modal.classList.add('show');
+    }, 10);
+}
+
+function getSubjectComparisonData(subject) {
+    var totalTasks = getSubjectTotalTasks(subject);
+    var completedTasks = getSubjectCompletedTasks(subject);
+    var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    return {
+        totalTasks: totalTasks,
+        completedTasks: completedTasks,
+        progress: progress
+    };
+}
+
+function closeComparisonView() {
+    var modal = document.querySelector('.comparison-modal-overlay');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(function() {
+            modal.remove();
+            cancelComparison();
+        }, 300);
+    }
+}
+
+function updateProgressChart() {
+    try {
+        var chartContainer = document.getElementById('progressChart');
+        if (!chartContainer) return;
+        
+        var subjects = getActiveSubjects();
+        
+        if (subjects.length === 0) {
+            chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><h3>No schedule data found</h3><p>Create a schedule in the Home page to see your progress here</p></div>';
+            return;
+        }
+        
+        chartContainer.innerHTML = '';
+        
+        subjects.forEach(function(subject, index) {
+            var totalTasks = getSubjectTotalTasks(subject);
+            var completedTasks = getSubjectCompletedTasks(subject);
+            var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            var barElement = document.createElement('div');
+            barElement.className = 'chart-bar';
+            barElement.setAttribute('data-subject', subject);
+            
+            var compareButtonHTML = subjects.length > 1 ? 
+                '<div class="compare-button" onclick="startComparison(\'' + subject + '\')">' +
+                    '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+                        '<path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+                        '<path d="M19 11h-4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+                        '<path d="M12 2v20"/>' +
+                    '</svg>' +
+                    'Compare' +
+                '</div>' : '';
+            
+            barElement.innerHTML = 
+                '<div class="bar-container" style="height: 5%; transition: height 1s ease;" data-progress="' + progress + '">' +
+                    '<div class="bar-value">' + completedTasks + '/' + totalTasks + ' tasks</div>' +
+                    '<div class="bar-progress-text">0%</div>' +
+                '</div>' +
+                '<div class="bar-label">' + subject + '</div>' +
+                compareButtonHTML;
+            
+            chartContainer.appendChild(barElement);
+            
+            // Add event listeners for comparison
+            if (subjects.length > 1) {
+                (function(subjectName) {
+                    barElement.addEventListener('mouseenter', function() { handleBarHover(subjectName, true); });
+                    barElement.addEventListener('mouseleave', function() { handleBarHover(subjectName, false); });
+                    barElement.addEventListener('click', function() { handleBarClick(subjectName); });
+                })(subject);
+            }
+            
+            // Animate bars with delay
+            setTimeout(function() {
+                var barContainer = barElement.querySelector('.bar-container');
+                var progressText = barElement.querySelector('.bar-progress-text');
+                
+                // Ensure minimum height for visibility
+                var displayHeight = Math.max(progress, 8);
+                barContainer.style.height = displayHeight + '%';
+                
+                // Animate the percentage text
+                animateNumber(progressText, 0, progress, 1000, '%');
+                
+                // Apply subject color
+                barContainer.style.background = getSubjectGradient(subject);
+                
+                if (progress > 15) {
+                    barContainer.classList.add('show-text');
+                }
+                
+                console.log('Updated bar for', subject, '- Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
+            }, index * 200 + 300);
+        });
+        
+        updateChartSummary();
+        updateLastUpdatedTime();
+    } catch (error) {
+        console.error('Error updating progress chart:', error);
+    }
+}
+
+// Animated number counter
+function animateNumber(element, start, end, duration, suffix) {
+    suffix = suffix || '';
+    var startTime = performance.now();
+    
+    function updateNumber(currentTime) {
+        var elapsed = currentTime - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        var easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        var current = Math.round(start + (end - start) * easeOutQuart);
+        
+        element.textContent = current + suffix;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+        }
+    }
+    
+    requestAnimationFrame(updateNumber);
+}
+
+// Progress tab switching
+function switchProgressTab(tabId) {
+    var tabs = document.querySelectorAll('.progress-tab-btn');
+    var contents = document.querySelectorAll('.progress-tab-content');
+    
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+    for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove('active');
+    }
+    
+    event.target.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+    
+    if (tabId === 'analytics-stats') {
+        setTimeout(function() {
+            updateProgressChart();
+            updateStatsDisplay();
+        }, 100);
+    }
+}
+
+function calculateTotalTasks() {
+    if (!appState.schedules || !appState.activeSchedule) return 0;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    var total = 0;
+    
+    if (schedule && schedule.weeklySchedule) {
+        Object.values(schedule.weeklySchedule).forEach(function(dayTasks) {
+            total += dayTasks.length;
+        });
+    }
+    
+    return total;
+}
+
+function calculateCompletedTasks() {
+    if (!appState.schedules || !appState.activeSchedule) return 0;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    
+    if (schedule && schedule.completedTasks) {
+        return Object.values(schedule.completedTasks).filter(function(completed) {
+            return completed === true;
+        }).length;
+    }
+    
+    return 0;
+}
+
+function calculateTasksCompletedToday() {
+    if (!appState.schedules || !appState.activeSchedule) return 0;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    var today = new Date().getDay();
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var todayName = days[today];
+    
+    var completed = 0;
+    
+    if (schedule && schedule.weeklySchedule && schedule.weeklySchedule[todayName]) {
+        schedule.weeklySchedule[todayName].forEach(function(task) {
+            if (schedule.completedTasks[task.id]) {
+                completed++;
+            }
+        });
+    }
+    
+    return completed;
+}
+function calculateTasksCompletedToday() {
+    var today = new Date().toISOString().split('T')[0];
+    var todayData = getScheduleData(today);
+    var completed = 0;
+    
+    Object.keys(todayData).forEach(function(subject) {
+        if (subject !== 'date' && Array.isArray(todayData[subject])) {
+            todayData[subject].forEach(function(task) {
+                if (task && task.completed) completed++;
+            });
+        }
+    });
+    return completed;
+}
+
+function updateStatsDisplay() {
+    try {
+        var totalTasks = calculateTotalTasks();
+        var completedTasks = calculateCompletedTasks();
+        var completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+        
+        console.log('Stats Update - Total:', totalTasks, 'Completed:', completedTasks, 'Rate:', completionRate + '%');
+        
+        var elements = {
+            totalTasks: document.getElementById('totalTasks'),
+            completedTasks: document.getElementById('completedTasks'),
+            remainingTasks: document.getElementById('remainingTasks'),
+            completionRate: document.getElementById('completionRate')
+        };
+        
+        if (elements.totalTasks) elements.totalTasks.textContent = totalTasks;
+        if (elements.completedTasks) elements.completedTasks.textContent = completedTasks;
+        if (elements.remainingTasks) elements.remainingTasks.textContent = totalTasks - completedTasks;
+        if (elements.completionRate) elements.completionRate.textContent = completionRate + '%';
+        
+        // Update other stats if elements exist
+        var lastCompletedTaskEl = document.getElementById('lastCompletedTask');
+        var mostActiveSubjectEl = document.getElementById('mostActiveSubject');
+        
+        if (lastCompletedTaskEl) lastCompletedTaskEl.textContent = getLastCompletedTask() || '--';
+        if (mostActiveSubjectEl) mostActiveSubjectEl.textContent = getMostActiveSubject() || '--';
+        
+    } catch (error) {
+        console.error('Error updating stats display:', error);
+    }
+}
+
+function updateChartSummary() {
+    try {
+        var subjects = getActiveSubjects();
+        var progresses = subjects.map(function(subject) {
+            return calculateRealSubjectProgress(subject);
+        });
+        
+        var overallProgress = progresses.length > 0 
+            ? Math.round(progresses.reduce(function(a, b) { return a + b; }, 0) / progresses.length) 
+            : 0;
+        var overallProgressEl = document.getElementById('overallProgress');
+        if (overallProgressEl) overallProgressEl.textContent = overallProgress + '%';
+        
+        var maxProgress = Math.max.apply(null, progresses);
+        var bestIndex = progresses.indexOf(maxProgress);
+        var bestSubject = subjects[bestIndex] || '--';
+        var bestSubjectEl = document.getElementById('bestSubject');
+        if (bestSubjectEl) bestSubjectEl.textContent = bestSubject;
+        
+        var minProgress = Math.min.apply(null, progresses);
+        var worstIndex = progresses.indexOf(minProgress);
+        var needsAttention = subjects[worstIndex] || '--';
+        var needsAttentionEl = document.getElementById('needsAttention');
+        if (needsAttentionEl) needsAttentionEl.textContent = needsAttention;
+        
+    } catch (error) {
+        console.error('Error updating chart summary:', error);
+    }
+}
+
+function calculateRealSubjectProgress(subject) {
+    var totalTasks = getSubjectTotalTasks(subject);
+    var completedTasks = getSubjectCompletedTasks(subject);
+    
+    if (totalTasks === 0) return 0;
+    return Math.round((completedTasks / totalTasks) * 100);
+}
+
+// REAL-TIME UPDATE FUNCTION - Call this when tasks are marked complete
+function onTaskStatusChange(date, subject, taskIndex, isCompleted) {
+    updateTaskStatus(date, subject, taskIndex, isCompleted);
+    
+    // Immediately refresh progress displays
+    setTimeout(function() {
+        updateProgressChart();
+        updateStatsDisplay();
+    }, 100);
+    
+    if (isCompleted) {
+        var scheduleData = getScheduleData(date);
+        if (scheduleData[subject] && scheduleData[subject][taskIndex]) {
+            var taskTitle = scheduleData[subject][taskIndex].title || 'Task';
+            localStorage.setItem('lastCompletedTask', taskTitle);
+            localStorage.setItem('lastCompletedTime', new Date().toISOString());
+        }
+    }
+    
+    showNotification(
+        isCompleted ? 'Task completed! ✅' : 'Task unmarked ↩️', 
+        isCompleted ? 'success' : 'info'
+    );
+}
+
+// Helper functions
+function getStoredStudyTime() {
+    return parseInt(localStorage.getItem('totalStudyTime')) || 0;
+}
+
+function getStudySessions() {
+    return parseInt(localStorage.getItem('studySessions')) || 1;
+}
+
+function getTodayStudyTime() {
+    var today = new Date().toISOString().split('T')[0];
+    return parseInt(localStorage.getItem('studyTime-' + today)) || 0;
+}
+
+function getLastCompletedTask() {
+    return localStorage.getItem('lastCompletedTask') || null;
+}
+
+function getMostActiveSubject() {
+    try {
+        var subjects = getActiveSubjects();
+        var maxTasks = 0;
+        var mostActive = null;
+        
+        subjects.forEach(function(subject) {
+            var completed = getSubjectCompletedTasks(subject);
+            if (completed > maxTasks) {
+                maxTasks = completed;
+                mostActive = subject;
+            }
+        });
+        
+        return mostActive;
+    } catch (error) {
+        return null;
+    }
+}
+
+function getWeeklyStreak() {
+    return parseInt(localStorage.getItem('weeklyStreak')) || 0;
+}
+
+function calculateProductivityScore() {
+    try {
+        var totalTasks = calculateTotalTasks();
+        var completedTasks = calculateCompletedTasks();
+        
+        if (totalTasks === 0) return '--';
+        
+        var completionRate = (completedTasks / totalTasks) * 100;
+        if (completionRate >= 80) return 'Excellent';
+        if (completionRate >= 60) return 'Good';
+        if (completionRate >= 40) return 'Fair';
+        return 'Needs Improvement';
+    } catch (error) {
+        return '--';
+    }
+}
+
+function updateLastUpdatedTime() {
+    var now = new Date();
+    var timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    var lastUpdatedEl = document.getElementById('lastUpdated');
+    if (lastUpdatedEl) lastUpdatedEl.textContent = 'Updated at ' + timeString;
+}
+
+function formatTime(minutes) {
+    var hours = Math.floor(minutes / 60);
+    var mins = minutes % 60;
+    return hours + 'h ' + mins + 'm';
+}
+
+function showNotification(message, type) {
+    console.log(type.toUpperCase() + ': ' + message);
+    
+    var notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = 
+        'position: fixed; top: 20px; right: 20px; background: ' + 
+        (type === 'success' ? '#059669' : '#3b82f6') + 
+        '; color: white; padding: 12px 20px; border-radius: 8px; z-index: 10000; font-weight: 600;';
+    
+    document.body.appendChild(notification);
+    setTimeout(function() {
+        if (notification.parentNode) {
+            document.body.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('progressChart')) {
+        updateProgressChart();
+        updateStatsDisplay();
+    }
+});
+
+function toggleTaskComplete(taskId) {
+    if (!appState.schedules || !appState.activeSchedule) return;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    
+    // Toggle the completion status
+    var wasCompleted = schedule.completedTasks[taskId] || false;
+    var newStatus = !wasCompleted;
+    schedule.completedTasks[taskId] = newStatus;
+    
+    // Save the state
+    saveAppState();
+    
+    // Update the UI
+    var taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        if (newStatus) {
+            taskElement.classList.add('completed');
+        } else {
+            taskElement.classList.remove('completed');
+        }
+    }
+    
+    // Update progress displays immediately
+    setTimeout(function() {
+        if (document.getElementById('progressChart')) {
+            updateProgressChart();
+        }
+        if (document.getElementById('analytics-stats') && 
+            document.getElementById('analytics-stats').classList.contains('active')) {
+            updateStatsDisplay();
+        }
+    }, 100);
+    
+    // Show notification
+    showAlert(
+        newStatus ? 'Task completed! ✅' : 'Task unmarked ↩️', 
+        newStatus ? 'success' : 'info'
+    );
+}
+
+// Helper function to find task by ID
+function findTaskById(taskId) {
+    if (!appState.schedules || !appState.activeSchedule) return null;
+    
+    var schedule = appState.schedules[appState.activeSchedule];
+    
+    for (var day in schedule.weeklySchedule) {
+        if (schedule.weeklySchedule[day]) {
+            for (var i = 0; i < schedule.weeklySchedule[day].length; i++) {
+                var task = schedule.weeklySchedule[day][i];
+                if (task.id === taskId) {
+                    return {
+                        subject: task.subject,
+                        title: task.title || task.topic || 'Task',
+                        day: day
+                    };
+                }
+            }
+        }
+    }
+    return null;
+}
+
+// Modified progress update function for your data structure
+function onTaskStatusChangeForAppState(subject, taskId, isCompleted) {
+    // Update progress displays if they're visible
+    setTimeout(function() {
+        if (document.getElementById('progressChart')) {
+            updateProgressChart();
+        }
+        if (document.getElementById('analytics-stats') && 
+            document.getElementById('analytics-stats').classList.contains('active')) {
+            updateStatsDisplay();
+        }
+    }, 100);
+    
+    // Update last completed task
+    if (isCompleted) {
+        var taskDetails = findTaskById(taskId);
+        if (taskDetails) {
+            localStorage.setItem('lastCompletedTask', taskDetails.title);
+            localStorage.setItem('lastCompletedTime', new Date().toISOString());
+        }
+    }
+    
+    // Show notification
+    showNotification(
+        isCompleted ? 'Task completed!' : 'Task unmarked', 
+        isCompleted ? 'success' : 'info'
+    );
 }
     </script>
 </body>
