@@ -16069,9 +16069,10 @@ Do not include any text outside the JSON.`
                                 },
                                 {
                                     inline_data: {
-                                        mime_type: mimeType,
-                                        data: base64Data
-                                    }
+  mime_type: file.type,   // e.g. "image/png"
+  data: base64.split(',')[1] // remove prefix
+}
+
                                 }
                             ]
                         }
