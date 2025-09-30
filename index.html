@@ -8969,6 +8969,33 @@ body {
         padding: 6px 10px;
     }
 }
+
+#progressChart {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 24px;
+    padding: 20px;
+    min-height: 300px;
+}
+
+.chart-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+    width: 120px;
+}
+
+.bar-container {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -22375,6 +22402,15 @@ function updateProgressChart() {
             return;
         }
         
+        // Set flexbox layout
+        chartContainer.style.display = 'flex';
+        chartContainer.style.flexDirection = 'row';
+        chartContainer.style.justifyContent = 'flex-start';
+        chartContainer.style.alignItems = 'flex-end';
+        chartContainer.style.gap = '24px';
+        chartContainer.style.padding = '20px';
+        chartContainer.style.minHeight = '300px';
+        
         chartContainer.innerHTML = '';
         
         subjects.forEach(function(subject, index) {
@@ -22385,6 +22421,8 @@ function updateProgressChart() {
             var barElement = document.createElement('div');
             barElement.className = 'chart-bar';
             barElement.setAttribute('data-subject', subject);
+            barElement.style.width = '120px';
+            barElement.style.flex = '0 0 auto';
             
             var compareButtonHTML = subjects.length > 1 ? 
                 '<div class="compare-button" onclick="startComparison(\'' + subject + '\')">' +
@@ -22397,7 +22435,7 @@ function updateProgressChart() {
                 '</div>' : '';
             
             barElement.innerHTML = 
-                '<div class="bar-container" style="height: 5%; transition: height 1s ease;" data-progress="' + progress + '">' +
+                '<div class="bar-container" style="height: 8%; width: 100%; transition: height 1s ease;" data-progress="' + progress + '">' +
                     '<div class="bar-value">' + completedTasks + '/' + totalTasks + ' tasks</div>' +
                     '<div class="bar-progress-text">0%</div>' +
                 '</div>' +
