@@ -8953,6 +8953,73 @@ body {
     justify-content: flex-end;
     align-items: center;
 }
+
+@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .search-suggestions {
+        max-height: 400px;
+        overflow-y: auto;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .search-suggestions.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .search-suggestion-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-suggestion-item:last-child {
+        border-bottom: none;
+    }
+    
+    .search-suggestion-item:hover {
+        background: var(--accent-blue);
+        color: white;
+    }
+    
+    .search-suggestion-item:hover .search-suggestion-type,
+    .search-suggestion-item:hover .search-suggestion-meta {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .search-suggestion-type {
+        display: inline-block;
+        padding: 4px 8px;
+        background: var(--accent-blue);
+        color: white;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    
+    .search-suggestion-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    
+    .search-suggestion-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -13198,7 +13265,7 @@ function handleTopSearch(event) {
         flashcards.forEach(flashcard => {
             if (flashcard.subject.toLowerCase().includes(query) || 
                 flashcard.topic.toLowerCase().includes(query) ||
-                flashcard.notes.toLowerCase().includes(query)) {
+                (flashcard.notes && flashcard.notes.toLowerCase().includes(query))) {
                 results.push({
                     type: 'flashcard',
                     title: flashcard.topic,
@@ -13219,10 +13286,14 @@ function handleTopSearch(event) {
         });
     }
     
-    // Display results
+    // Display results with smooth animation
     if (results.length > 0) {
-        suggestions.innerHTML = results.slice(0, 6).map(result => `
-            <div class="search-suggestion-item" onclick="executeSearchAction('${result.id}', '${result.type}')">
+        suggestions.innerHTML = results.slice(0, 6).map((result, index) => `
+            <div class="search-suggestion-item" onclick="executeSearchAction('${result.id}', '${result.type}')" style="
+                opacity: 0;
+                transform: translateY(-10px);
+                animation: fadeInUp 0.3s ease forwards ${index * 0.05}s;
+            ">
                 <div class="search-suggestion-type ${result.type}">${result.type}</div>
                 <div class="search-suggestion-content">
                     <div class="search-suggestion-title">${result.title}</div>
@@ -13240,7 +13311,7 @@ function handleTopSearch(event) {
         showSearchSuggestions();
     } else {
         suggestions.innerHTML = `
-            <div class="search-suggestion-item">
+            <div class="search-suggestion-item" style="opacity: 0; animation: fadeInUp 0.3s ease forwards;">
                 <div class="search-suggestion-content">
                     <div class="search-suggestion-title">No results found</div>
                     <div class="search-suggestion-meta">Try searching for schedule names or flashcard topics</div>
@@ -16332,23 +16403,22 @@ function toBase64(file) {
     });
 }
 
-// Update your processUploadedImagesForFlashcards function
 async function processUploadedImagesForFlashcards(subjects) {
     if (!uploadedFiles || uploadedFiles.length === 0) {
         console.log('No uploaded files to process');
         return [];
     }
     
-    // Ensure config is loaded before processing
     console.log('Ensuring configuration is loaded...');
     await ensureConfigLoaded();
     
-    if (!GEMINI_API_KEY) {
-        console.warn('Gemini API key still not available after config load. Skipping AI analysis.');
-        showAlert('AI analysis unavailable. Creating basic flashcards instead.', 'info');
+    if (!OPENAI_API_KEY) {
+        console.warn('OpenAI API key still not available after config load. Skipping AI analysis.');
+        showAlert('AI analysis unavailable. Please configure your OpenAI API key.', 'error');
         
-        // Create basic flashcards without AI analysis
-        return createBasicFlashcardsFromImages(subjects);
+        // REMOVE THIS LINE - Don't create fallback flashcards
+        // return createBasicFlashcardsFromImages(subjects);
+        return []; // Return empty array instead
     }
     
     const processedFlashcards = [];
@@ -16357,7 +16427,6 @@ async function processUploadedImagesForFlashcards(subjects) {
         for (let i = 0; i < uploadedFiles.length; i++) {
             const file = uploadedFiles[i];
             
-            // Skip non-image files
             if (!file.type || !file.type.startsWith('image/')) {
                 console.log('Skipping non-image file:', file.name);
                 continue;
@@ -16365,10 +16434,8 @@ async function processUploadedImagesForFlashcards(subjects) {
             
             console.log(`Processing image ${i + 1}/${uploadedFiles.length}: ${file.name}`);
             
-            // Determine best subject for this file
-            let subject = subjects[0]; // Default to first subject
+            let subject = subjects[0];
             
-            // Try to match file name to subjects
             for (const subj of subjects) {
                 if (file.name.toLowerCase().includes(subj.toLowerCase())) {
                     subject = subj;
@@ -16377,11 +16444,9 @@ async function processUploadedImagesForFlashcards(subjects) {
             }
             
             try {
-                // Call Gemini API to analyze the image
-                console.log(`Analyzing ${file.name} with Gemini API for ${subject}...`);
-                const analysis = await analyzeImageWithGemini(file.data, subject);
+                console.log(`Analyzing ${file.name} with OpenAI API for ${subject}...`);
+                const analysis = await analyzeImageWithOpenAI(file.data, subject);
                 
-                // Create flashcard with AI analysis
                 const flashcard = {
                     id: Date.now() + Math.random() + i,
                     subject: subject,
@@ -16401,20 +16466,19 @@ async function processUploadedImagesForFlashcards(subjects) {
                 
             } catch (analysisError) {
                 console.warn(`Failed to analyze ${file.name} with AI:`, analysisError);
+                // REMOVE THIS - Don't create fallback for individual failures
+                // const fallbackFlashcard = createBasicFlashcardFromImage(file, subject);
+                // processedFlashcards.push(fallbackFlashcard);
                 
-                // Fallback: create basic flashcard
-                const fallbackFlashcard = createBasicFlashcardFromImage(file, subject);
-                processedFlashcards.push(fallbackFlashcard);
-                console.log(`⚠️ Created fallback flashcard: ${fallbackFlashcard.topic}`);
+                // Instead, show error and skip this file
+                showAlert(`Failed to analyze ${file.name}. Skipping this file.`, 'error');
             }
             
-            // Add small delay to avoid rate limiting
             if (i < uploadedFiles.length - 1) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
         
-        // Save flashcards
         if (processedFlashcards.length > 0) {
             flashcards.push(...processedFlashcards);
             localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
@@ -16426,26 +16490,16 @@ async function processUploadedImagesForFlashcards(subjects) {
             }
             
             const aiCount = processedFlashcards.filter(f => f.source === 'ai_analyzed_image').length;
-            const fallbackCount = processedFlashcards.length - aiCount;
-            
-            let message = `Created ${processedFlashcards.length} flashcard${processedFlashcards.length !== 1 ? 's' : ''}`;
-            if (aiCount > 0) {
-                message += ` (${aiCount} AI-analyzed`;
-                if (fallbackCount > 0) {
-                    message += `, ${fallbackCount} basic)`;
-                } else {
-                    message += `)`;
-                }
-            }
-            
-            showAlert(message, 'success');
+            showAlert(`Created ${aiCount} AI-analyzed flashcard${aiCount !== 1 ? 's' : ''}`, 'success');
+        } else {
+            showAlert('No flashcards were created. Check that OpenAI API is configured correctly.', 'error');
         }
         
         return processedFlashcards;
         
     } catch (error) {
         console.error('Error processing uploaded images for flashcards:', error);
-        showAlert('Failed to process some images. Check console for details.', 'error');
+        showAlert('Failed to process images. Check console for details.', 'error');
         return [];
     }
 }
@@ -16931,7 +16985,6 @@ function openFlashcardInterface(flashcardId, event) {
         </button>
     </div>
     
-    // Replace the tab navigation section with:
 <!-- Tab Navigation with Structure Button -->
 <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
     <div class="flashcard-tabs" style="display: flex; gap: 8px;">
