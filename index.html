@@ -10073,6 +10073,17 @@ async function generateSchedule(event) {
         }
         
         const subjectsInput = document.getElementById('subjects').value.trim();
+        const subjects = subjectsInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        
+        // Check if there are uploaded images to analyze
+        if (uploadedFiles.length > 0) {
+            generateBtn.innerHTML = '<svg class="icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Analyzing images...';
+            
+            // Analyze images with Gemini
+            await processUploadedImagesForFlashcards(subjects);
+        }
+        
+        // Rest of existing generateSchedule code...
         const currentGrade = document.getElementById('currentGrade').value;
         const examBoard = document.getElementById('examBoard').value;
         const examType = document.getElementById('examType').value;
@@ -10099,10 +10110,7 @@ async function generateSchedule(event) {
             return;
         }
         
-        const subjects = subjectsInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
         const scheduleName = subjects.join(', ');
-        
-        // REMOVED: Automatic flashcard creation
         
         const existingSchedule = findSimilarSchedule(scheduleName, subjects);
         if (existingSchedule) {
@@ -10694,6 +10702,9 @@ function createPersonalizedSchedule(scheduleId, scheduleData) {
     });
     
     createRevisionScheduleFromData(scheduleId, subjects, weeklySchedule, scheduleData);
+
+    // Auto-create flashcard for this schedule
+    createAutoFlashcardForSchedule(scheduleId, subjects);
 }
 
 function createDaySchedule(day, subjects, sessionsPerDay, currentGrade, daysUntilExam, gradeAdjustments) {
@@ -16221,6 +16232,27 @@ function updateSidebarStats() {
 let flashcards = JSON.parse(localStorage.getItem('gcseFlashcards') || '[]');
 let currentMainTab = 'schedule';
 
+function createAutoFlashcardForSchedule(scheduleId, subjects) {
+    // Create one flashcard for the entire schedule
+    const scheduleName = subjects.join(', ');
+    
+    const flashcard = {
+        id: Date.now() + Math.random(),
+        subject: subjects[0], // Primary subject
+        topic: `${scheduleName} - Study Notes`,
+        notes: `# ${scheduleName}\n\nStart adding your study notes here...\n\n## Key Topics:\n- \n\n## Important Concepts:\n- \n\n## Practice Questions:\n- `,
+        scheduleId: scheduleId,
+        created: new Date().toISOString()
+    };
+    
+    flashcards.push(flashcard);
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    updateSidebarStats();
+    
+    return flashcard.id;
+}
+
+
 function switchMainTab(tab) {
     currentMainTab = tab;
     
@@ -16976,103 +17008,232 @@ function openFlashcardInterface(flashcardId, event) {
         </button>
     </div>
     
-    <!-- Tab Navigation -->
-    <div style="display: flex; align-items: center; padding: 16px 32px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
-        <div class="flashcard-tabs" style="display: flex; gap: 8px;">
-            <div class="flashcard-tab active" onclick="switchFlashcardTab('notes')" data-tab="notes" style="
-                padding: 12px 20px;
-                background: var(--accent-blue);
-                color: white;
-                border: 2px solid var(--accent-blue);
-                border-radius: 12px;
+    // Replace the tab navigation section with:
+<!-- Tab Navigation with Structure Button -->
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
+    <div class="flashcard-tabs" style="display: flex; gap: 8px;">
+        <div class="flashcard-tab active" onclick="switchFlashcardTab('notes')" data-tab="notes" style="
+            padding: 12px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        ">
+            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+            </svg>
+            Notes
+        </div>
+        <div class="flashcard-tab" onclick="switchFlashcardTab('questions')" data-tab="questions" style="
+            padding: 12px 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        ">
+            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <path d="M12 17h.01"/>
+            </svg>
+            Questions
+        </div>
+    </div>
+    
+    <!-- Structure Button -->
+    <div style="position: relative;">
+        <button id="structureBtn" onclick="toggleStructureDropdown()" style="
+            padding: 12px 20px;
+            background: var(--accent-green, #10b981);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='var(--accent-green, #10b981)'">
+            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Structure
+            <svg style="width: 12px; height: 12px; transition: transform 0.3s ease;" id="structureArrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"/>
+            </svg>
+        </button>
+        
+        <!-- Structure Dropdown -->
+        <div id="structureDropdown" style="
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        ">
+            <div class="structure-option" onclick="applyAIStructure('bullet')" style="
+                padding: 12px 16px;
                 cursor: pointer;
-                font-weight: 600;
-                transition: all 0.3s ease;
+                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
-                gap: 8px;
-            ">
+                gap: 10px;
+                border-bottom: 1px solid var(--border-color);
+            " onmouseover="this.style.background='var(--accent-blue)'; this.style.color='white'" onmouseout="this.style.background=''; this.style.color=''">
                 <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
                 </svg>
-                Notes
+                Bullet Points
             </div>
-            <div class="flashcard-tab" onclick="switchFlashcardTab('questions')" data-tab="questions" style="
-                padding: 12px 20px;
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                border: 2px solid var(--border-color);
-                border-radius: 12px;
+            
+            <div class="structure-option" onclick="applyAIStructure('outline')" style="
+                padding: 12px 16px;
                 cursor: pointer;
-                font-weight: 600;
-                transition: all 0.3s ease;
+                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
-                gap: 8px;
-            ">
+                gap: 10px;
+                border-bottom: 1px solid var(--border-color);
+            " onmouseover="this.style.background='var(--accent-blue)'; this.style.color='white'" onmouseout="this.style.background=''; this.style.color=''">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4,17 10,11 4,5"/>
+                    <line x1="12" y1="19" x2="20" y2="19"/>
+                </svg>
+                Outline Format
+            </div>
+            
+            <div class="structure-option" onclick="applyAIStructure('qa')" style="
+                padding: 12px 16px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border-bottom: 1px solid var(--border-color);
+            " onmouseover="this.style.background='var(--accent-blue)'; this.style.color='white'" onmouseout="this.style.background=''; this.style.color=''">
                 <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
                     <path d="M12 17h.01"/>
                 </svg>
-                Questions
+                Q&A Format
+            </div>
+            
+            <div class="structure-option" onclick="applyAIStructure('summary')" style="
+                padding: 12px 16px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            " onmouseover="this.style.background='var(--accent-blue)'; this.style.color='white'" onmouseout="this.style.background=''; this.style.color=''">
+                <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
+                Summary Format
             </div>
         </div>
     </div>
+</div>
     
     <!-- Tab Content -->
-    <div style="flex: 1; position: relative;">
-        <!-- Notes Tab -->
-        <div class="flashcard-tab-content active" id="notesTabContent" style="
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 32px;
-            background: var(--bg-primary);
-            display: flex;
-            gap: 24px;
-            opacity: 1;
-            transform: translateX(0);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        ">
-            ${flashcard.imageData ? `
-                <div style="flex: 0 0 300px;">
-                    <div style="position: sticky; top: 20px;">
-                        <h3 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 700;">Reference Image</h3>
-                        <div style="border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; background: var(--bg-secondary); margin-bottom: 16px;">
-                            <img src="${flashcard.imageData}" alt="Study material" style="width: 100%; height: auto; display: block; cursor: pointer;" onclick="viewImageFullscreen('${flashcard.imageData}')">
-                        </div>
-                        <div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
-                            Click image to view fullscreen
-                        </div>
-                        <button onclick="openQuestionsFromImage()" style="
-                            width: 100%;
-                            padding: 12px 16px;
-                            background: var(--accent-green, #10b981);
-                            color: white;
-                            border: none;
-                            border-radius: 12px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 8px;
-                        " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='var(--accent-green, #10b981)'">
-                            <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                                <path d="M12 17h.01"/>
-                            </svg>
-                            Do Questions
-                        </button>
-                    </div>
+<div style="flex: 1; position: relative;">
+    <!-- Notes Tab -->
+    <div class="flashcard-tab-content active" id="notesTabContent" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 32px;
+        background: var(--bg-primary);
+        display: flex;
+        gap: 24px;
+        opacity: 1;
+        transform: translateX(0);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    ">
+        <div style="flex: 1; display: flex; flex-direction: column;">
+            <textarea 
+                id="flashcardNotesTextarea"
+                placeholder="Start writing your study notes here..."
+                style="width: 100%; height: 100%; padding: 24px; border: 2px solid var(--border-color); border-radius: 16px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; line-height: 1.8; resize: none; outline: none; transition: all 0.2s ease; font-family: inherit;" 
+                oninput="autoSaveNotes()"
+                onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
+            >${flashcard.notes || ''}</textarea>
+        </div>
+        
+        ${flashcard.imageData ? `
+            <div style="flex: 0 0 300px; position: sticky; top: 0; max-height: 100%;">
+                <h3 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 700;">Reference Image</h3>
+                <div style="border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; background: var(--bg-secondary); margin-bottom: 16px;">
+                    <img src="${flashcard.imageData}" alt="Study material" style="width: 100%; height: auto; display: block; cursor: pointer;" onclick="viewImageFullscreen('${flashcard.imageData}')">
                 </div>
-            ` : ''}
+                <div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                    Click image to view fullscreen
+                </div>
+                <button onclick="openQuestionsFromImage()" style="
+                    width: 100%;
+                    padding: 12px 16px;
+                    background: var(--accent-green, #10b981);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='var(--accent-green, #10b981)'">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <path d="M12 17h.01"/>
+                    </svg>
+                    Do Questions
+                </button>
+            </div>
+        ` : ''}
+    </div>
             <div style="flex: 1;">
                 <textarea 
                     id="flashcardNotesTextarea"
@@ -22755,6 +22916,25 @@ function confirmFlashcardDelete(flashcardId, modal) {
         
         showAlert('Flashcard deleted successfully', 'success');
     }, 400);
+}
+
+function autoSaveNotes() {
+    if (!window.currentFlashcardId) return;
+    
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    if (!textarea) return;
+    
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (flashcard) {
+        flashcard.notes = textarea.value;
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Update word count
+        updateWordCount();
+        
+        // Update last saved time
+        updateLastSavedTime();
+    }
 }
     </script>
 </body>
