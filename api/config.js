@@ -8,7 +8,7 @@ export default function handler(req, res) {
     const config = {
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
         GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
-       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+       GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,
         EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY
@@ -18,5 +18,6 @@ export default function handler(req, res) {
     
     res.status(200).json(config);
 }
+
 
 
