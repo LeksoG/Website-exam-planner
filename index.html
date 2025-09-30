@@ -22397,35 +22397,47 @@ function updateProgressChart() {
         
         var subjects = getActiveSubjects();
         
+        console.log('Found subjects:', subjects); // Debug log
+        
         if (subjects.length === 0) {
             chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><h3>No schedule data found</h3><p>Create a schedule in the Home page to see your progress here</p></div>';
             return;
         }
         
-        // Set flexbox layout
-        chartContainer.style.display = 'flex';
-        chartContainer.style.flexDirection = 'row';
-        chartContainer.style.justifyContent = 'flex-start';
-        chartContainer.style.alignItems = 'flex-end';
-        chartContainer.style.gap = '24px';
-        chartContainer.style.padding = '20px';
-        chartContainer.style.minHeight = '300px';
-        
+        // Clear and set up container
         chartContainer.innerHTML = '';
+        chartContainer.style.cssText = `
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-end;
+            gap: 24px;
+            padding: 20px 40px;
+            min-height: 350px;
+            position: relative;
+        `;
         
         subjects.forEach(function(subject, index) {
             var totalTasks = getSubjectTotalTasks(subject);
             var completedTasks = getSubjectCompletedTasks(subject);
             var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
             
+            console.log('Creating bar for:', subject, 'Progress:', progress + '%'); // Debug log
+            
             var barElement = document.createElement('div');
             barElement.className = 'chart-bar';
             barElement.setAttribute('data-subject', subject);
-            barElement.style.width = '120px';
-            barElement.style.flex = '0 0 auto';
+            barElement.style.cssText = `
+                width: 100px;
+                flex: 0 0 auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+            `;
             
             var compareButtonHTML = subjects.length > 1 ? 
-                '<div class="compare-button" onclick="startComparison(\'' + subject + '\')">' +
+                '<div class="compare-button" onclick="startComparison(\'' + subject + '\')" style="margin-top: 12px;">' +
                     '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
                         '<path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
                         '<path d="M19 11h-4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
@@ -22434,12 +22446,15 @@ function updateProgressChart() {
                     'Compare' +
                 '</div>' : '';
             
+            // Ensure minimum height for visibility even at 0%
+            var displayHeight = progress === 0 ? 5 : Math.max(progress, 8);
+            
             barElement.innerHTML = 
-                '<div class="bar-container" style="height: 8%; width: 100%; transition: height 1s ease;" data-progress="' + progress + '">' +
-                    '<div class="bar-value">' + completedTasks + '/' + totalTasks + ' tasks</div>' +
-                    '<div class="bar-progress-text">0%</div>' +
+                '<div class="bar-container" style="height: ' + displayHeight + '%; width: 100%; transition: height 1s ease; border-radius: 12px 12px 0 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-height: 40px;" data-progress="' + progress + '">' +
+                    '<div class="bar-value" style="font-size: 0.75rem; font-weight: 600; margin-bottom: 4px;">' + completedTasks + '/' + totalTasks + '</div>' +
+                    '<div class="bar-progress-text" style="font-size: 1.1rem; font-weight: 800;">0%</div>' +
                 '</div>' +
-                '<div class="bar-label">' + subject + '</div>' +
+                '<div class="bar-label" style="margin-top: 12px; font-weight: 700; text-align: center; word-break: break-word;">' + subject + '</div>' +
                 compareButtonHTML;
             
             chartContainer.appendChild(barElement);
@@ -22458,9 +22473,9 @@ function updateProgressChart() {
                 var barContainer = barElement.querySelector('.bar-container');
                 var progressText = barElement.querySelector('.bar-progress-text');
                 
-                // Ensure minimum height for visibility
-                var displayHeight = Math.max(progress, 8);
-                barContainer.style.height = displayHeight + '%';
+                // Set final height
+                var finalHeight = progress === 0 ? 5 : Math.max(progress, 8);
+                barContainer.style.height = finalHeight + '%';
                 
                 // Animate the percentage text
                 animateNumber(progressText, 0, progress, 1000, '%');
@@ -22472,7 +22487,7 @@ function updateProgressChart() {
                     barContainer.classList.add('show-text');
                 }
                 
-                console.log('Updated bar for', subject, '- Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
+                console.log('Animated bar for', subject, '- Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
             }, index * 200 + 300);
         });
         
