@@ -8953,73 +8953,6 @@ body {
     justify-content: flex-end;
     align-items: center;
 }
-
-@keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .search-suggestions {
-        max-height: 400px;
-        overflow-y: auto;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .search-suggestions.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .search-suggestion-item {
-        padding: 12px 16px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        border-bottom: 1px solid var(--border-color);
-    }
-    
-    .search-suggestion-item:last-child {
-        border-bottom: none;
-    }
-    
-    .search-suggestion-item:hover {
-        background: var(--accent-blue);
-        color: white;
-    }
-    
-    .search-suggestion-item:hover .search-suggestion-type,
-    .search-suggestion-item:hover .search-suggestion-meta {
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .search-suggestion-type {
-        display: inline-block;
-        padding: 4px 8px;
-        background: var(--accent-blue);
-        color: white;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 4px;
-    }
-    
-    .search-suggestion-title {
-        font-weight: 600;
-        margin-bottom: 2px;
-    }
-    
-    .search-suggestion-meta {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
     </style>
 </head>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -13110,7 +13043,6 @@ function initSearchCloseHandlers() {
     });
 }
 
-// Enhanced search input handler with debouncing
 function enhancedHandleTopSearch(event) {
     clearTimeout(window.searchDebounceTimer);
     
@@ -13119,22 +13051,11 @@ function enhancedHandleTopSearch(event) {
     
     if (!suggestions) return;
     
-    // Add typing animation
-    suggestions.classList.add('searching');
-    
+    // Reduced from 300ms to 150ms for faster response
     window.searchDebounceTimer = setTimeout(() => {
         suggestions.classList.remove('searching');
-        
-        if (query.length === 0) {
-            hideSearchSuggestions();
-            return;
-        }
-        
-        if (query.length < 2) return;
-        
-        // Your existing search logic here...
         handleTopSearch(event);
-    }, 300);
+    }, 150);
 }
 
 function animatePageFromTab(tabElement, pageId) {
@@ -13235,15 +13156,15 @@ function handleTopSearch(event) {
         return;
     }
     
-    if (query.length < 2) return;
+    // Changed from < 2 to < 1 to show after 1 character
+    if (query.length < 1) return;
     
-    // Search through schedules and flashcards
     const results = [];
     
     // Search schedules
-    Object.values(appState.schedules).forEach(schedule => {
+    Object.values(appState.schedules || {}).forEach(schedule => {
         if (schedule.name.toLowerCase().includes(query) || 
-            schedule.subjects.some(subject => subject.toLowerCase().includes(query))) {
+            (schedule.subjects && schedule.subjects.some(subject => subject.toLowerCase().includes(query)))) {
             results.push({
                 type: 'schedule',
                 title: schedule.name,
@@ -13258,10 +13179,31 @@ function handleTopSearch(event) {
                 }
             });
         }
+        
+        // Also search individual subjects
+        if (schedule.subjects) {
+            schedule.subjects.forEach(subject => {
+                if (subject.toLowerCase().includes(query) && !results.find(r => r.title === subject)) {
+                    results.push({
+                        type: 'subject',
+                        title: subject,
+                        meta: `From schedule: ${schedule.name}`,
+                        id: schedule.id + '_' + subject,
+                        action: () => {
+                            toggleTopSearch();
+                            showPage('dashboard');
+                            setTimeout(() => {
+                                switchToSchedule(schedule.id);
+                            }, 300);
+                        }
+                    });
+                }
+            });
+        }
     });
     
     // Search flashcards
-    if (typeof flashcards !== 'undefined') {
+    if (typeof flashcards !== 'undefined' && flashcards.length > 0) {
         flashcards.forEach(flashcard => {
             if (flashcard.subject.toLowerCase().includes(query) || 
                 flashcard.topic.toLowerCase().includes(query) ||
@@ -13286,12 +13228,11 @@ function handleTopSearch(event) {
         });
     }
     
-    // Display results with smooth animation
+    // Display results
     if (results.length > 0) {
-        suggestions.innerHTML = results.slice(0, 6).map((result, index) => `
+        suggestions.innerHTML = results.slice(0, 8).map((result, index) => `
             <div class="search-suggestion-item" onclick="executeSearchAction('${result.id}', '${result.type}')" style="
                 opacity: 0;
-                transform: translateY(-10px);
                 animation: fadeInUp 0.3s ease forwards ${index * 0.05}s;
             ">
                 <div class="search-suggestion-type ${result.type}">${result.type}</div>
@@ -13302,7 +13243,6 @@ function handleTopSearch(event) {
             </div>
         `).join('');
         
-        // Store actions for execution
         window.searchActions = {};
         results.forEach(result => {
             window.searchActions[result.id] = result.action;
@@ -13314,7 +13254,7 @@ function handleTopSearch(event) {
             <div class="search-suggestion-item" style="opacity: 0; animation: fadeInUp 0.3s ease forwards;">
                 <div class="search-suggestion-content">
                     <div class="search-suggestion-title">No results found</div>
-                    <div class="search-suggestion-meta">Try searching for schedule names or flashcard topics</div>
+                    <div class="search-suggestion-meta">Try searching for schedule names or subjects</div>
                 </div>
             </div>
         `;
@@ -13331,6 +13271,7 @@ function executeSearchAction(id, type) {
 function showSearchSuggestions() {
     const suggestions = document.getElementById('topSearchSuggestions');
     if (suggestions) {
+        suggestions.style.display = 'block';
         suggestions.classList.add('show');
     }
 }
@@ -13339,6 +13280,9 @@ function hideSearchSuggestions() {
     const suggestions = document.getElementById('topSearchSuggestions');
     if (suggestions) {
         suggestions.classList.remove('show');
+        setTimeout(() => {
+            suggestions.style.display = 'none';
+        }, 300);
     }
 }
 
@@ -20861,6 +20805,78 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add highlight and modal styles
     addHighlightAndModalStyles();
+
+    // ADD THIS HERE - Search Animation Styles
+    const searchAnimationStyles = document.createElement('style');
+    searchAnimationStyles.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .search-suggestions {
+            max-height: 400px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .search-suggestions.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .search-suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-suggestion-item:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .search-suggestion-item:hover .search-suggestion-type,
+        .search-suggestion-item:hover .search-suggestion-meta {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .search-suggestion-type {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .search-suggestion-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .search-suggestion-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    `;
+    document.head.appendChild(searchAnimationStyles);
 });
 
 
