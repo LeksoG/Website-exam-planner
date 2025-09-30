@@ -15550,7 +15550,8 @@ async function analyzeImageWithGemini(imageData, subject) {
         
         // Use the correct model name for image analysis (gemini-pro-vision for v1beta)
         const model = 'gemini-pro-vision';
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${GEMINI_API_KEY}`;
+
         
         const requestBody = {
             contents: [{
