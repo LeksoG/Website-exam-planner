@@ -15535,85 +15535,69 @@ function triggerHaptic(element) {
     }, 300);
 }
 
-// Fixed analyzeImageWithGemini function
 async function analyzeImageWithGemini(imageData, subject) {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not available');
-    }
-    
+    if (!GEMINI_API_KEY) throw new Error('Gemini API key not available');
+
     try {
-        // Convert image data to base64 if it's not already
         let base64Image = imageData;
         if (imageData.startsWith('data:')) {
             base64Image = imageData.split(',')[1];
         }
-        
-        // Use the correct model name for image analysis (gemini-pro-vision for v1beta)
-        const model = 'gemini-pro-vision';
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${GEMINI_API_KEY}`;
 
-        
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision-latest:generateContent?key=${GEMINI_API_KEY}`;
+
         const requestBody = {
-            contents: [{
-                parts: [
-                    {
-                        text: `Analyze this ${subject} study material image. Provide:
-                        1. A detailed explanation of what's shown
-                        2. Key concepts to remember
-                        3. Study questions based on the content
-                        4. Memory tips for better retention
-                        
-                        Focus on GCSE level understanding for ${subject}.`
-                    },
-                    {
-                        inline_data: {
-                            mime_type: "image/jpeg", // Adjust based on actual image type
-                            data: base64Image
-                        }
+            contents: [
+                {
+                    text: `Analyze this ${subject} study material image. Provide:
+1. A detailed explanation of what's shown
+2. Key concepts to remember
+3. Study questions based on the content
+4. Memory tips for better retention
+
+Focus on GCSE level understanding for ${subject}.`,
+                    image: {
+                        mime_type: "image/jpeg",
+                        data: base64Image
                     }
-                ]
-            }],
+                }
+            ],
             generationConfig: {
                 temperature: 0.4,
                 topK: 32,
                 topP: 1,
-                maxOutputTokens: 2048,
+                maxOutputTokens: 2048
             }
         };
-        
+
         console.log('Making request to:', apiUrl);
-        
+
         const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody)
         });
-        
+
         if (!response.ok) {
             console.error('API Response Status:', response.status);
             console.error('API Response Text:', await response.text());
             throw new Error(`API request failed: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log('Gemini API Response:', data);
-        
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-            throw new Error('Invalid response format from Gemini API');
-        }
-        
-        const analysisText = data.candidates[0].content.parts[0].text;
-        
-        // Parse the analysis into structured data
+
+        const analysisText = data.candidates?.[0]?.content?.[0]?.text;
+        if (!analysisText) throw new Error('Invalid response format from Gemini API');
+
         return parseGeminiResponse(analysisText, subject);
-        
+
     } catch (error) {
         console.error('Image Analysis Error:', error);
         throw error;
     }
 }
+
 
 // Helper function to parse Gemini's response into structured data
 function parseGeminiResponse(text, subject) {
