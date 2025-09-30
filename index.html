@@ -4389,49 +4389,6 @@ body.sidebar-open-mobile {
     align-items: center;
 }
 
-/* AI Assistant Button */
-.ai-assistant-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.ai-assistant-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.ai-assistant-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-}
-
-.ai-assistant-btn:hover::before {
-    left: 100%;
-}
-
-.ai-assistant-btn .icon {
-    width: 18px;
-    height: 18px;
-}
-
 /* AI Chatbot Sidebar */
 .ai-chatbot-sidebar {
     position: fixed;
@@ -9007,10 +8964,6 @@ body {
     <div class="sidebar-trigger" onmouseenter="openSidebar()"></div>
     
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- ADD THE AI TRIGGER AREA HERE: -->
-<div class="ai-trigger-area" id="aiTriggerArea" onmouseenter="showAIPreview()" onmouseleave="hideAIPreview()"></div>
-
     
     <div class="sidebar" id="sidebar" onmouseleave="handleSidebarLeave(event)">
         <div class="sidebar-header">
@@ -9080,13 +9033,6 @@ body {
                 <h1>GCSE Revision Planner</h1>
             </div>
             <div class="header-right">
-                <button class="ai-assistant-btn dashboard-only" id="aiAssistantBtn" onclick="toggleAIChatbot()" title="AI Study Assistant">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    <span>AI Assistant</span>
-                </button>
             </div>
         </header>
 
@@ -9235,12 +9181,6 @@ body {
             <!-- Dashboard Page -->
 <div id="dashboard" class="page">
     <!-- AI Button for Dashboard -->
-    <button class="dashboard-ai-button" onclick="toggleAIChatbot()">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-        </svg>
-        <span>AI Assistant</span>
-    </button>
 
     <div class="main-tab-switches">
         <button class="main-tab-switch active" onclick="switchMainTab('schedule')">
@@ -9363,11 +9303,11 @@ body {
             <!-- Enhanced Grid Chart Container -->
             <div class="chart-grid-container">
                 <div class="chart-y-axis">
-                    <div class="y-axis-label">100%</div>
-                    <div class="y-axis-label">75%</div>
-                    <div class="y-axis-label">50%</div>
-                    <div class="y-axis-label">25%</div>
                     <div class="y-axis-label">0%</div>
+                    <div class="y-axis-label">25%</div>
+                    <div class="y-axis-label">50%</div>
+                    <div class="y-axis-label">75%</div>
+                    <div class="y-axis-label">100%</div>
                 </div>
                 
                 <div class="chart-main-area">
@@ -9716,85 +9656,6 @@ body {
         </div>
     </div>
 
-    <!-- AI Chatbot Components -->
-    <div class="ai-chatbot-sidebar" id="aiChatbotSidebar">
-        <div class="ai-chatbot-header">
-            <div class="ai-chatbot-title">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83"/>
-                </svg>
-                <span>AI Study Assistant</span>
-                <span class="ai-subject-context" id="aiSubjectContext">General</span>
-            </div>
-            <button class="ai-close-btn" onclick="toggleAIChatbot()">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-        </div>
-
-        <div class="ai-quick-actions">
-            <button class="ai-action-btn" onclick="aiQuickAction('explain-topic')">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                Explain Topic
-            </button>
-            <button class="ai-action-btn" onclick="aiQuickAction('create-quiz')">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14,2 14,8 20,8"/>
-                </svg>
-                Create Quiz
-            </button>
-            <button class="ai-action-btn" onclick="aiQuickAction('study-tips')">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                </svg>
-                Study Tips
-            </button>
-        </div>
-
-        <div class="ai-chat-container" id="aiChatContainer">
-            <div class="ai-welcome-message" id="aiWelcomeMessage">
-                <div class="ai-message ai-assistant">
-                    <div class="ai-message-avatar">AI</div>
-                    <div class="ai-message-content">
-                        <p>Hello! I'm your AI study assistant for <strong id="contextSubject">your current subject</strong>.</p>
-                        <div id="subjectSpecificWelcome">
-                            <!-- Dynamic content will be inserted here -->
-                        </div>
-                        <p>I can help you with study strategies, explanations, and managing your revision schedule.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ai-input-container">
-            <div class="ai-input-wrapper">
-                <input type="text" 
-                       id="aiChatInput" 
-                       placeholder="Ask me anything about your studies..."
-                       onkeypress="handleAIChatKeypress(event)">
-                <button class="ai-send-btn" onclick="sendAIMessage()">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <line x1="22" y1="2" x2="11" y2="13"/>
-                        <polygon points="22,2 15,22 11,13 2,9 22,2"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="ai-suggested-prompts" id="aiSuggestedPrompts">
-                <!-- Dynamic prompts based on current subject -->
-            </div>
-        </div>
-    </div>
-
-    <div class="ai-chatbot-overlay" id="aiChatbotOverlay" onclick="toggleAIChatbot()"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 
@@ -9826,6 +9687,9 @@ let limits = {
     uploads: 10,      // Free tier upload limit
     flashcards: 50    // Free tier flashcard limit
 };
+
+let flashcardStartTime = null;
+let totalStudyTimeSeconds = parseInt(localStorage.getItem('totalStudyTimeSeconds') || '0');
 
 
 // Google Calendar Integration
@@ -10123,8 +9987,6 @@ function showPage(pageId) {
         updateTopTabActive();
     }
     
-    // Control AI button visibility
-    toggleAIButtonVisibility(pageId);
 }
 
 function toggleSidebarMobile() {
@@ -10197,7 +10059,6 @@ function validateScheduleForm() {
     return true;
 }
 
-// Replace the existing generateSchedule function with this updated version
 async function generateSchedule(event) {
     event.preventDefault();
     
@@ -10241,12 +10102,7 @@ async function generateSchedule(event) {
         const subjects = subjectsInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
         const scheduleName = subjects.join(', ');
         
-        // Check for uploaded images and create flashcards
-        if (uploadedFiles.length > 0) {
-            generateBtn.innerHTML = '<svg class="icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg> Analyzing images...';
-            
-            await processUploadedImagesForFlashcards(subjects);
-        }
+        // REMOVED: Automatic flashcard creation
         
         const existingSchedule = findSimilarSchedule(scheduleName, subjects);
         if (existingSchedule) {
@@ -15668,456 +15524,6 @@ function triggerHaptic(element) {
     }, 300);
 }
 
-// ===== AI CHATBOT FUNCTIONS =====
-function toggleAIChatbot() {
-    aiChatbotOpen = !aiChatbotOpen;
-    const sidebar = document.getElementById('aiChatbotSidebar');
-    const overlay = document.getElementById('aiChatbotOverlay');
-    const container = document.querySelector('.container');
-    
-    if (aiChatbotOpen) {
-        sidebar.classList.add('open');
-        overlay.classList.add('show');
-        container.classList.add('ai-open');
-        
-        updateAISubjectContext();
-        updateAISuggestedPrompts();
-        
-        setTimeout(() => {
-            document.getElementById('aiChatInput').focus();
-        }, 500);
-    } else {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
-        container.classList.remove('ai-open');
-    }
-}
-
-function updateAISubjectContext() {
-    let detectedSubject = 'General';
-    
-    const activeTab = document.querySelector('.tab.active');
-    if (activeTab) {
-        const tabText = activeTab.textContent.trim();
-        const tabName = activeTab.dataset.tabName || tabText;
-        detectedSubject = tabName.replace(/schedule:/i, '').trim();
-        
-        if (detectedSubject === 'General' || detectedSubject.length === 0) {
-            const activeSchedule = appState.schedules[appState.activeSchedule];
-            if (activeSchedule && activeSchedule.subjects && activeSchedule.subjects.length > 0) {
-                detectedSubject = activeSchedule.subjects[0];
-            }
-        }
-    } else {
-        const activeSchedule = appState.schedules[appState.activeSchedule];
-        if (activeSchedule && activeSchedule.subjects && activeSchedule.subjects.length > 0) {
-            detectedSubject = activeSchedule.subjects[0];
-        }
-    }
-    
-    currentAISubject = detectedSubject;
-    
-    const contextElement = document.getElementById('aiSubjectContext');
-    const contextSubjectElement = document.getElementById('contextSubject');
-    
-    if (contextElement) contextElement.textContent = currentAISubject;
-    if (contextSubjectElement) contextSubjectElement.textContent = currentAISubject;
-    
-    updateWelcomeMessage();
-    updateAISuggestedPrompts();
-}
-
-function updateWelcomeMessage() {
-    const welcomeContent = document.getElementById('subjectSpecificWelcome');
-    if (!welcomeContent) return;
-    
-    const subjectWelcomes = {
-        'Mathematics': `
-            <ul>
-                <li>Solving equations and working with formulas</li>
-                <li>Understanding graphs and data interpretation</li>
-                <li>Practicing exam-style calculations</li>
-                <li>Reviewing algebra, geometry, and statistics</li>
-            </ul>`,
-        'English Literature': `
-            <ul>
-                <li>Analyzing quotes and literary techniques</li>
-                <li>Understanding themes and character development</li>
-                <li>Structuring essays and written responses</li>
-                <li>Exploring context and historical background</li>
-            </ul>`,
-        'Biology': `
-            <ul>
-                <li>Understanding cell biology and life processes</li>
-                <li>Learning about human body systems</li>
-                <li>Studying ecosystems and environmental science</li>
-                <li>Practicing diagram labeling and scientific method</li>
-            </ul>`,
-        'Chemistry': `
-            <ul>
-                <li>Balancing chemical equations</li>
-                <li>Understanding atomic structure and bonding</li>
-                <li>Learning about chemical reactions and processes</li>
-                <li>Practicing calculations and data analysis</li>
-            </ul>`,
-        'Physics': `
-            <ul>
-                <li>Understanding forces, motion, and energy</li>
-                <li>Learning about electricity and magnetism</li>
-                <li>Studying waves, radiation, and space</li>
-                <li>Practicing problem-solving with equations</li>
-            </ul>`,
-        'Computing': `
-            <ul>
-                <li>Programming concepts and algorithm design</li>
-                <li>Understanding computer systems and networks</li>
-                <li>Learning about data representation and security</li>
-                <li>Practicing computational thinking skills</li>
-            </ul>`,
-        'History': `
-            <ul>
-                <li>Analyzing historical sources and evidence</li>
-                <li>Understanding cause and effect relationships</li>
-                <li>Learning about different time periods and events</li>
-                <li>Developing essay writing and evaluation skills</li>
-            </ul>`,
-        'Geography': `
-            <ul>
-                <li>Understanding physical and human geography</li>
-                <li>Learning about climate, ecosystems, and development</li>
-                <li>Practicing map skills and data interpretation</li>
-                <li>Studying case studies and fieldwork techniques</li>
-            </ul>`
-    };
-    
-    const defaultWelcome = `
-        <ul>
-            <li>Explaining key concepts and topics</li>
-            <li>Creating practice questions and quizzes</li>
-            <li>Providing study strategies and tips</li>
-            <li>Managing your revision schedule</li>
-        </ul>`;
-    
-    welcomeContent.innerHTML = subjectWelcomes[currentAISubject] || defaultWelcome;
-}
-
-function updateAISuggestedPrompts() {
-    const promptsContainer = document.getElementById('aiSuggestedPrompts');
-    if (!promptsContainer) return;
-    
-    const subjectPrompts = {
-        'Mathematics': [
-            'Explain quadratic equations',
-            'Help with algebra problems', 
-            'Create a trigonometry quiz',
-            'Show me geometry formulas',
-            'Practice probability questions'
-        ],
-        'English Literature': [
-            'Analyze character development',
-            'Explain essay structure',
-            'Help with quote analysis',
-            'Create comprehension questions',
-            'Discuss themes and context'
-        ],
-        'Biology': [
-            'Explain cell division',
-            'Help with photosynthesis',
-            'Create anatomy quiz',
-            'Show me plant biology',
-            'Practice genetics problems'
-        ],
-        'Chemistry': [
-            'Balance chemical equations',
-            'Explain atomic structure',
-            'Help with calculations',
-            'Show periodic trends',
-            'Create reaction quiz'
-        ],
-        'Physics': [
-            'Explain forces and motion',
-            'Help with electricity',
-            'Show wave properties',
-            'Create energy quiz',
-            'Practice calculations'
-        ],
-        'Computing': [
-            'Explain algorithms',
-            'Help with programming',
-            'Show data structures',
-            'Create logic quiz',
-            'Practice pseudocode'
-        ],
-        'History': [
-            'Analyze historical sources',
-            'Explain cause and effect',
-            'Help with timelines',
-            'Create period quiz',
-            'Practice essay questions'
-        ],
-        'Geography': [
-            'Explain climate patterns',
-            'Help with map skills',
-            'Show case studies',
-            'Create location quiz',
-            'Practice data analysis'
-        ]
-    };
-    
-    const prompts = subjectPrompts[currentAISubject] || [
-        'Help me study better',
-        'Create a quiz for me',
-        'Explain key concepts',
-        'Add study tasks',
-        'Review my progress'
-    ];
-    
-    promptsContainer.innerHTML = prompts.map(prompt => 
-        `<div class="ai-suggested-prompt" onclick="sendSuggestedPrompt('${prompt}')">${prompt}</div>`
-    ).join('');
-}
-
-function handleAIChatKeypress(event) {
-    if (event.key === 'Enter') {
-        sendAIMessage();
-    }
-}
-
-function sendAIMessage() {
-    const input = document.getElementById('aiChatInput');
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    addAIMessage(message, 'user');
-    input.value = '';
-    
-    showAITypingIndicator();
-    
-    setTimeout(() => {
-        hideAITypingIndicator();
-        processAIResponse(message);
-    }, 1500);
-}
-
-function sendSuggestedPrompt(prompt) {
-    document.getElementById('aiChatInput').value = prompt;
-    sendAIMessage();
-}
-
-function aiQuickAction(action) {
-    const actions = {
-        'explain-topic': `Explain a key topic in ${currentAISubject} that I should focus on`,
-        'create-quiz': `Create a quick quiz for ${currentAISubject} based on my current progress`,
-        'study-tips': `Give me study tips specifically for ${currentAISubject}`
-    };
-    
-    const prompt = actions[action];
-    if (prompt) {
-        document.getElementById('aiChatInput').value = prompt;
-        sendAIMessage();
-    }
-}
-
-function addAIMessage(content, sender, actions = []) {
-    const chatContainer = document.getElementById('aiChatContainer');
-    const isUser = sender === 'user';
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `ai-message ${isUser ? 'ai-user' : 'ai-assistant'}`;
-    
-    const avatar = isUser ? 
-        (currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U') : 
-        'AI';
-    
-    let actionButtonsHTML = '';
-    if (actions.length > 0) {
-        actionButtonsHTML = `
-            <div class="ai-action-buttons">
-                ${actions.map(action => 
-                    `<button class="ai-action-button" onclick="executeAIAction('${action.type}', '${action.data}')">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            ${getActionIcon(action.type)}
-                        </svg>
-                        ${action.label}
-                    </button>`
-                ).join('')}
-            </div>
-        `;
-    }
-    
-    messageDiv.innerHTML = `
-        <div class="ai-message-avatar">${avatar}</div>
-        <div class="ai-message-content">
-            <div>${formatAIMessage(content)}</div>
-            ${actionButtonsHTML}
-        </div>
-    `;
-    
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-    
-    aiChatHistory.push({ content, sender, timestamp: new Date(), actions });
-}
-
-function formatAIMessage(content) {
-    return content
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(/^/, '<p>')
-        .replace(/$/, '</p>');
-}
-
-function showAITypingIndicator() {
-    const chatContainer = document.getElementById('aiChatContainer');
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'ai-typing-indicator';
-    typingDiv.id = 'aiTypingIndicator';
-    typingDiv.innerHTML = `
-        <div class="ai-message-avatar">AI</div>
-        <div>
-            AI is thinking
-            <div class="ai-typing-dots">
-                <div class="ai-typing-dot"></div>
-                <div class="ai-typing-dot"></div>
-                <div class="ai-typing-dot"></div>
-            </div>
-        </div>
-    `;
-    
-    chatContainer.appendChild(typingDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function hideAITypingIndicator() {
-    const indicator = document.getElementById('aiTypingIndicator');
-    if (indicator) {
-        indicator.remove();
-    }
-}
-
-async function processAIResponse(userMessage) {
-    try {
-        const commandResult = processNaturalLanguageCommands(userMessage);
-        if (commandResult.handled) {
-            addAIMessage(commandResult.response, 'assistant', commandResult.actions);
-            return;
-        }
-        
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GOOGLE_GEMINI_API_KEY_HERE') {
-            const mockResponse = getMockResponse(userMessage);
-            addAIMessage(mockResponse.content, 'assistant', mockResponse.actions);
-            return;
-        }
-
-        const context = {
-            currentSubject: currentAISubject,
-            userProgress: getCurrentUserProgress(),
-            currentSchedule: appState.schedules[appState.activeSchedule]
-        };
-        
-        const response = await callGeminiAPI(userMessage, context);
-        addAIMessage(response.content, 'assistant', response.actions);
-    } catch (error) {
-        console.error('AI Response Error:', error);
-        const mockResponse = getMockResponse(userMessage);
-        addAIMessage(mockResponse.content, 'assistant', mockResponse.actions);
-    }
-}
-
-// Google Gemini API Integration with improved error handling
-async function callGeminiAPI(userMessage, context) {
-    // First check if API key is valid
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyAd9K0tS-0p-bVyVUhlFkNNCbuU9qJ5qQ4' || GEMINI_API_KEY.length < 30) {
-        console.log('Using mock response - API key not configured');
-        throw new Error('API key not configured');
-    }
-
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-    
-    // Create system prompt with context
-    const systemPrompt = createSystemPrompt(context);
-    const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`;
-    
-    const requestBody = {
-        contents: [{
-            parts: [{
-                text: fullPrompt
-            }]
-        }],
-        generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-        },
-        safetySettings: [
-            {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-        ]
-    };
-
-    try {
-        const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API Error Details:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errorText
-            });
-            throw new Error(`API request failed: ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-            console.error('Invalid API response structure:', data);
-            throw new Error('Invalid response format from Gemini API');
-        }
-
-        const aiResponse = data.candidates[0].content.parts[0].text;
-        
-        // Parse response for actions
-        return parseGeminiResponse(aiResponse, context);
-        
-    } catch (error) {
-        console.error('Gemini API Error:', error);
-        
-        // For development purposes, show a helpful message
-        if (error.message.includes('404')) {
-            console.log('API endpoint not found. Using mock response.');
-        } else if (error.message.includes('403')) {
-            console.log('API key invalid or no permissions. Using mock response.');
-        }
-        
-        throw error;
-    }
-}
-
 // Fixed analyzeImageWithGemini function
 async function analyzeImageWithGemini(imageData, subject) {
     if (!GEMINI_API_KEY) {
@@ -16532,142 +15938,6 @@ function getActionLabel(actionType, actionData) {
     return labels[actionType] || `Execute ${actionType}`;
 }
 
-function processNaturalLanguageCommands(userMessage) {
-    const message = userMessage.toLowerCase().trim();
-    
-    if (message.includes('change') && (message.includes('schedule') || message.includes('timetable'))) {
-        return {
-            handled: true,
-            response: `I'll help you modify your **${currentAISubject}** schedule. Here are some options:`,
-            actions: [
-                { type: 'add-more-tasks', data: currentAISubject, label: `Add More ${currentAISubject} Tasks` },
-                { type: 'reschedule-tasks', data: currentAISubject, label: `Reschedule ${currentAISubject}` },
-                { type: 'adjust-difficulty', data: currentAISubject, label: 'Adjust Task Difficulty' }
-            ]
-        };
-    }
-    
-    if ((message.includes('add') || message.includes('more')) && (message.includes('task') || message.includes('work') || message.includes('study'))) {
-        executeAIAction('add-more-tasks', currentAISubject);
-        return {
-            handled: true,
-            response: `✅ I've added more **${currentAISubject}** study tasks to your schedule! Check your dashboard to see the new tasks.`,
-            actions: [
-                { type: 'view-schedule', data: currentAISubject, label: 'View Updated Schedule' }
-            ]
-        };
-    }
-    
-    if (message.includes('help') || message.includes('explain') || message.includes('teach')) {
-        return {
-            handled: true,
-            response: `I'm here to help with **${currentAISubject}**! What specific topic would you like me to explain?`,
-            actions: [
-                { type: 'explain-concept', data: 'key-topics', label: `Explain Key ${currentAISubject} Topics` },
-                { type: 'create-study-guide', data: currentAISubject, label: 'Create Study Guide' }
-            ]
-        };
-    }
-    
-    if (message.includes('quiz') || message.includes('test') || message.includes('practice')) {
-        return {
-            handled: true,
-            response: `I'll create a **${currentAISubject}** quiz based on your current progress!`,
-            actions: [
-                { type: 'generate-quiz', data: currentAISubject, label: `Create ${currentAISubject} Quiz` },
-                { type: 'practice-questions', data: currentAISubject, label: 'Practice Questions' }
-            ]
-        };
-    }
-    
-    return { handled: false };
-}
-
-function getCurrentUserProgress() {
-    const schedule = appState.schedules[appState.activeSchedule];
-    if (!schedule) return null;
-    
-    let totalTasks = 0;
-    let completedTasks = 0;
-    
-    Object.values(schedule.weeklySchedule).forEach(dayTasks => {
-        totalTasks += dayTasks.length;
-    });
-    
-    completedTasks = Object.values(schedule.completedTasks).filter(completed => completed).length;
-    
-    return {
-        totalTasks,
-        completedTasks,
-        progressPercentage: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
-        subjects: schedule.subjects,
-        currentSubject: currentAISubject
-    };
-}
-
-function getMockResponse(userMessage) {
-    const lowerMessage = userMessage.toLowerCase();
-    const subject = currentAISubject.toLowerCase();
-    
-    const subjectResponses = {
-        'mathematics': {
-            content: `**Mathematics Study Help**\n\nFor your **${currentAISubject}** studies, I can help with:\n\n**Key Topics:**\n• Algebra - Solving equations, graphs, sequences\n• Geometry - Area, volume, trigonometry\n• Statistics - Data analysis, probability\n• Number - Fractions, decimals, percentages\n\n**Study Strategies:**\n• Practice past papers regularly\n• Work through exam-style questions\n• Focus on showing working clearly\n• Learn key formulas by heart\n\nWhat specific maths topic would you like help with?`,
-            actions: [
-                { type: 'create-task', data: 'algebra-practice', label: 'Add Algebra Practice' },
-                { type: 'create-task', data: 'geometry-revision', label: 'Add Geometry Revision' },
-                { type: 'generate-quiz', data: 'mathematics', label: 'Create Maths Quiz' }
-            ]
-        }
-    };
-    
-    const response = subjectResponses[subject] || {
-        content: `**${currentAISubject} Study Assistant**\n\nI'm here to help with your **${currentAISubject}** studies!\n\nI can assist with:\n• Explaining key concepts\n• Creating practice questions\n• Planning study sessions\n• Providing revision strategies\n• Organizing your schedule\n\nWhat specific aspect of ${currentAISubject} would you like to work on?`,
-        actions: [
-            { type: 'explain-concept', data: currentAISubject, label: `Explain ${currentAISubject} Concepts` },
-            { type: 'create-schedule', data: currentAISubject, label: `Update ${currentAISubject} Schedule` }
-        ]
-    };
-    
-    return response;
-}
-
-function executeAIAction(actionType, actionData) {
-    switch (actionType) {
-        case 'create-task':
-            createAITask(actionData);
-            break;
-        case 'add-more-tasks':
-            addMoreTasksWithAnimation(actionData);
-            break;
-        case 'reschedule-tasks':
-            rescheduleSubjectTasks(actionData);
-            break;
-        case 'adjust-difficulty':
-            adjustTaskDifficulty(actionData);
-            break;
-        case 'generate-quiz':
-            generateAIQuiz(actionData);
-            break;
-        case 'explain-concept':
-            explainAIConcept(actionData);
-            break;
-        case 'create-schedule':
-            updateAISchedule(actionData);
-            break;
-        case 'view-schedule':
-            viewSubjectSchedule(actionData);
-            break;
-        case 'create-study-guide':
-            createStudyGuide(actionData);
-            break;
-        case 'practice-questions':
-            createPracticeQuestions(actionData);
-            break;
-        default:
-            showAlert('Action not implemented yet', 'error');
-    }
-}
-
 function createAITask(actionData) {
     showAlert(`Creating ${actionData} task...`, 'info');
 }
@@ -16798,38 +16068,6 @@ function getActionIcon(actionType) {
     return icons[actionType] || '<circle cx="12" cy="12" r="10"/>';
 }
 
-// Replace the existing toggleAIButtonVisibility function
-function toggleAIButtonVisibility(pageId) {
-    const aiTrigger = document.getElementById('aiTriggerArea');
-    const aiButton = document.getElementById('aiAssistantBtn');
-    
-    // Hide the old button
-    if (aiButton) {
-        aiButton.style.display = 'none';
-    }
-    
-    if (aiTrigger) {
-        if (pageId === 'dashboard') {
-            aiTrigger.classList.add('dashboard-active');
-            // Show glow effect once when first visiting dashboard
-            if (!sessionStorage.getItem('aiGlowShown')) {
-                setTimeout(() => {
-                    showAIGlowEffect();
-                    sessionStorage.setItem('aiGlowShown', 'true');
-                }, 1000);
-            } else {
-                // Keep subtle glow for returning users
-                aiTrigger.classList.add('glowing');
-            }
-        } else {
-            aiTrigger.classList.remove('dashboard-active', 'glowing');
-            if (aiChatbotOpen) {
-                toggleAIChatbot();
-            }
-        }
-    }
-}
-
 // Add these new functions
 function showAIGlowEffect() {
     const aiTrigger = document.getElementById('aiTriggerArea');
@@ -16878,52 +16116,6 @@ function showAIGlowEffect() {
         aiTrigger.style.background = '';
         aiTrigger.style.width = '';
     }, 5000);
-}
-
-function showAIPreview() {
-    if (!document.getElementById('aiTriggerArea').classList.contains('dashboard-active')) return;
-    
-    clearTimeout(window.aiPreviewTimeout);
-    window.aiPreviewTimeout = setTimeout(() => {
-        toggleAIChatbot();
-    }, 300);
-}
-
-function hideAIPreview() {
-    clearTimeout(window.aiPreviewTimeout);
-}
-
-// Update the toggleAIChatbot function to handle outside clicks
-function toggleAIChatbot() {
-    aiChatbotOpen = !aiChatbotOpen;
-    const sidebar = document.getElementById('aiChatbotSidebar');
-    const overlay = document.getElementById('aiChatbotOverlay');
-    const container = document.querySelector('.container');
-    
-    if (aiChatbotOpen) {
-        sidebar.classList.add('open');
-        overlay.classList.add('show');
-        container.classList.add('ai-open');
-        
-        updateAISubjectContext();
-        updateAISuggestedPrompts();
-        
-        // Add click outside handler
-        setTimeout(() => {
-            document.addEventListener('click', handleAIOutsideClick);
-        }, 100);
-        
-        setTimeout(() => {
-            document.getElementById('aiChatInput').focus();
-        }, 500);
-    } else {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
-        container.classList.remove('ai-open');
-        
-        // Remove click outside handler
-        document.removeEventListener('click', handleAIOutsideClick);
-    }
 }
 
 function handleAIOutsideClick(event) {
@@ -17733,6 +16925,9 @@ function showFlashcardLoading(flashcardElement, flashcardId, event) {
 }
 
 function openFlashcardInterface(flashcardId, event) {
+
+    flashcardStartTime = Date.now();
+
     const flashcard = flashcards.find(f => f.id == flashcardId);
     if (!flashcard) {
         showAlert('Flashcard not found', 'error');
@@ -17950,23 +17145,33 @@ function openFlashcardInterface(flashcardId, event) {
 }
 
 function closeFlashcardInterface() {
-    const fullpage = document.getElementById('flashcardFullpage');
-    const backdrop = document.getElementById('flashcardBackdrop');
-    
-    if (fullpage) {
-        // Animate out
-        fullpage.style.transform = 'translate(-50%, -50%) scale(0.1)';
-        fullpage.style.opacity = '0';
+    // Track study time before closing
+    if (flashcardStartTime) {
+        var timeSpent = Math.floor((Date.now() - flashcardStartTime) / 1000);
+        totalStudyTimeSeconds += timeSpent;
+        localStorage.setItem('totalStudyTimeSeconds', totalStudyTimeSeconds.toString());
         
-        if (backdrop) {
-            backdrop.style.background = 'rgba(0, 0, 0, 0)';
-        }
+        // Also save today's study time
+        var today = new Date().toISOString().split('T')[0];
+        var todayTime = parseInt(localStorage.getItem('studyTime_' + today) || '0');
+        todayTime += timeSpent;
+        localStorage.setItem('studyTime_' + today, todayTime.toString());
         
-        setTimeout(() => {
-            if (fullpage.parentNode) fullpage.remove();
-            if (backdrop && backdrop.parentNode) backdrop.remove();
-        }, 500);
+        flashcardStartTime = null;
     }
+    
+    // Existing close code...
+    var fullpage = document.getElementById('flashcardFullpage');
+    if (fullpage) {
+        fullpage.style.transform = 'scale(0.95)';
+        fullpage.style.opacity = '0';
+        setTimeout(function() {
+            if (fullpage.parentNode) fullpage.remove();
+        }, 400);
+    }
+    
+    // Update study time display
+    updateStudyTimeDisplay();
 }
 
 // Add these functions to your JavaScript section
@@ -21448,6 +20653,22 @@ document.addEventListener('DOMContentLoaded', function() {
     initSearchCloseHandlers();
 
     
+    // ADD THIS SECTION HERE:
+    const compareButtonStyles = `
+        .chart-bar {
+            position: relative;
+        }
+        .compare-button:hover {
+            background: #2563eb !important;
+            transform: translateX(-50%) translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+        }
+    `;
+    const styleEl = document.createElement('style');
+    styleEl.textContent = compareButtonStyles;
+    document.head.appendChild(styleEl);
+    // END OF NEW SECTION
+
     // Rest of your existing initialization code...
     const currentPage = appState.currentPage || 'home';
     
@@ -21476,7 +20697,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
     
-    toggleAIButtonVisibility(currentPage);
     
     setTimeout(initHomeUpload, 100);
     handleDaysUntilExamChange();
@@ -21516,6 +20736,33 @@ document.addEventListener('click', function(event) {
         document.querySelectorAll('.tab-dropdown').forEach(dropdown => {
             dropdown.classList.remove('show');
         });
+    }
+    
+    // NEW: Handle bar chart selection/deselection
+    var progressChart = document.getElementById('progressChart');
+    var statsSection = document.querySelector('.analytics-stats-grid');
+    
+    // Check if click is outside chart and stats areas
+    if (progressChart && 
+        !progressChart.contains(event.target) && 
+        (!statsSection || !statsSection.contains(event.target))) {
+        
+        // Deselect all bars
+        var allBars = document.querySelectorAll('.chart-bar');
+        var hasSelected = Array.from(allBars).some(function(bar) {
+            return bar.classList.contains('bar-selected');
+        });
+        
+        if (hasSelected) {
+            allBars.forEach(function(bar) {
+                bar.classList.remove('bar-selected', 'bar-faded');
+                bar.style.opacity = '1';
+                bar.style.transform = 'scale(1)';
+            });
+            
+            // Reset to overall stats
+            updateStatsDisplay();
+        }
     }
 });
 
@@ -21965,8 +21212,10 @@ function updateTaskStatus(date, subject, taskIndex, isCompleted) {
     }
 }
 
+// Updated data access functions that should work with your appState
 function getActiveSubjects() {
     try {
+        // Check if we have an active schedule
         if (!appState || !appState.activeSchedule || !appState.schedules) {
             console.log('No appState, activeSchedule, or schedules found');
             return [];
@@ -21978,7 +21227,13 @@ function getActiveSubjects() {
             return [];
         }
         
-        // Extract ALL unique subjects from weeklySchedule
+        // If subjects array exists, return it
+        if (schedule.subjects && Array.isArray(schedule.subjects)) {
+            console.log('Found subjects:', schedule.subjects);
+            return schedule.subjects.slice(); // Return copy
+        }
+        
+        // Otherwise, extract subjects from weeklySchedule
         var subjects = new Set();
         if (schedule.weeklySchedule) {
             Object.values(schedule.weeklySchedule).forEach(function(dayTasks) {
@@ -21993,7 +21248,7 @@ function getActiveSubjects() {
         }
         
         var subjectsArray = Array.from(subjects);
-        console.log('All subjects found:', subjectsArray);
+        console.log('Extracted subjects from weeklySchedule:', subjectsArray);
         return subjectsArray;
     } catch (error) {
         console.error('Error in getActiveSubjects:', error);
@@ -22090,49 +21345,40 @@ function findTaskById(taskId) {
 }
 
 function getSubjectColor(subject) {
-    var colorMap = {
-        'Geography': '#3b82f6',      // Blue
-        'Computing': '#7c3aed',      // Purple
-        'Maths': '#10b981',          // Green
-        'Mathematics': '#10b981',    // Green (alternative name)
-        'Science': '#eab308',        // Yellow
-        'English': '#ef4444',        // Red
-        'English Literature': '#ef4444', // Red
-        'English Language': '#ef4444',   // Red
-        'History': '#f97316'         // Orange
-    };
-    
-    // Case-insensitive match
-    for (var key in colorMap) {
-        if (subject.toLowerCase() === key.toLowerCase()) {
-            return colorMap[key];
+    // Get color from the schedule where this subject exists
+    for (var scheduleId in appState.schedules) {
+        var schedule = appState.schedules[scheduleId];
+        if (schedule.subjects && Array.isArray(schedule.subjects)) {
+            var index = schedule.subjects.findIndex(function(s) {
+                return s.toLowerCase() === subject.toLowerCase();
+            });
+            
+            if (index !== -1) {
+                // These match your tab colors exactly
+                var colors = ['#3b82f6', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#0891b2', '#8b5cf6', '#06b6d4'];
+                return colors[index % colors.length];
+            }
         }
     }
     
-    return '#3b82f6'; // Default blue
+    return '#3b82f6';
 }
 
 function getSubjectGradient(subject) {
-    var colorMap = {
-        'Geography': 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)',      // Blue
-        'Computing': 'linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%)',      // Purple
-        'Maths': 'linear-gradient(180deg, #10b981 0%, #059669 100%)',          // Green
-        'Mathematics': 'linear-gradient(180deg, #10b981 0%, #059669 100%)',    // Green
-        'Science': 'linear-gradient(180deg, #eab308 0%, #ca8a04 100%)',        // Yellow
-        'English': 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)',        // Red
-        'English Literature': 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)',
-        'English Language': 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)',
-        'History': 'linear-gradient(180deg, #f97316 0%, #ea580c 100%)'         // Orange
+    var color = getSubjectColor(subject);
+    
+    var gradientMap = {
+        '#3b82f6': 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)',
+        '#7c3aed': 'linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%)',
+        '#10b981': 'linear-gradient(180deg, #10b981 0%, #059669 100%)',
+        '#f59e0b': 'linear-gradient(180deg, #f59e0b 0%, #d97706 100%)',
+        '#ef4444': 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)',
+        '#0891b2': 'linear-gradient(180deg, #0891b2 0%, #0e7490 100%)',
+        '#8b5cf6': 'linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%)',
+        '#06b6d4': 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)'
     };
     
-    // Case-insensitive match
-    for (var key in colorMap) {
-        if (subject.toLowerCase() === key.toLowerCase()) {
-            return colorMap[key];
-        }
-    }
-    
-    return 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)'; // Default blue
+    return gradientMap[color] || gradientMap['#3b82f6'];
 }
 
 function calculateTotalTasks() {
@@ -22230,6 +21476,7 @@ function startComparison(subject) {
         var barSubject = bar.getAttribute('data-subject');
         if (barSubject !== subject) {
             bar.classList.add('comparison-desaturated');
+            bar.style.cursor = 'pointer';
         } else {
             bar.classList.add('comparison-selected');
         }
@@ -22239,8 +21486,57 @@ function startComparison(subject) {
         if (compareBtn) compareBtn.style.display = 'none';
     }
     
-    // Show cancel comparison button
-    showCancelComparisonButton();
+    // Show instruction banner
+    showComparisonInstructions(subject);
+}
+
+function showComparisonInstructions(subject) {
+    var chartHeader = document.querySelector('.chart-header');
+    if (!chartHeader) return;
+    
+    var instructionBanner = document.createElement('div');
+    instructionBanner.className = 'comparison-instruction-banner';
+    instructionBanner.style.cssText = `
+        background: var(--accent-blue);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: 16px;
+        animation: slideIn 0.4s ease;
+    `;
+    instructionBanner.innerHTML = `
+        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+        </svg>
+        <span style="font-weight: 600;">Click another subject to compare with ${subject}</span>
+        <button onclick="cancelComparison()" style="
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: auto;
+        ">Cancel</button>
+    `;
+    
+    chartHeader.appendChild(instructionBanner);
+    
+    // Add animation
+    var style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 function cancelComparison() {
@@ -22248,17 +21544,25 @@ function cancelComparison() {
     selectedSubjectForComparison = null;
     hoveredSubject = null;
     
+    // Restore scrolling if modal was open
+    var modal = document.querySelector('.comparison-modal-overlay');
+    if (modal && modal.preventScroll) {
+        document.body.style.overflow = '';
+    }
+    
     // Reset all bars
     var allBars = document.querySelectorAll('.chart-bar');
     for (var i = 0; i < allBars.length; i++) {
         var bar = allBars[i];
         bar.classList.remove('comparison-desaturated', 'comparison-selected', 'comparison-highlight');
+        bar.style.cursor = '';
         var compareBtn = bar.querySelector('.compare-button');
         if (compareBtn) compareBtn.style.display = 'flex';
     }
     
-    // Hide cancel button
-    hideCancelComparisonButton();
+    // Remove instruction banner
+    var banner = document.querySelector('.comparison-instruction-banner');
+    if (banner) banner.remove();
 }
 
 function showCancelComparisonButton() {
@@ -22291,95 +21595,364 @@ function showComparisonView(subject1, subject2) {
     
     var modal = document.createElement('div');
     modal.className = 'comparison-modal-overlay';
-    modal.innerHTML = 
-        '<div class="comparison-modal">' +
-            '<div class="comparison-header">' +
-                '<h2>Subject Comparison</h2>' +
-                '<button class="comparison-close" onclick="closeComparisonView()">' +
-                    '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
-                        '<line x1="18" y1="6" x2="6" y2="18"/>' +
-                        '<line x1="6" y1="6" x2="18" y2="18"/>' +
-                    '</svg>' +
-                '</button>' +
-            '</div>' +
-            '<div class="comparison-content">' +
-                '<div class="comparison-side left-side">' +
-                    '<div class="subject-header color-1">' +
-                        '<h3>' + subject1 + '</h3>' +
-                    '</div>' +
-                    '<div class="comparison-stats">' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Total Tasks</span>' +
-                            '<span class="stat-value">' + data1.totalTasks + '</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Completed</span>' +
-                            '<span class="stat-value">' + data1.completedTasks + '</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Progress</span>' +
-                            '<span class="stat-value">' + data1.progress + '%</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Remaining</span>' +
-                            '<span class="stat-value">' + (data1.totalTasks - data1.completedTasks) + '</span>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="comparison-divider">' +
-                    '<div class="vs-badge">VS</div>' +
-                '</div>' +
-                '<div class="comparison-side right-side">' +
-                    '<div class="subject-header color-2">' +
-                        '<h3>' + subject2 + '</h3>' +
-                    '</div>' +
-                    '<div class="comparison-stats">' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Total Tasks</span>' +
-                            '<span class="stat-value">' + data2.totalTasks + '</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Completed</span>' +
-                            '<span class="stat-value">' + data2.completedTasks + '</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Progress</span>' +
-                            '<span class="stat-value">' + data2.progress + '%</span>' +
-                        '</div>' +
-                        '<div class="stat-item">' +
-                            '<span class="stat-label">Remaining</span>' +
-                            '<span class="stat-value">' + (data2.totalTasks - data2.completedTasks) + '</span>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-        '</div>';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100001;
+        opacity: 0;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    modal.innerHTML = `
+    <div class="comparison-modal" style="
+        background: var(--bg-primary);
+        border-radius: 24px;
+        max-width: 900px;
+        width: 90%;
+        max-height: 85vh;
+        border: 2px solid var(--accent-blue);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        transform: scale(0.9) translateY(20px);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    ">
+        <!-- Sticky Header -->
+        <div class="comparison-header" style="
+            padding: 24px 32px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+            z-index: 10;
+        ">
+            <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 800;">
+                📊 Subject Comparison
+            </h2>
+            <button class="comparison-close" onclick="closeComparisonView()" style="
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+" onmouseover="this.style.background='var(--accent-red, #ef4444)'; this.style.borderColor='var(--accent-red, #ef4444)'; this.querySelector('svg').style.stroke='white'" 
+   onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)'; this.querySelector('svg').style.stroke='var(--text-primary)'">
+    <svg style="width: 20px; height: 20px; transition: all 0.3s ease; stroke: var(--text-primary);" viewBox="0 0 24 24" fill="none" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+</button>
+        </div>
+        
+        <!-- Scrollable Content Area -->
+        <div style="
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        ">
+            <div class="comparison-content" style="
+                display: flex;
+                padding: 40px;
+                gap: 32px;
+                align-items: stretch;
+            ">
+                <div class="comparison-side left-side" style="
+                    flex: 1;
+                    opacity: 0;
+                    transform: translateX(-50px);
+                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-delay: 0.2s;
+                ">
+                    <div class="subject-header" style="
+                        background: ${getSubjectGradient(subject1)};
+                        color: white;
+                        padding: 20px;
+                        border-radius: 16px;
+                        margin-bottom: 24px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    ">
+                        <h3 style="margin: 0; font-size: 1.3rem; font-weight: 800;">${subject1}</h3>
+                    </div>
+                    <div class="comparison-stats">
+                        ${createDetailedStatItem('Total Tasks', data1.totalTasks, '#3b82f6', 'All tasks across all schedules')}
+                        ${createDetailedStatItem('Completed', data1.completedTasks, '#10b981', 'Successfully completed tasks')}
+                        ${createDetailedStatItem('Remaining', data1.totalTasks - data1.completedTasks, '#f59e0b', 'Tasks yet to complete')}
+                        ${createDetailedStatItem('Progress', data1.progress + '%', '#8b5cf6', 'Overall completion rate')}
+                        ${createDetailedStatItem('Completed Today', data1.completedToday, '#06b6d4', 'Tasks finished today')}
+                        ${createDetailedStatItem('Avg. Daily', data1.avgDaily, '#ec4899', 'Average tasks per day')}
+                    </div>
+                </div>
+                
+                <div class="comparison-divider" style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transform: scale(0.8);
+                    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-delay: 0.4s;
+                ">
+                    <div class="vs-badge" style="
+                        width: 60px;
+                        height: 60px;
+                        background: var(--accent-blue);
+                        color: white;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.2rem;
+                        font-weight: 900;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+                    ">VS</div>
+                    <div style="
+                        width: 2px;
+                        flex: 1;
+                        background: linear-gradient(180deg, var(--accent-blue) 0%, transparent 100%);
+                        margin-top: 16px;
+                        min-height: 100px;
+                    "></div>
+                </div>
+                
+                <div class="comparison-side right-side" style="
+                    flex: 1;
+                    opacity: 0;
+                    transform: translateX(50px);
+                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-delay: 0.2s;
+                ">
+                    <div class="subject-header" style="
+                        background: ${getSubjectGradient(subject2)};
+                        color: white;
+                        padding: 20px;
+                        border-radius: 16px;
+                        margin-bottom: 24px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    ">
+                        <h3 style="margin: 0; font-size: 1.3rem; font-weight: 800;">${subject2}</h3>
+                    </div>
+                    <div class="comparison-stats">
+                        ${createDetailedStatItem('Total Tasks', data2.totalTasks, '#3b82f6', 'All tasks across all schedules')}
+                        ${createDetailedStatItem('Completed', data2.completedTasks, '#10b981', 'Successfully completed tasks')}
+                        ${createDetailedStatItem('Remaining', data2.totalTasks - data2.completedTasks, '#f59e0b', 'Tasks yet to complete')}
+                        ${createDetailedStatItem('Progress', data2.progress + '%', '#8b5cf6', 'Overall completion rate')}
+                        ${createDetailedStatItem('Completed Today', data2.completedToday, '#06b6d4', 'Tasks finished today')}
+                        ${createDetailedStatItem('Avg. Daily', data2.avgDaily, '#ec4899', 'Average tasks per day')}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparison Summary (inside scrollable area) -->
+            <div style="
+                padding: 24px 40px;
+                border-top: 2px solid var(--border-color);
+                background: var(--bg-secondary);
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+            ">
+                ${createComparisonSummary(subject1, subject2, data1, data2)}
+            </div>
+        </div>
+    </div>
+`;
     
     document.body.appendChild(modal);
+
+    // Prevent background scrolling
+document.body.style.overflow = 'hidden';
+modal.preventScroll = true; // Flag to track this modal
+
+    // Click outside to close
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeComparisonView();
+        }
+    });
     
-    setTimeout(function() {
-        modal.classList.add('show');
-    }, 10);
+    // ESC key to close
+    function handleEscKey(e) {
+        if (e.key === 'Escape') {
+            closeComparisonView();
+        }
+    }
+    document.addEventListener('keydown', handleEscKey);
+    modal.escHandler = handleEscKey;
+    
+    // Trigger animations
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        var modalContent = modal.querySelector('.comparison-modal');
+        if (modalContent) {
+            modalContent.style.transform = 'scale(1) translateY(0)';
+        }
+        
+        // Animate sides with stagger
+        setTimeout(() => {
+            var leftSide = modal.querySelector('.left-side');
+            var rightSide = modal.querySelector('.right-side');
+            var divider = modal.querySelector('.comparison-divider');
+            
+            if (leftSide) {
+                leftSide.style.opacity = '1';
+                leftSide.style.transform = 'translateX(0)';
+            }
+            if (rightSide) {
+                rightSide.style.opacity = '1';
+                rightSide.style.transform = 'translateX(0)';
+            }
+            if (divider) {
+                divider.style.opacity = '1';
+                divider.style.transform = 'scale(1)';
+            }
+        }, 200);
+    }, 50);
+}
+
+function createDetailedStatItem(label, value, color, description) {
+    return `
+        <div class="stat-item" style="
+            padding: 16px 20px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid ${color};
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        " onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" 
+           onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="color: var(--text-secondary); font-weight: 600; font-size: 0.9rem;">${label}</span>
+                <span style="color: var(--text-primary); font-weight: 800; font-size: 1.3rem;">${value}</span>
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.75rem;">${description}</div>
+        </div>
+    `;
+}
+
+function createComparisonSummary(subject1, subject2, data1, data2) {
+    var winner = '';
+    var winnerColor = '';
+    
+    if (data1.progress > data2.progress) {
+        winner = subject1 + ' is ahead';
+        winnerColor = getSubjectColor(subject1);
+    } else if (data2.progress > data1.progress) {
+        winner = subject2 + ' is ahead';
+        winnerColor = getSubjectColor(subject2);
+    } else {
+        winner = 'Both subjects are tied';
+        winnerColor = '#8b5cf6';
+    }
+    
+    var progressDiff = Math.abs(data1.progress - data2.progress);
+    
+    return `
+        <div style="
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid ${winnerColor};
+            text-align: center;
+        ">
+            <h4 style="margin: 0 0 8px 0; color: ${winnerColor}; font-weight: 800; font-size: 1.1rem;">
+                ${winner}
+            </h4>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                ${progressDiff > 0 ? `Progress difference: ${progressDiff}%` : 'Equal progress'}
+            </p>
+        </div>
+    `;
 }
 
 function getSubjectComparisonData(subject) {
-    var totalTasks = getSubjectTotalTasks(subject);
-    var completedTasks = getSubjectCompletedTasks(subject);
+    var totalTasks = 0;
+    var completedTasks = 0;
+    var completedToday = 0;
+    var today = new Date().toISOString().split('T')[0];
+    var daysWithTasks = new Set();
+    
+    Object.entries(appState.schedules || {}).forEach(function([scheduleId, schedule]) {
+        if (schedule.weeklySchedule) {
+            Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
+                if (Array.isArray(dayTasks)) {
+                    dayTasks.forEach(function(task, idx) {
+                        if (task.subject === subject) {
+                            totalTasks++;
+                            daysWithTasks.add(day);
+                            
+                            var taskId = scheduleId + '_' + day + '_' + idx;
+                            if (schedule.completedTasks && schedule.completedTasks[taskId]) {
+                                completedTasks++;
+                                
+                                // Check if completed today
+                                var completionDate = localStorage.getItem('taskCompleted_' + taskId);
+                                if (completionDate === today) {
+                                    completedToday++;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+    
+    var avgDaily = daysWithTasks.size > 0 ? (totalTasks / daysWithTasks.size).toFixed(1) : 0;
     var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
     
     return {
         totalTasks: totalTasks,
         completedTasks: completedTasks,
-        progress: progress
+        completedToday: completedToday,
+        progress: progress,
+        avgDaily: avgDaily,
+        daysActive: daysWithTasks.size
     };
 }
 
 function closeComparisonView() {
     var modal = document.querySelector('.comparison-modal-overlay');
     if (modal) {
-        modal.classList.remove('show');
+        // Remove ESC key listener
+        if (modal.escHandler) {
+            document.removeEventListener('keydown', modal.escHandler);
+        }
+        
+        // Restore background scrolling
+        if (modal.preventScroll) {
+            document.body.style.overflow = '';
+        }
+        
+        modal.style.opacity = '0';
+        var modalContent = modal.querySelector('.comparison-modal');
+        if (modalContent) {
+            modalContent.style.transform = 'scale(0.9) translateY(20px)';
+        }
+        
         setTimeout(function() {
-            modal.remove();
+            if (modal.parentNode) {
+                modal.remove();
+            }
             cancelComparison();
         }, 300);
     }
@@ -22390,34 +21963,73 @@ function updateProgressChart() {
         var chartContainer = document.getElementById('progressChart');
         if (!chartContainer) return;
         
-        var subjects = getActiveSubjects();
+       // Replace the section that collects subjects data
+var allSubjects = {};
+
+Object.entries(appState.schedules || {}).forEach(function([scheduleId, schedule]) {
+    if (schedule.weeklySchedule) {
+        // First pass: count all tasks
+        Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
+            if (Array.isArray(dayTasks)) {
+                dayTasks.forEach(function(task) {
+                    var subject = task.subject;
+                    if (!allSubjects[subject]) {
+                        allSubjects[subject] = {
+                            total: 0,
+                            completed: 0
+                        };
+                    }
+                    allSubjects[subject].total++;
+                });
+            }
+        });
         
-        console.log('Found subjects:', subjects); // Debug log
+        // Second pass: count completed tasks
+        Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
+            if (Array.isArray(dayTasks)) {
+                dayTasks.forEach(function(task, taskIndex) {
+                    var subject = task.subject;
+                    var taskId = scheduleId + '_' + day + '_' + taskIndex;
+                    
+                    if (schedule.completedTasks && schedule.completedTasks[taskId] === true) {
+                        allSubjects[subject].completed++;
+                    }
+                });
+            }
+        });
+    }
+});
+        
+        var subjects = Object.keys(allSubjects);
+        console.log('All subjects across all schedules:', subjects);
+        console.log('Subject data:', allSubjects);
         
         if (subjects.length === 0) {
             chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><h3>No schedule data found</h3><p>Create a schedule in the Home page to see your progress here</p></div>';
             return;
         }
         
-        // Clear and set up container
-        chartContainer.innerHTML = '';
-        chartContainer.style.cssText = `
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: flex-end;
-            gap: 24px;
-            padding: 20px 40px;
-            min-height: 350px;
-            position: relative;
-        `;
+        // Clear and set up container with Y-axis
+chartContainer.innerHTML = '';
+chartContainer.style.cssText = `
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 24px;
+    padding: 20px 40px 20px 60px;
+    min-height: 350px;
+    position: relative;
+    flex-wrap: wrap;
+`;
         
         subjects.forEach(function(subject, index) {
-            var totalTasks = getSubjectTotalTasks(subject);
-            var completedTasks = getSubjectCompletedTasks(subject);
+            var data = allSubjects[subject];
+            var totalTasks = data.total;
+            var completedTasks = data.completed;
             var progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
             
-            console.log('Creating bar for:', subject, 'Progress:', progress + '%'); // Debug log
+            console.log('Creating bar for:', subject, 'Progress:', progress + '%', 'Tasks:', completedTasks + '/' + totalTasks);
             
             var barElement = document.createElement('div');
             barElement.className = 'chart-bar';
@@ -22441,49 +22053,179 @@ function updateProgressChart() {
                     'Compare' +
                 '</div>' : '';
             
-            // Ensure minimum height for visibility even at 0%
             var displayHeight = progress === 0 ? 5 : Math.max(progress, 8);
             
             barElement.innerHTML = 
-                '<div class="bar-container" style="height: ' + displayHeight + '%; width: 100%; transition: height 1s ease; border-radius: 12px 12px 0 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-height: 40px;" data-progress="' + progress + '">' +
-                    '<div class="bar-value" style="font-size: 0.75rem; font-weight: 600; margin-bottom: 4px;">' + completedTasks + '/' + totalTasks + '</div>' +
-                    '<div class="bar-progress-text" style="font-size: 1.1rem; font-weight: 800;">0%</div>' +
-                '</div>' +
-                '<div class="bar-label" style="margin-top: 12px; font-weight: 700; text-align: center; word-break: break-word;">' + subject + '</div>' +
-                compareButtonHTML;
+    '<div class="bar-container" style="' +
+        'height: 5%;' +
+        'width: 100%;' +
+        'transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);' +
+        'border-radius: 12px 12px 0 0;' +
+        'position: relative;' +
+        'display: flex;' +
+        'flex-direction: column;' +
+        'align-items: center;' +
+        'justify-content: center;' +
+        'min-height: 80px;' +
+        'padding: 12px 8px;' +
+    '" data-progress="' + progress + '">' +
+        '<div class="bar-progress-text" style="' +
+            'font-size: 1.5rem;' +
+            'font-weight: 900;' +
+            'color: white;' +
+            'text-shadow: 0 2px 4px rgba(0,0,0,0.5);' +
+            'margin-bottom: 6px;' +
+            'z-index: 10;' +
+            'line-height: 1;' +
+        '">0%</div>' +
+        '<div class="bar-value" style="' +
+            'font-size: 0.85rem;' +
+            'font-weight: 600;' +
+            'color: rgba(255,255,255,0.95);' +
+            'text-shadow: 0 1px 2px rgba(0,0,0,0.4);' +
+            'z-index: 10;' +
+            'white-space: nowrap;' +
+        '">' + completedTasks + '/' + totalTasks + '</div>' +
+    '</div>' +
+    '<div class="bar-label" style="margin-top: 12px; font-weight: 700; text-align: center; word-break: break-word; color: var(--text-primary);">' + subject + '</div>' +
+    // FIXED COMPARE BUTTON - Small and horizontal
+    '<button class="compare-button" onclick="event.stopPropagation(); startComparison(\'' + subject + '\')" style="' +
+    'position: absolute;' +
+    'top: -10px;' +  // CHANGED THIS VALUE
+    'left: 50%;' +
+    'transform: translateX(-50%) translateY(10px);' +
+    'opacity: 0;' +
+    'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);' +
+    'padding: 6px 12px;' +
+    'background: var(--accent-blue);' +
+    'color: white;' +
+    'border: none;' +
+    'border-radius: 6px;' +
+    'font-size: 0.75rem;' +
+    'font-weight: 600;' +
+    'cursor: pointer;' +
+    'display: inline-flex;' +
+    'flex-direction: row;' +
+    'align-items: center;' +
+    'justify-content: center;' +
+    'gap: 4px;' +
+    'white-space: nowrap;' +
+    'box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);' +
+    'pointer-events: none;' +
+    'z-index: 100;' +
+    'height: 28px;' +
+    'min-width: 80px;' +
+    '">' +
+        '<svg style="width: 12px; height: 12px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+            '<path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+            '<path d="M19 11h-4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>' +
+        '</svg>' +
+        '<span style="line-height: 1;">Compare</span>' +
+    '</button>';
             
             chartContainer.appendChild(barElement);
+
+            function selectBar(subject) {
+    var allBars = document.querySelectorAll('.chart-bar');
+    var clickedBar = document.querySelector('[data-subject="' + subject + '"]');
+    
+    // Check if this bar is already selected
+    var isAlreadySelected = clickedBar && clickedBar.classList.contains('bar-selected');
+    
+    if (isAlreadySelected) {
+        // Deselect - return all bars to normal
+        allBars.forEach(function(bar) {
+            bar.classList.remove('bar-selected', 'bar-faded');
+            bar.style.opacity = '1';
+            bar.style.transform = 'scale(1)';
+        });
+        
+        // Reset stats to overall stats
+        updateStatsDisplay();
+        showAlert('Showing overall statistics', 'info');
+    } else {
+        // Select this bar, fade others
+        allBars.forEach(function(bar) {
+            var barSubject = bar.getAttribute('data-subject');
             
-            // Add event listeners for comparison
-            if (subjects.length > 1) {
-                (function(subjectName) {
-                    barElement.addEventListener('mouseenter', function() { handleBarHover(subjectName, true); });
-                    barElement.addEventListener('mouseleave', function() { handleBarHover(subjectName, false); });
-                    barElement.addEventListener('click', function() { handleBarClick(subjectName); });
-                })(subject);
+            if (barSubject === subject) {
+                bar.classList.add('bar-selected');
+                bar.classList.remove('bar-faded');
+                bar.style.opacity = '1';
+                bar.style.transform = 'scale(1.05)';
+                bar.style.transition = 'all 0.3s ease';
+            } else {
+                bar.classList.remove('bar-selected');
+                bar.classList.add('bar-faded');
+                bar.style.opacity = '0.3';
+                bar.style.transform = 'scale(1)';
+                bar.style.transition = 'all 0.3s ease';
             }
+        });
+        
+        // Update stats to show this subject's data
+        showSubjectStats(subject);
+    }
+}
             
-            // Animate bars with delay
+            // Add event listeners for ALL bars
+(function(element, subjectName) {
+    var compareBtn = element.querySelector('.compare-button');
+    
+    element.addEventListener('mouseenter', function() {
+        if (compareBtn && !comparisonMode && !element.classList.contains('bar-selected')) {
+            compareBtn.style.opacity = '1';
+            compareBtn.style.transform = 'translateX(-50%) translateY(0)';
+            compareBtn.style.pointerEvents = 'auto';
+        }
+    });
+    
+    element.addEventListener('mouseleave', function() {
+        if (compareBtn && !comparisonMode && !element.classList.contains('bar-selected')) {
+            compareBtn.style.opacity = '0';
+            compareBtn.style.transform = 'translateX(-50%) translateY(10px)';
+            compareBtn.style.pointerEvents = 'none';
+        }
+    });
+    
+    // Main click handler for selecting a bar
+    element.addEventListener('click', function(e) {
+        // Don't trigger if clicking the compare button
+        if (e.target.closest('.compare-button')) return;
+        
+        if (comparisonMode && selectedSubjectForComparison && subjectName !== selectedSubjectForComparison) {
+            handleBarClick(subjectName);
+        } else if (!comparisonMode) {
+            selectBar(subjectName);
+        }
+    });
+})(barElement, subject);
+            
             setTimeout(function() {
-                var barContainer = barElement.querySelector('.bar-container');
-                var progressText = barElement.querySelector('.bar-progress-text');
-                
-                // Set final height
-                var finalHeight = progress === 0 ? 5 : Math.max(progress, 8);
-                barContainer.style.height = finalHeight + '%';
-                
-                // Animate the percentage text
-                animateNumber(progressText, 0, progress, 1000, '%');
-                
-                // Apply subject color
-                barContainer.style.background = getSubjectGradient(subject);
-                
-                if (progress > 15) {
-                    barContainer.classList.add('show-text');
-                }
-                
-                console.log('Animated bar for', subject, '- Total:', totalTasks, 'Completed:', completedTasks, 'Progress:', progress + '%');
-            }, index * 200 + 300);
+    var barContainer = barElement.querySelector('.bar-container');
+    var progressText = barElement.querySelector('.bar-progress-text');
+    
+    if (!barContainer || !progressText) return;
+    
+    // Set gradient background IMMEDIATELY
+    var gradient = getSubjectGradient(subject);
+    barContainer.style.background = gradient;
+    
+    // Animate to final height
+    requestAnimationFrame(function() {
+        setTimeout(function() {
+            var finalHeight = Math.max(progress, 15); // Minimum 15% for text visibility
+            barContainer.style.height = finalHeight + '%';
+            
+            // Always animate the percentage
+            animateNumber(progressText, 0, progress, 1200, '%');
+            
+            // Always show text (remove the conditional)
+            progressText.style.opacity = '1';
+            barContainer.querySelector('.bar-value').style.opacity = '1';
+        }, 100);
+    });
+}, index * 150 + 200);
         });
         
         updateChartSummary();
@@ -22807,6 +22549,12 @@ function toggleTaskComplete(taskId) {
     
     // Save the state
     saveAppState();
+
+     if (newStatus) {
+        // Save completion date
+        var today = new Date().toISOString().split('T')[0];
+        localStorage.setItem('taskCompleted_' + taskId, today);
+    }
     
     // Update the UI immediately
     var taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
@@ -22900,6 +22648,113 @@ function onTaskStatusChangeForAppState(subject, taskId, isCompleted) {
         isCompleted ? 'Task completed!' : 'Task unmarked', 
         isCompleted ? 'success' : 'info'
     );
+}
+
+function showSubjectStats(subject) {
+    var data = getSubjectDetailedStats(subject);
+    
+    // Update the stats display with subject-specific data
+    var totalTasksEl = document.getElementById('totalTasks');
+    var completedTasksEl = document.getElementById('completedTasks');
+    var remainingTasksEl = document.getElementById('remainingTasks');
+    var completionRateEl = document.getElementById('completionRate');
+    
+    if (totalTasksEl) totalTasksEl.textContent = data.totalTasks;
+    if (completedTasksEl) completedTasksEl.textContent = data.completed;
+    if (remainingTasksEl) remainingTasksEl.textContent = data.totalTasks - data.completed;
+    if (completionRateEl) completionRateEl.textContent = data.completionRate + '%';
+    
+    // Update other relevant stats
+    var mostActiveSubjectEl = document.getElementById('mostActiveSubject');
+    if (mostActiveSubjectEl) mostActiveSubjectEl.textContent = subject;
+    
+    // Show which subject is selected
+    showAlert('Showing statistics for ' + subject, 'info');
+}
+
+function getSubjectDetailedStats(subject) {
+    var total = 0;
+    var completed = 0;
+    var completedToday = 0;
+    var today = new Date().toISOString().split('T')[0];
+    
+    Object.entries(appState.schedules || {}).forEach(function([scheduleId, schedule]) {
+        if (schedule.weeklySchedule) {
+            Object.entries(schedule.weeklySchedule).forEach(function([day, dayTasks]) {
+                dayTasks.forEach(function(task, idx) {
+                    if (task.subject === subject) {
+                        total++;
+                        var taskId = scheduleId + '_' + day + '_' + idx;
+                        if (schedule.completedTasks && schedule.completedTasks[taskId]) {
+                            completed++;
+                            // Check if completed today (you'd need to track completion dates)
+                            var completionDate = localStorage.getItem('taskCompleted_' + taskId);
+                            if (completionDate === today) {
+                                completedToday++;
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    });
+    
+    return {
+        totalTasks: total,
+        completed: completed,
+        completedToday: completedToday,
+        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0
+    };
+}
+
+function updateStudyTimeDisplay() {
+    var hours = Math.floor(totalStudyTimeSeconds / 3600);
+    var minutes = Math.floor((totalStudyTimeSeconds % 3600) / 60);
+    
+    var totalTimeEl = document.querySelector('#studyTimeAnalytics .stat-item:nth-child(1) .stat-value');
+    if (totalTimeEl) {
+        totalTimeEl.textContent = hours + 'h ' + minutes + 'm';
+    }
+    
+    // Calculate average session (assume each flashcard session)
+    var sessions = parseInt(localStorage.getItem('studySessions') || '1');
+    var avgMinutes = Math.floor(totalStudyTimeSeconds / 60 / sessions);
+    
+    var avgTimeEl = document.querySelector('#studyTimeAnalytics .stat-item:nth-child(2) .stat-value');
+    if (avgTimeEl) {
+        avgTimeEl.textContent = '0h ' + avgMinutes + 'm';
+    }
+}
+
+function confirmFlashcardDelete(flashcardId, modal) {
+    // Find the flashcard element
+    const flashcardElement = document.querySelector(`[data-flashcard-id="${flashcardId}"]`);
+    
+    // Animate out
+    if (flashcardElement) {
+        flashcardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        flashcardElement.style.transform = 'scale(0.8) translateY(-20px)';
+        flashcardElement.style.opacity = '0';
+    }
+    
+    // Close modal
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+    
+    // Delete after animation
+    setTimeout(() => {
+        // Remove from array
+        flashcards = flashcards.filter(f => f.id != flashcardId);
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Update display
+        displayFlashcards();
+        updateSidebarStats();
+        
+        showAlert('Flashcard deleted successfully', 'success');
+    }, 400);
 }
     </script>
 </body>
