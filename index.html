@@ -15547,27 +15547,28 @@ async function analyzeImageWithGemini(imageData, subject) {
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision-latest:generateContent?key=${GEMINI_API_KEY}`;
 
         const requestBody = {
-            contents: [
+            input: [
                 {
-                    text: `Analyze this ${subject} study material image. Provide:
+                    text_segments: [
+                        {
+                            text: `Analyze this ${subject} study material image. Provide:
 1. A detailed explanation of what's shown
 2. Key concepts to remember
 3. Study questions based on the content
 4. Memory tips for better retention
 
-Focus on GCSE level understanding for ${subject}.`,
+Focus on GCSE level understanding for ${subject}.`
+                        }
+                    ],
                     image: {
                         mime_type: "image/jpeg",
                         data: base64Image
                     }
                 }
             ],
-            generationConfig: {
-                temperature: 0.4,
-                topK: 32,
-                topP: 1,
-                maxOutputTokens: 2048
-            }
+            candidate_count: 1,
+            temperature: 0.4,
+            max_output_tokens: 2048
         };
 
         console.log('Making request to:', apiUrl);
