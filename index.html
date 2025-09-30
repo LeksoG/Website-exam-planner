@@ -15705,69 +15705,6 @@ async function analyzeImageWithGeminiWithFallback(imageData, subject) {
     }
 }
 
-async function analyzeImageWithGeminiModel(imageData, subject, model) {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not available');
-    }
-    
-    let base64Image = imageData;
-    if (imageData.startsWith('data:')) {
-        base64Image = imageData.split(',')[1];
-    }
-    
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-    
-    const requestBody = {
-        contents: [{
-            parts: [
-                {
-                    text: `Analyze this ${subject} study material image. Provide:
-                    1. A detailed explanation of what's shown
-                    2. Key concepts to remember
-                    3. Study questions based on the content
-                    4. Memory tips for better retention
-                    
-                    Focus on GCSE level understanding for ${subject}.`
-                },
-                {
-                    inline_data: {
-                        mime_type: "image/jpeg",
-                        data: base64Image
-                    }
-                }
-            ]
-        }],
-        generationConfig: {
-            temperature: 0.4,
-            topK: 32,
-            topP: 1,
-            maxOutputTokens: 2048,
-        }
-    };
-    
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-    });
-    
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`API Error for model ${model}:`, response.status, errorText);
-        throw new Error(`API request failed for ${model}: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        throw new Error(`Invalid response format from ${model}`);
-    }
-    
-    const analysisText = data.candidates[0].content.parts[0].text;
-    return parseGeminiResponse(analysisText, subject);
-}
 
 // Missing fallback functions that your code needs
 function createBasicFlashcardFromImage(file, subject) {
