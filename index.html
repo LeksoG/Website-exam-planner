@@ -9731,14 +9731,14 @@ async function loadConfig() {
             GOOGLE_API_KEY = config.GOOGLE_API_KEY;
         }
         
-        // Update OpenAI API key
-if (config.OPENAI_API_KEY) {
-    OPENAI_API_KEY = config.OPENAI_API_KEY;
-    console.log('✅ OpenAI API key loaded successfully');
-} else {
-    console.warn('⚠️ OpenAI API key not found in config response');
-    console.log('Available config keys:', Object.keys(config));
-}
+        // Update Gemini API key
+        if (config.GEMINI_API_KEY) {
+            GEMINI_API_KEY = config.GEMINI_API_KEY;
+            console.log('✅ Gemini API key loaded successfully');
+        } else {
+            console.warn('⚠️ Gemini API key not found in config response');
+            console.log('Available config keys:', Object.keys(config));
+        }
         
         // Update EmailJS config
         if (config.EMAILJS_SERVICE_ID) {
@@ -9753,7 +9753,7 @@ if (config.OPENAI_API_KEY) {
         console.log('Configuration loaded successfully');
         console.log('Google Client ID set:', !!GOOGLE_CLIENT_ID);
         console.log('Google API Key set:', !!GOOGLE_API_KEY);
-        console.log('OpenAI API Key set:', !!OPENAI_API_KEY);
+        console.log('Gemini API Key set:', !!GEMINI_API_KEY);
         console.log('EmailJS config set:', !!EMAILJS_CONFIG.publicKey);
         
         return config;
@@ -9822,8 +9822,7 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 let configLoaded = false;
-// NEW - OpenAI
-let OPENAI_API_KEY = null;
+let GEMINI_API_KEY = null;
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -15536,8 +15535,8 @@ function triggerHaptic(element) {
     }, 300);
 }
 
-async function analyzeImageWithOpenAI(imageData, subject) {
-    if (!OPENAI_API_KEY) throw new Error('OpenAI API key not available');
+async function analyzeImageWithGemini(imageData, subject) {
+    if (!GEMINI_API_KEY) throw new Error('Gemini API key not available');
 
     try {
         let base64Image = imageData;
@@ -15545,19 +15544,13 @@ async function analyzeImageWithOpenAI(imageData, subject) {
             base64Image = imageData.split(',')[1];
         }
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "gpt-4o", // or "gpt-4-vision-preview"
-                messages: [{
-                    role: "user",
-                    content: [
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+        const requestBody = {
+            input: [
+                {
+                    text_segments: [
                         {
-                            type: "text",
                             text: `Analyze this ${subject} study material image. Provide:
 1. A detailed explanation of what's shown
 2. Key concepts to remember
@@ -15565,30 +15558,40 @@ async function analyzeImageWithOpenAI(imageData, subject) {
 4. Memory tips for better retention
 
 Focus on GCSE level understanding for ${subject}.`
-                        },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: `data:image/jpeg;base64,${base64Image}`
-                            }
                         }
-                    ]
-                }],
-                max_tokens: 2048,
-                temperature: 0.4
-            })
+                    ],
+                    image: {
+                        mime_type: "image/jpeg",
+                        data: base64Image
+                    }
+                }
+            ],
+            candidate_count: 1,
+            temperature: 0.4,
+            max_output_tokens: 2048
+        };
+
+        console.log('Making request to:', apiUrl);
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('OpenAI API Error:', response.status, errorText);
+            console.error('API Response Status:', response.status);
+            console.error('API Response Text:', await response.text());
             throw new Error(`API request failed: ${response.status}`);
         }
 
         const data = await response.json();
-        const analysisText = data.choices[0].message.content;
-        
-        return parseGeminiResponse(analysisText, subject); // Keep same parser
+        console.log('Gemini API Response:', data);
+
+        const analysisText = data.candidates?.[0]?.content?.[0]?.text;
+        if (!analysisText) throw new Error('Invalid response format from Gemini API');
+
+        return parseGeminiResponse(analysisText, subject);
 
     } catch (error) {
         console.error('Image Analysis Error:', error);
@@ -16403,13 +16406,13 @@ async function processUploadedImagesForFlashcards(subjects) {
     console.log('Ensuring configuration is loaded...');
     await ensureConfigLoaded();
     
-    if (!OPENAI_API_KEY) {
-    console.warn('OpenAI API key still not available after config load. Skipping AI analysis.');
-    showAlert('AI analysis unavailable. Creating basic flashcards instead.', 'info');
-    
-    // Create basic flashcards without AI analysis
-    return createBasicFlashcardsFromImages(subjects);
-}
+    if (!GEMINI_API_KEY) {
+        console.warn('Gemini API key still not available after config load. Skipping AI analysis.');
+        showAlert('AI analysis unavailable. Creating basic flashcards instead.', 'info');
+        
+        // Create basic flashcards without AI analysis
+        return createBasicFlashcardsFromImages(subjects);
+    }
     
     const processedFlashcards = [];
     
@@ -16437,9 +16440,9 @@ async function processUploadedImagesForFlashcards(subjects) {
             }
             
             try {
-                // Call OpenAI API to analyze the image
-console.log(`Analyzing ${file.name} with OpenAI API for ${subject}...`);
-const analysis = await analyzeImageWithOpenAI(file.data, subject);
+                // Call Gemini API to analyze the image
+                console.log(`Analyzing ${file.name} with Gemini API for ${subject}...`);
+                const analysis = await analyzeImageWithGemini(file.data, subject);
                 
                 // Create flashcard with AI analysis
                 const flashcard = {
@@ -17828,17 +17831,15 @@ async function translateKeyTerm(term, subject) {
 }
 
 async function getAIExplanation(term, subject) {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [{
-                role: "user",
-                content: `Provide a clear, concise explanation of the term "${term}" in the context of ${subject}. 
+            contents: [{
+                parts: [{
+                    text: `Provide a clear, concise explanation of the term "${term}" in the context of ${subject}. 
 
 Include:
 1. Definition
@@ -17847,9 +17848,13 @@ Include:
 4. A simple example if applicable
 
 Keep the explanation focused and educational, suitable for GCSE level students.`
+                }]
             }],
-            temperature: 0.3,
-            max_tokens: 300
+            generationConfig: {
+                temperature: 0.3,
+                topP: 0.8,
+                maxOutputTokens: 300,
+            }
         })
     });
 
@@ -17858,7 +17863,7 @@ Keep the explanation focused and educational, suitable for GCSE level students.`
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    return data.candidates[0].content.parts[0].text;
 }
 
 function closeTranslationModal() {
@@ -17886,30 +17891,93 @@ function revealContentWithWordGlow(content) {
     startWordGlowReveal(textarea, content);
 }
 
-async function callOpenAIForStructure(content, structureType, subject) {
+async function callGeminiForStructure(content, structureType, subject) {
     try {
-        if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-openai-api-key') {
-            throw new Error('OpenAI API key not configured.');
+
+        // Check if API key is available
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key') {
+            throw new Error('Gemini API key not configured. Using fallback response.');
         }
 
         const enhancedPrompts = {
-            // ... keep your existing prompts ...
+            bullet: `Transform the following ${subject} study notes into a well-organized bullet point format with HIGHLIGHTED KEY TERMS. Create clear, scannable bullet points with:
+
+- Main topics as primary bullets
+- Subtopics as secondary bullets (indented)
+- Key facts and details as tertiary bullets
+- **IMPORTANT**: Wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Use consistent formatting throughout
+- Keep each bullet point concise but complete
+- Group related information together
+- Add spacing between major sections
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Please restructure this into professional bullet points with highlighted key terms that are easy to study from.`,
+
+            outline: `Convert the following ${subject} study notes into a clear, hierarchical outline format with HIGHLIGHTED KEY TERMS. Structure it with:
+
+I. Main Topics (Roman numerals)
+   A. Subtopics (Capital letters)
+      1. Key points (Numbers)
+         a. Supporting details (Lowercase letters)
+            i. Specific examples (Lowercase Roman numerals)
+
+Requirements:
+- Use proper outline formatting
+- **IMPORTANT**: Wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Create logical hierarchy
+- Group related concepts together
+- Include all important information
+- Make it easy to follow and study
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Transform this into a structured outline format with highlighted key terms.`,
+
+            qa: `Convert the following ${subject} study notes into a comprehensive Question & Answer format with HIGHLIGHTED KEY TERMS for effective studying:
+
+Create questions that:
+- Test key concepts and understanding
+- Cover all major topics mentioned
+- Range from basic recall to application
+- Include "what," "why," "how," and "when" questions
+- **IMPORTANT**: In answers, wrap all key terms, concepts, definitions, and important facts in [HIGHLIGHT]...[/HIGHLIGHT] tags
+- Follow each question immediately with a clear, complete answer
+
+Format each as:
+Q: [Clear, specific question]
+A: [Detailed, accurate answer with highlighted key terms]
+
+Group questions by topic where logical.
+
+Subject: ${subject}
+Original Notes:
+${content}
+
+Transform this into effective Q&A study format with highlighted key terms.`
         };
         
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: "gpt-4o-mini", // or "gpt-4o" for better quality
-                messages: [{
-                    role: "user",
-                    content: enhancedPrompts[structureType]
+                contents: [{
+                    parts: [{
+                        text: enhancedPrompts[structureType]
+                    }]
                 }],
-                temperature: 0.3,
-                max_tokens: 1500
+                generationConfig: {
+                    temperature: 0.3,
+                    topP: 0.8,
+                    maxOutputTokens: 1500,
+                }
             })
         });
 
@@ -17918,16 +17986,20 @@ async function callOpenAIForStructure(content, structureType, subject) {
         }
 
         const data = await response.json();
-        const structuredContent = data.choices[0].message.content;
         
-        // Rest of your existing code...
-        if (structureType === 'qa') {
-            aiGeneratedQuestions = extractQuestionsFromAIContent(structuredContent);
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const structuredContent = data.candidates[0].content.parts[0].text;
+            
+            // Extract questions if this is Q&A format
+            if (structureType === 'qa') {
+                aiGeneratedQuestions = extractQuestionsFromAIContent(structuredContent);
+                console.log('AI Generated Questions:', aiGeneratedQuestions);
+            }
+            
+            const highlightedContent = processHighlightedContent(structuredContent, subject);
+            revealContentWithWordGlow(highlightedContent);
+            showAlert('Notes structured successfully!', 'success');
         }
-        
-        const highlightedContent = processHighlightedContent(structuredContent, subject);
-        revealContentWithWordGlow(highlightedContent);
-        showAlert('Notes structured successfully!', 'success');
         
     } catch (error) {
         console.error('AI Structure Error:', error);
