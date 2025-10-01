@@ -17382,15 +17382,15 @@ function openFlashcardInterface(flashcardId, event) {
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     ">
         <div style="flex: 1; display: flex; flex-direction: column;">
-            <textarea 
-                id="flashcardNotesTextarea"
-                placeholder="Start writing your study notes here..."
-                style="width: 100%; height: 100%; padding: 24px; border: 2px solid var(--border-color); border-radius: 16px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; line-height: 1.8; resize: none; outline: none; transition: all 0.2s ease; font-family: inherit;" 
-                oninput="autoSaveNotes()"
-                onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
-            >${processHighlightedContent(flashcard.notes || '', flashcard.subject)}</textarea>
-        </div>
+            <div 
+    id="flashcardNotesTextarea"
+    contenteditable="true"
+    placeholder="Start writing your study notes here..."
+    style="width: 100%; height: 100%; padding: 24px; border: 2px solid var(--border-color); border-radius: 16px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; line-height: 1.8; resize: none; outline: none; transition: all 0.2s ease; font-family: inherit; overflow-y: auto;" 
+    oninput="autoSaveNotes()"
+    onfocus="this.style.borderColor='var(--accent-blue)'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+    onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'"
+>${flashcard.notes || 'Start writing your study notes here...'}</div>
         
         ${flashcard.imageData ? `
             <div style="flex: 0 0 300px; position: sticky; top: 0; max-height: 100%;">
@@ -17791,24 +17791,24 @@ function handleStructureOutsideClick(event) {
     }
 }
 
-// Enhanced AI Structure functionality
 function applyAIStructure(type) {
     hideStructureDropdown();
     
-    const textarea = document.getElementById('flashcardNotesTextarea');
-    if (!textarea || !textarea.value.trim()) {
-        showAlert('Please add some notes first before applying AI structure', 'error');
+    const notesDiv = document.getElementById('flashcardNotesTextarea');
+    if (!notesDiv || !notesDiv.textContent?.trim()) {
+        showAlert('Please add some notes first', 'error');
         return;
     }
     
     const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
     if (!flashcard) return;
     
-    // Show enhanced wave animation with structure type
+    console.log('🔄 Restructuring with type:', type);
     showEnhancedAIAnimation(type);
     
-    // Call Gemini API to restructure content
-    callGeminiForStructure(textarea.value, type, flashcard.subject);
+    // Get text content only (no HTML)
+    const content = notesDiv.textContent || notesDiv.innerText;
+    callGeminiForStructure(content, type, flashcard.subject);
 }
 
 function showEnhancedAIAnimation(structureType) {
@@ -18088,14 +18088,20 @@ function copyExplanation(text) {
 }
 
 function revealContentWithWordGlow(content) {
-    const textarea = document.getElementById('flashcardNotesTextarea');
-    if (!textarea) return;
+    const notesDiv = document.getElementById('flashcardNotesTextarea');
+    if (!notesDiv) return;
     
-    // Hide the enhanced AI animation
     hideEnhancedAIAnimation();
     
-    // Start the word-by-word reveal with highlighting support
-    startWordGlowReveal(textarea, content);
+    // Set HTML content directly
+    notesDiv.innerHTML = content;
+    notesDiv.focus();
+    autoSaveNotes();
+    
+    setTimeout(() => {
+        animateKeyHighlights();
+        showFollowUpPrompt();
+    }, 400);
 }
 
 async function callGeminiForStructure(content, structureType, subject) {
@@ -20886,10 +20892,11 @@ function updateLastSavedTime() {
 }
 
 function updateWordCount() {
-    const textarea = document.getElementById('flashcardNotesTextarea');
+    const notesDiv = document.getElementById('flashcardNotesTextarea');
     const countElement = document.getElementById('wordCount');
-    if (textarea && countElement) {
-        const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);
+    if (notesDiv && countElement) {
+        const text = notesDiv.textContent || notesDiv.innerText || '';
+        const words = text.trim().split(/\s+/).filter(word => word.length > 0);
         countElement.textContent = words.length;
     }
 }
@@ -21315,10 +21322,9 @@ async function handleFiles(files) {
                 console.log('🤖 Calling Gemini for:', file.name);
                 showAlert('Analyzing with AI...', 'info');
                 
-                const aiNotes = await analyzeImageWithGemini(fileData.data, subject);
-                
                 if (aiNotes) {
-                    const flashcard = {
+    console.log('📝 Gemini returned:', aiNotes.substring(0, 500)); // Add this line
+    const flashcard = {
                         id: Date.now() + Math.random(),
                         subject: subject,
                         topic: file.name.replace(/\.[^/.]+$/, ''),
@@ -23282,18 +23288,16 @@ function confirmFlashcardDelete(flashcardId, modal) {
 function autoSaveNotes() {
     if (!window.currentFlashcardId) return;
     
-    const textarea = document.getElementById('flashcardNotesTextarea');
-    if (!textarea) return;
+    const notesDiv = document.getElementById('flashcardNotesTextarea');
+    if (!notesDiv) return;
     
     const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
     if (flashcard) {
-        flashcard.notes = textarea.value;
+        // Get innerHTML for contenteditable div (preserves formatting)
+        flashcard.notes = notesDiv.innerHTML || notesDiv.textContent;
         localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
         
-        // Update word count
         updateWordCount();
-        
-        // Update last saved time
         updateLastSavedTime();
     }
 }
