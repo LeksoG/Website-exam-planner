@@ -16359,17 +16359,14 @@ async function processUploadedImagesForFlashcards(subjects) {
         return [];
     }
     
-    const processedFlashcards = [];
+    const createdFlashcards = [];
     
+    // Process each uploaded file
     for (let i = 0; i < uploadedFiles.length; i++) {
         const file = uploadedFiles[i];
-        
-        if (!file.type || !file.type.startsWith('image/')) {
-            continue;
-        }
-        
-        // Determine subject
         let subject = subjects[0];
+        
+        // Match file to subject
         for (const subj of subjects) {
             if (file.name.toLowerCase().includes(subj.toLowerCase())) {
                 subject = subj;
@@ -16377,49 +16374,61 @@ async function processUploadedImagesForFlashcards(subjects) {
             }
         }
         
-        // Use OCR to extract text from image
-        showAlert(`Extracting text from ${file.name}...`, 'info');
+        // Try OCR
+        let extractedText = '';
+        let hasText = false;
         
         try {
             const { data: { text } } = await Tesseract.recognize(
                 file.data,
-                'eng',
-                {
-                    logger: m => console.log(m)
-                }
+                'eng'
             );
             
-            const flashcard = {
-                id: Date.now() + Math.random() + i,
-                subject: subject,
-                topic: extractTopicFromFilename(file.name) || `${subject} Study Material`,
-                notes: formatExtractedText(text, subject),
-                imageData: file.data,
-                keyConcepts: extractKeyConceptsSimple(text),
-                studyQuestions: generateBasicQuestions(text, subject),
-                created: new Date().toISOString(),
-                source: 'ocr_extracted',
-                originalFileName: file.name
-            };
-            
-            processedFlashcards.push(flashcard);
+            extractedText = text.trim();
+            hasText = extractedText.length > 20;
             
         } catch (error) {
-            console.warn(`Failed to process ${file.name}:`, error);
-            // Create basic flashcard without OCR
-            const basicFlashcard = createInteractiveFlashcard(file, subject);
-            processedFlashcards.push(basicFlashcard);
+            console.warn('OCR failed for', file.name, error);
         }
+        
+        let notes = '';
+        let source = '';
+        
+        if (hasText) {
+            const cleanedText = cleanAndStructureOCRText(extractedText);
+            notes = formatExtractedTextForStudy(cleanedText, subject);
+            source = 'ocr_extracted';
+        } else {
+            notes = formatImageDescriptionTemplate(subject, 1);
+            source = 'manual_template';
+        }
+        
+        const flashcard = {
+            id: Date.now() + Math.random() + i, // Unique ID
+            subject: subject,
+            topic: extractTopicFromFilename(file.name) || `${subject} Study Material ${i + 1}`,
+            notes: notes,
+            imageData: file.data,
+            keyConcepts: [],
+            studyQuestions: [],
+            created: new Date().toISOString(),
+            source: source,
+            originalFileName: file.name
+        };
+        
+        flashcards.push(flashcard);
+        createdFlashcards.push(flashcard);
+        
+        // Small delay between processing files
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
     
-    if (processedFlashcards.length > 0) {
-        flashcards.push(...processedFlashcards);
-        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-        updateSidebarStats();
-        showAlert(`Created ${processedFlashcards.length} flashcard${processedFlashcards.length !== 1 ? 's' : ''}`, 'success');
-    }
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    updateSidebarStats();
     
-    return processedFlashcards;
+    showAlert(`Created ${createdFlashcards.length} flashcard(s)!`, 'success');
+    
+    return createdFlashcards;
 }
 
 function formatExtractedTextForStudy(text, subject) {
