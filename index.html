@@ -21235,104 +21235,115 @@ function initFileUpload() {
     
     if (!uploadArea || !fileInput) return;
     
-    // Drag and drop events
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
+    // Remove duplicate listeners
+    const newArea = uploadArea.cloneNode(true);
+    const newInput = fileInput.cloneNode(true);
     
-    uploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-    });
+    uploadArea.parentNode.replaceChild(newArea, uploadArea);
+    fileInput.parentNode.replaceChild(newInput, fileInput);
     
-    uploadArea.addEventListener('drop', (e) => {
+    const area = document.getElementById('uploadArea');
+    const input = document.getElementById('fileUpload');
+    
+    area.ondragover = (e) => { e.preventDefault(); area.classList.add('dragover'); };
+    area.ondragleave = (e) => { e.preventDefault(); area.classList.remove('dragover'); };
+    area.ondrop = (e) => {
         e.preventDefault();
-        uploadArea.classList.remove('dragover');
+        area.classList.remove('dragover');
         handleFiles(e.dataTransfer.files);
-    });
-    
-    uploadArea.addEventListener('click', () => {
-        fileInput.click();
-    });
-    
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
+    };
+    area.onclick = () => input.click();
+    input.onchange = (e) => {
+        if (e.target.files.length > 0) handleFiles(e.target.files);
+        e.target.value = '';
+    };
     
     displayUploadedFiles();
 }
 
 async function handleFiles(files) {
-    if (isProcessingUpload) return;
+    if (isProcessingUpload) {
+        console.log('⚠️ Already processing, blocked');
+        return;
+    }
+    
     isProcessingUpload = true;
+    console.log('📁 Processing', files.length, 'files');
     
     try {
         for (const file of Array.from(files)) {
-            if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
-                showAlert('Only images and PDF files are supported', 'error');
+            // Create unique ID for this file
+            const fileId = `${file.name}_${file.size}_${file.lastModified}`;
+            
+            // Skip if already processed
+            if (uploadProcessed.has(fileId)) {
+                console.log('⏭️ Skipping duplicate:', file.name);
                 continue;
             }
             
-            await new Promise((resolve) => {
+            uploadProcessed.add(fileId);
+            
+            if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+                showAlert('Only images and PDF supported', 'error');
+                continue;
+            }
+            
+            console.log('🔄 Processing:', file.name);
+            
+            const fileData = await new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const fileData = {
-                        id: Date.now() + Math.random(),
-                        name: file.name,
-                        size: formatFileSize(file.size),
-                        type: file.type,
-                        data: e.target.result,
-                        uploadDate: new Date().toISOString()
-                    };
-                    
-                    // Save file
-                    uploadedFiles.push(fileData);
-                    localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
-                    
-                    // Only create flashcard for images
-                    if (file.type.startsWith('image/')) {
-                        const activeSchedule = appState.schedules[appState.activeSchedule];
-                        const defaultSubject = activeSchedule?.subjects?.[0] || 'Geography';
-                        
-                        showAlert('🤖 Analyzing with Gemini AI...', 'info');
-                        
-                        // Get Gemini analysis
-                        const aiNotes = await analyzeImageWithGemini(fileData.data, defaultSubject);
-                        
-                        if (!aiNotes) {
-                            showAlert('❌ Gemini analysis failed. Check console.', 'error');
-                            resolve();
-                            return;
-                        }
-                        
-                        // Create single flashcard with Gemini analysis
-                        const flashcard = {
-                            id: Date.now() + Math.random(),
-                            subject: defaultSubject,
-                            topic: file.name.replace(/\.[^/.]+$/, ''),
-                            notes: aiNotes,
-                            imageData: fileData.data,
-                            created: new Date().toISOString(),
-                            source: 'gemini_ai'
-                        };
-                        
-                        flashcards.push(flashcard);
-                        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-                        
-                        showAlert('✅ AI flashcard created!', 'success');
-                    }
-                    
-                    displayUploadedFiles();
-                    updateSidebarStats();
-                    updateHomeUploadDisplay();
-                    resolve();
-                };
+                reader.onload = (e) => resolve({
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: formatFileSize(file.size),
+                    type: file.type,
+                    data: e.target.result,
+                    uploadDate: new Date().toISOString()
+                });
                 reader.readAsDataURL(file);
             });
+            
+            // Save file to uploads
+            uploadedFiles.push(fileData);
+            localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
+            
+            // Create flashcard ONLY for images
+            if (file.type.startsWith('image/')) {
+                const activeSchedule = appState.schedules[appState.activeSchedule];
+                const subject = activeSchedule?.subjects?.[0] || 'Geography';
+                
+                console.log('🤖 Calling Gemini for:', file.name);
+                showAlert('Analyzing with AI...', 'info');
+                
+                const aiNotes = await analyzeImageWithGemini(fileData.data, subject);
+                
+                if (aiNotes) {
+                    const flashcard = {
+                        id: Date.now() + Math.random(),
+                        subject: subject,
+                        topic: file.name.replace(/\.[^/.]+$/, ''),
+                        notes: aiNotes,
+                        imageData: fileData.data,
+                        created: new Date().toISOString()
+                    };
+                    
+                    flashcards.push(flashcard);
+                    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+                    console.log('✅ Flashcard created');
+                    showAlert('Flashcard created!', 'success');
+                } else {
+                    console.error('❌ Gemini failed');
+                    showAlert('AI analysis failed', 'error');
+                }
+            }
+            
+            displayUploadedFiles();
+            updateSidebarStats();
+            updateHomeUploadDisplay();
         }
     } finally {
         isProcessingUpload = false;
+        console.log('✅ Processing complete');
     }
 }
 
@@ -21478,51 +21489,33 @@ function initHomeUpload() {
     const fileInput = document.getElementById('homeFileUpload');
     
     if (!uploadArea || !fileInput) {
-        console.log('Upload elements not found, retrying...');
         setTimeout(initHomeUpload, 500);
         return;
     }
     
-    // Remove existing listeners by cloning
-    const newUploadArea = uploadArea.cloneNode(true);
-    uploadArea.parentNode.replaceChild(newUploadArea, uploadArea);
+    // IMPORTANT: Remove by replacing with clean clones
+    const newArea = uploadArea.cloneNode(true);
+    const newInput = fileInput.cloneNode(true);
     
-    const newFileInput = fileInput.cloneNode(true);
-    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    uploadArea.parentNode.replaceChild(newArea, uploadArea);
+    fileInput.parentNode.replaceChild(newInput, fileInput);
     
-    const freshUploadArea = document.getElementById('homeUploadArea');
-    const freshFileInput = document.getElementById('homeFileUpload');
+    const area = document.getElementById('homeUploadArea');
+    const input = document.getElementById('homeFileUpload');
     
-    // Add listeners ONCE
-    freshUploadArea.addEventListener('dragover', (e) => {
+    // Add SINGLE set of listeners
+    area.ondragover = (e) => { e.preventDefault(); area.classList.add('dragover'); };
+    area.ondragleave = (e) => { e.preventDefault(); area.classList.remove('dragover'); };
+    area.ondrop = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        freshUploadArea.classList.add('dragover');
-    });
-    
-    freshUploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        freshUploadArea.classList.remove('dragover');
-    });
-    
-    freshUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        freshUploadArea.classList.remove('dragover');
+        area.classList.remove('dragover');
         handleFiles(e.dataTransfer.files);
-    });
-    
-    freshUploadArea.addEventListener('click', (e) => {
-        e.preventDefault();
-        freshFileInput.click();
-    });
-    
-    freshFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFiles(e.target.files);
-        }
-    });
+    };
+    area.onclick = () => input.click();
+    input.onchange = (e) => {
+        if (e.target.files.length > 0) handleFiles(e.target.files);
+        e.target.value = ''; // Reset input
+    };
     
     updateHomeUploadDisplay();
 }
