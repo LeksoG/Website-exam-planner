@@ -9683,6 +9683,8 @@ let userSettings = {
     useTopTabBar: false  // Add this line
 };
 
+let isProcessingUpload = false;
+
 // ADD THIS HERE:
 let limits = {
     uploads: 10,      // Free tier upload limit
@@ -9713,14 +9715,17 @@ let EMAILJS_CONFIG = {
     publicKey: 'your-public-key'
 };
 
-// Gemini AI Image Analysis Function
 async function analyzeImageWithGemini(imageBase64, subject) {
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'AIzaSyCVYNL_SjMbNl5fFPZrlbT3HGNya7IoLfY') {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_ACTUAL_GEMINI_API_KEY_HERE' || GEMINI_API_KEY === 'your-gemini-api-key-here') {
+        console.warn('Gemini API key not configured');
+        showAlert('Please set your Gemini API key in the code', 'error');
         return null;
     }
     
     try {
         const base64Image = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+        
+        console.log('Sending request to Gemini API...');
         
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
@@ -9729,15 +9734,30 @@ async function analyzeImageWithGemini(imageBase64, subject) {
                 contents: [{
                     parts: [
                         {
-                            text: `Analyze this ${subject} study material image. Provide structured study notes with:
-1. Main topic/concept
-2. Key terms (wrap important terms in [HIGHLIGHT]term[/HIGHLIGHT])
-3. Detailed explanation
-4. Important points as bullet list
-5. Any formulas/definitions
-6. 3 practice questions
+                            text: `Analyze this ${subject} study material image. Provide structured study notes in markdown format with:
 
-Format as proper markdown with headers.`
+# ${subject} Study Notes
+
+## Main Topic
+[Identify the main topic shown]
+
+## Key Concepts
+Wrap important terms in [HIGHLIGHT]term[/HIGHLIGHT] tags like this:
+- [HIGHLIGHT]photosynthesis[/HIGHLIGHT]
+- [HIGHLIGHT]mitochondria[/HIGHLIGHT]
+
+## Detailed Explanation
+[Provide clear explanation of what's shown]
+
+## Important Points
+- Point 1
+- Point 2
+- Point 3
+
+## Practice Questions
+1. Question 1?
+2. Question 2?
+3. Question 3?`
                         },
                         {
                             inline_data: {
@@ -9755,12 +9775,27 @@ Format as proper markdown with headers.`
             })
         });
 
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Gemini API Error:', response.status, errorText);
+            showAlert(`API Error: ${response.status}`, 'error');
+            return null;
+        }
 
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        console.log('Gemini API Response:', data);
+        
+        const analysisText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!analysisText) {
+            console.error('No analysis text in response');
+            return null;
+        }
+        
+        return analysisText;
     } catch (error) {
         console.error('Gemini analysis error:', error);
+        showAlert('AI analysis failed: ' + error.message, 'error');
         return null;
     }
 }
@@ -21424,58 +21459,78 @@ function initFileUpload() {
     displayUploadedFiles();
 }
 
-async function handleFiles(files) {  
-    for (const file of Array.from(files)) {
-        if (file.type.startsWith('image/') || file.type === 'application/pdf') {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const fileData = {
+async function handleFiles(files) {
+    if (isProcessingUpload) {
+        console.log('Already processing upload, skipping...');
+        return;
+    }
+    
+    isProcessingUpload = true;
+    
+    try {
+        for (const file of Array.from(files)) {
+            if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+                await processFile(file);
+            } else {
+                showAlert('Only images and PDF files are supported', 'error');
+            }
+        }
+    } finally {
+        isProcessingUpload = false;
+    }
+}
+
+async function processFile(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const fileData = {
+                id: Date.now() + Math.random(),
+                name: file.name,
+                size: formatFileSize(file.size),
+                type: file.type,
+                data: e.target.result,
+                uploadDate: new Date().toISOString()
+            };
+            
+            uploadedFiles.push(fileData);
+            localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
+            
+            // Auto-create flashcard with AI analysis for images ONLY
+            if (file.type.startsWith('image/')) {
+                const activeSchedule = appState.schedules[appState.activeSchedule];
+                const defaultSubject = activeSchedule?.subjects?.[0] || 'General';
+                
+                showAlert('Analyzing image with AI...', 'info');
+                
+                const aiAnalysis = await analyzeImageWithGemini(fileData.data, defaultSubject);
+                
+                console.log('Gemini Analysis Result:', aiAnalysis);
+                
+                const flashcard = {
                     id: Date.now() + Math.random(),
-                    name: file.name,
-                    size: formatFileSize(file.size),
-                    type: file.type,
-                    data: e.target.result,
-                    uploadDate: new Date().toISOString()
+                    subject: defaultSubject,
+                    topic: extractTopicFromFilename(file.name) || `${defaultSubject} Study Material`,
+                    notes: aiAnalysis || formatImageDescriptionTemplate(defaultSubject, 1),
+                    imageData: fileData.data,
+                    created: new Date().toISOString(),
+                    source: aiAnalysis ? 'ai_analyzed' : 'manual_template',
+                    originalFileName: file.name
                 };
                 
-                uploadedFiles.push(fileData);
-                localStorage.setItem('gcseUploadedFiles', JSON.stringify(uploadedFiles));
+                flashcards.push(flashcard);
+                localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
                 
-                // Auto-create flashcard with AI analysis for images
-                if (file.type.startsWith('image/')) {
-                    const activeSchedule = appState.schedules[appState.activeSchedule];
-                    const defaultSubject = activeSchedule?.subjects?.[0] || 'General';
-                    
-                    showAlert('Analyzing image with AI...', 'info');
-                    
-                    const aiAnalysis = await analyzeImageWithGemini(fileData.data, defaultSubject);
-                    
-                    const flashcard = {
-                        id: Date.now() + Math.random(),
-                        subject: defaultSubject,
-                        topic: extractTopicFromFilename(file.name) || `${defaultSubject} Study Material`,
-                        notes: aiAnalysis || formatImageDescriptionTemplate(defaultSubject, 1),
-                        imageData: fileData.data,
-                        created: new Date().toISOString(),
-                        source: aiAnalysis ? 'ai_analyzed' : 'manual_template',
-                        originalFileName: file.name
-                    };
-                    
-                    flashcards.push(flashcard);
-                    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-                    
-                    showAlert(aiAnalysis ? 'Image analyzed and flashcard created!' : 'Flashcard created!', 'success');
-                }
-                
-                displayUploadedFiles();
-                updateSidebarStats();
-                updateHomeUploadDisplay();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            showAlert('Only images and PDF files are supported', 'error');
-        }
-    }
+                showAlert(aiAnalysis ? 'Flashcard created with AI analysis!' : 'Flashcard created!', 'success');
+            }
+            
+            displayUploadedFiles();
+            updateSidebarStats();
+            updateHomeUploadDisplay();
+            resolve();
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 function formatFileSize(bytes) {
@@ -21572,37 +21627,42 @@ function initHomeUpload() {
         return;
     }
     
-    // Remove existing listeners to prevent duplicates
-    uploadArea.replaceWith(uploadArea.cloneNode(true));
-    const newUploadArea = document.getElementById('homeUploadArea');
-    const newFileInput = document.getElementById('homeFileUpload');
+    // Remove existing listeners by cloning
+    const newUploadArea = uploadArea.cloneNode(true);
+    uploadArea.parentNode.replaceChild(newUploadArea, uploadArea);
     
-    // Drag and drop events
-    newUploadArea.addEventListener('dragover', (e) => {
+    const newFileInput = fileInput.cloneNode(true);
+    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    
+    const freshUploadArea = document.getElementById('homeUploadArea');
+    const freshFileInput = document.getElementById('homeFileUpload');
+    
+    // Add listeners ONCE
+    freshUploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.add('dragover');
+        freshUploadArea.classList.add('dragover');
     });
     
-    newUploadArea.addEventListener('dragleave', (e) => {
+    freshUploadArea.addEventListener('dragleave', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.remove('dragover');
+        freshUploadArea.classList.remove('dragover');
     });
     
-    newUploadArea.addEventListener('drop', (e) => {
+    freshUploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        newUploadArea.classList.remove('dragover');
+        freshUploadArea.classList.remove('dragover');
         handleFiles(e.dataTransfer.files);
     });
     
-    newUploadArea.addEventListener('click', (e) => {
+    freshUploadArea.addEventListener('click', (e) => {
         e.preventDefault();
-        newFileInput.click();
+        freshFileInput.click();
     });
     
-    newFileInput.addEventListener('change', (e) => {
+    freshFileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             handleFiles(e.target.files);
         }
