@@ -16145,29 +16145,22 @@ async function extractTextFromImage(flashcardId) {
     }
 }
 
+// ===== OCR AND IMAGE TEXT PROCESSING =====
+
 function cleanAndStructureOCRText(rawText) {
     if (!rawText) return '';
     
     let text = rawText;
-    
-    // 1. Remove excessive whitespace and line breaks
     text = text.replace(/\s+/g, ' ');
     text = text.replace(/\n{3,}/g, '\n\n');
-    
-    // 2. Fix common OCR errors
-    text = text.replace(/[|]/g, 'I'); // Pipe to I
-    text = text.replace(/[`'']/g, "'"); // Smart quotes
-    text = text.replace(/[""]​/g, '"'); // Smart double quotes
-    text = text.replace(/—/g, '-'); // Em dash
-    text = text.replace(/\s+([.,!?;:])/g, '$1'); // Remove space before punctuation
-    
-    // 3. Remove noise characters
+    text = text.replace(/[|]/g, 'I');
+    text = text.replace(/[`'']/g, "'");
+    text = text.replace(/[""]​/g, '"');
+    text = text.replace(/—/g, '-');
+    text = text.replace(/\s+([.,!?;:])/g, '$1');
     text = text.replace(/[^\w\s.,!?;:()\-'"\n]/g, '');
     
-    // 4. Split into sentences
     let sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 3);
-    
-    // 5. Group into paragraphs (every 3-4 sentences)
     let paragraphs = [];
     for (let i = 0; i < sentences.length; i += 3) {
         const group = sentences.slice(i, i + 3).join('. ') + '.';
@@ -16177,6 +16170,168 @@ function cleanAndStructureOCRText(rawText) {
     return paragraphs.join('\n\n');
 }
 
+function formatExtractedTextForStudy(text, subject) {
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    
+    let formatted = `# ${subject} Study Notes\n\n`;
+    formatted += `*Extracted from image on ${new Date().toLocaleDateString()}*\n\n`;
+    formatted += `---\n\n`;
+    
+    const hasNumbers = /^\d+\./.test(lines[0]);
+    const hasBullets = /^[-•*]/.test(lines[0]);
+    
+    if (hasNumbers || hasBullets) {
+        formatted += lines.join('\n');
+    } else {
+        formatted += `## Main Content\n\n`;
+        
+        lines.forEach((line) => {
+            const trimmed = line.trim();
+            
+            if (trimmed.length < 50 && (trimmed === trimmed.toUpperCase() || trimmed.endsWith(':'))) {
+                formatted += `\n### ${trimmed.replace(':', '')}\n\n`;
+            } else if (/^[0-9a-z)]\.|^[-•*]/.test(trimmed)) {
+                formatted += `- ${trimmed.replace(/^[0-9a-z)]\.\s*|^[-•*]\s*/, '')}\n`;
+            } else {
+                formatted += trimmed + '\n\n';
+            }
+        });
+    }
+    
+    formatted += `\n---\n\n## My Notes\n\n`;
+    formatted += `*Add your own understanding here:*\n\n`;
+    formatted += `## Key Points to Remember\n- \n\n`;
+    formatted += `## Questions\n1. \n`;
+    
+    return formatted;
+}
+
+function formatImageDescriptionTemplate(subject, imageCount) {
+    return `# ${subject} Study Material
+
+## What This Shows
+*Describe the main content:*
+
+- **Topic/Concept:** 
+- **Key Elements:** 
+- **Important Details:** 
+
+---
+
+## My Understanding
+
+*Explain in your own words:*
+
+
+
+## Key Points
+- 
+- 
+- 
+
+## Formulas/Definitions
+*If applicable:*
+
+
+
+## Practice Questions
+1. What is the main concept shown?
+2. How does this relate to ${subject}?
+3. What should I remember for the exam?
+
+## Study Tips
+- 
+- 
+
+---
+
+## Related Topics
+*What else should I study alongside this?*
+
+
+${imageCount > 1 ? `\n---\n*Note: You uploaded ${imageCount} images. This template is for the first one.*` : ''}`;
+}
+
+function detectAndFormatContentType(text, subject) {
+    const lower = text.toLowerCase();
+    
+    if (lower.includes('equation') || /[+\-*/=]/.test(text) || lower.includes('solve')) {
+        return formatAsMathContent(text, subject);
+    } else if (lower.includes('define') || lower.includes('definition') || text.includes(':')) {
+        return formatAsDefinitions(text, subject);
+    } else if (/^\d+\./.test(text) || text.includes('first') || text.includes('second')) {
+        return formatAsSteps(text, subject);
+    } else {
+        return formatAsGeneral(text, subject);
+    }
+}
+
+function formatAsMathContent(text, subject) {
+    return `# ${subject} - Mathematical Content
+
+## Problem/Equation
+${text}
+
+## Solution Steps
+1. 
+2. 
+3. 
+
+## Key Formula
+\`\`\`
+[Write formula here]
+\`\`\`
+
+## When to Use
+- 
+
+## Common Mistakes
+- `;
+}
+
+function formatAsDefinitions(text, subject) {
+    const lines = text.split('\n').filter(l => l.trim());
+    let formatted = `# ${subject} - Definitions\n\n`;
+    
+    lines.forEach(line => {
+        if (line.includes(':')) {
+            const [term, def] = line.split(':');
+            formatted += `## ${term.trim()}\n${def.trim()}\n\n`;
+        } else {
+            formatted += `${line}\n\n`;
+        }
+    });
+    
+    formatted += `## My Examples\n- \n\n## How to Remember\n- `;
+    return formatted;
+}
+
+function formatAsSteps(text, subject) {
+    return `# ${subject} - Process/Steps
+
+## Original Content
+${text}
+
+## My Summary
+1. 
+2. 
+3. 
+
+## Why Each Step Matters
+- **Step 1:** 
+- **Step 2:** 
+- **Step 3:** 
+
+## Practice This
+*Try the process with a different example:*
+`;
+}
+
+function formatAsGeneral(text, subject) {
+    return formatExtractedTextForStudy(text, subject);
+}
+
+// ===== END OF OCR SECTION =====
 function createAutoFlashcardForSchedule(scheduleId, subjects) {
     // Create one flashcard for the entire schedule
     const scheduleName = subjects.join(', ');
@@ -16473,6 +16628,53 @@ function formatExtractedTextForStudy(text, subject) {
     formatted += `## Questions\n1. \n`;
     
     return formatted;
+}
+
+// ADD THIS FUNCTION HERE:
+function formatImageDescriptionTemplate(subject, imageCount) {
+    return `# ${subject} Study Material
+
+## What This Shows
+*Describe the main content:*
+
+- **Topic/Concept:** 
+- **Key Elements:** 
+- **Important Details:** 
+
+---
+
+## My Understanding
+
+*Explain in your own words:*
+
+
+
+## Key Points
+- 
+- 
+- 
+
+## Formulas/Definitions
+*If applicable:*
+
+
+
+## Practice Questions
+1. What is the main concept shown?
+2. How does this relate to ${subject}?
+3. What should I remember for the exam?
+
+## Study Tips
+- 
+- 
+
+---
+
+## Related Topics
+*What else should I study alongside this?*
+
+
+${imageCount > 1 ? `\n---\n*Note: You uploaded ${imageCount} images. This template is for the first one.*` : ''}`;
 }
 
 function detectAndFormatContentType(text, subject) {
