@@ -16085,10 +16085,6 @@ async function extractTextFromImage(flashcardId) {
     const flashcard = flashcards.find(f => f.id == flashcardId);
     if (!flashcard) return;
     
-    // REMOVE THIS LINE:
-    // showAlert('Extracting text from image...', 'info');
-    
-    // Show loading in the button instead
     const btn = event.target;
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '⏳ Extracting...';
@@ -16100,18 +16096,40 @@ async function extractTextFromImage(flashcardId) {
             'eng'
         );
         
-        // Save to flashcard notes
-        flashcard.notes += `\n\n## Extracted Text:\n${text}\n\n## Your Notes:\n`;
-        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        const extractedText = text.trim();
         
-        // Update textarea if open
+        if (extractedText.length < 20) {
+            // No meaningful text found
+            btn.innerHTML = '📷 No text found';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+            
+            showAlert('No text detected. This appears to be a diagram/photo. Describe it manually in your notes.', 'info');
+            return;
+        }
+        
+        // Has text - add to notes
         const textarea = document.getElementById('flashcardNotesTextarea');
         if (textarea) {
-            textarea.value = flashcard.notes;
+            // Replace template section with extracted text
+            const currentNotes = textarea.value;
+            
+            if (currentNotes.includes('## Image Analysis')) {
+                // Replace template with extracted text
+                textarea.value = formatExtractedText(extractedText, flashcard.subject);
+            } else {
+                // Append to existing notes
+                textarea.value += `\n\n## Extracted Text:\n${extractedText}\n`;
+            }
+            
+            flashcard.notes = textarea.value;
+            localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
             autoSaveNotes();
         }
         
-        btn.innerHTML = '✓ Extracted!';
+        btn.innerHTML = '✓ Text extracted!';
         setTimeout(() => {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
@@ -16123,8 +16141,79 @@ async function extractTextFromImage(flashcardId) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
         }, 2000);
-        showAlert('Failed to extract text. Please try again.', 'error');
     }
+}
+
+async function describeImageContent(imageData) {
+    try {
+        // Convert base64 to blob
+        const base64Response = await fetch(imageData);
+        const blob = await base64Response.blob();
+        
+        // Use Hugging Face's free image captioning model
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
+            {
+                method: "POST",
+                body: blob,
+                headers: {
+                    "Content-Type": "image/jpeg"
+                }
+            }
+        );
+        
+        if (!response.ok) {
+            const error = await response.text();
+            console.warn('Hugging Face API error:', error);
+            return null;
+        }
+        
+        const result = await response.json();
+        
+        // Handle different response formats
+        if (Array.isArray(result) && result[0]?.generated_text) {
+            return result[0].generated_text;
+        } else if (result.generated_text) {
+            return result.generated_text;
+        }
+        
+        return null;
+        
+    } catch (error) {
+        console.error('Image description failed:', error);
+        return null;
+    }
+}
+
+function formatImageWithDescription(description, subject, fileName) {
+    return `# ${subject} Study Material
+
+## Image Description
+**AI Analysis:** ${description}
+
+## What I See
+*Add your own observations:*
+- 
+- 
+
+## ${subject} Connection
+*How this relates to my studies:*
+
+
+## Key Concepts
+- 
+- 
+
+## Practice Questions
+1. What is the main concept shown?
+2. How does this connect to ${subject}?
+3. What details should I remember?
+
+## My Detailed Notes
+
+
+---
+*Source: ${fileName}*`;
 }
 
 function createAutoFlashcardForSchedule(scheduleId, subjects) {
@@ -16309,65 +16398,96 @@ async function processUploadedImagesForFlashcards(subjects) {
         return [];
     }
     
-    const processedFlashcards = [];
+    const firstFile = uploadedFiles[0];
+    let subject = subjects[0];
     
-    for (let i = 0; i < uploadedFiles.length; i++) {
-        const file = uploadedFiles[i];
-        
-        if (!file.type || !file.type.startsWith('image/')) {
-            continue;
-        }
-        
-        // Determine subject
-        let subject = subjects[0];
-        for (const subj of subjects) {
-            if (file.name.toLowerCase().includes(subj.toLowerCase())) {
-                subject = subj;
-                break;
-            }
-        }
-
-        
-        try {
-            const { data: { text } } = await Tesseract.recognize(
-                file.data,
-                'eng',
-                {
-                    logger: m => console.log(m)
-                }
-            );
-            
-            const flashcard = {
-                id: Date.now() + Math.random() + i,
-                subject: subject,
-                topic: extractTopicFromFilename(file.name) || `${subject} Study Material`,
-                notes: formatExtractedText(text, subject),
-                imageData: file.data,
-                keyConcepts: extractKeyConceptsSimple(text),
-                studyQuestions: generateBasicQuestions(text, subject),
-                created: new Date().toISOString(),
-                source: 'ocr_extracted',
-                originalFileName: file.name
-            };
-            
-            processedFlashcards.push(flashcard);
-            
-        } catch (error) {
-            console.warn(`Failed to process ${file.name}:`, error);
-            // Create basic flashcard without OCR
-            const basicFlashcard = createInteractiveFlashcard(file, subject);
-            processedFlashcards.push(basicFlashcard);
+    for (const subj of subjects) {
+        if (firstFile.name.toLowerCase().includes(subj.toLowerCase())) {
+            subject = subj;
+            break;
         }
     }
     
-    if (processedFlashcards.length > 0) {
-        flashcards.push(...processedFlashcards);
-        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-        updateSidebarStats();
-        showAlert(`Created ${processedFlashcards.length} flashcard${processedFlashcards.length !== 1 ? 's' : ''}`, 'success');
+    // Try OCR first
+    let extractedText = '';
+    let hasText = false;
+    
+    try {
+        const { data: { text } } = await Tesseract.recognize(
+            firstFile.data,
+            'eng',
+            { logger: m => console.log(m) }
+        );
+        
+        extractedText = text.trim();
+        hasText = extractedText.length > 20;
+        
+    } catch (error) {
+        console.warn('OCR failed:', error);
     }
     
-    return processedFlashcards;
+    let notes = '';
+    let source = '';
+    
+    if (hasText) {
+        // Has text - enhance with AI
+        const [summary, keyPhrases] = await Promise.all([
+            summarizeText(extractedText),
+            extractKeyPhrases(extractedText)
+        ]);
+        
+        notes = `# ${subject} Study Material\n\n`;
+        
+        if (summary) {
+            notes += `## Summary\n${summary}\n\n`;
+        }
+        
+        notes += `## Extracted Text\n${extractedText}\n\n`;
+        
+        if (keyPhrases && keyPhrases.length > 0) {
+            notes += `## Key Concepts\n`;
+            keyPhrases.slice(0, 8).forEach(phrase => {
+                if (phrase.word) notes += `• ${phrase.word}\n`;
+            });
+            notes += '\n';
+        }
+        
+        notes += `## My Notes\n\n`;
+        source = 'ocr_ai_enhanced';
+        
+    } else {
+        // No text - describe image
+        const description = await describeImageContent(firstFile.data);
+        
+        if (description) {
+            notes = formatImageWithDescription(description, subject, firstFile.name);
+            source = 'ai_described';
+        } else {
+            notes = formatImageDescriptionTemplate(subject, uploadedFiles.length);
+            source = 'manual_template';
+        }
+    }
+    
+    const flashcard = {
+        id: Date.now() + Math.random(),
+        subject: subject,
+        topic: extractTopicFromFilename(firstFile.name) || `${subject} Study Material`,
+        notes: notes,
+        imageData: firstFile.data,
+        keyConcepts: [],
+        studyQuestions: [],
+        created: new Date().toISOString(),
+        source: source,
+        originalFileName: firstFile.name
+    };
+    
+    flashcards.push(flashcard);
+    localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+    updateSidebarStats();
+    
+    showAlert('Flashcard created with AI analysis!', 'success');
+    
+    return [flashcard];
 }
 
 // Format extracted text nicely
@@ -16382,6 +16502,37 @@ function formatExtractedText(text, subject) {
     formatted += `## Practice Questions:\n1. \n`;
     
     return formatted;
+}
+
+function formatImageDescriptionTemplate(subject, imageCount) {
+    return `# ${subject} Study Material
+
+## Image Analysis
+*Describe what you see in the image:*
+- Main topic or concept: 
+- Key elements visible: 
+- Important details: 
+
+## What This Image Shows
+*Explain the content:*
+
+
+## Key Concepts
+*List the main ideas:*
+- 
+- 
+- 
+
+## Practice Questions
+1. What is the main concept shown?
+2. How does this relate to ${subject}?
+3. What are the key features to remember?
+
+## My Notes
+*Add your own notes and explanations:*
+
+
+${imageCount > 1 ? `\n---\n*Note: You uploaded ${imageCount} images. The first one is shown above. Use "Extract Text" to process if there's text in the image.*` : ''}`;
 }
 
 // Simple keyword extraction (no AI needed)
@@ -17524,7 +17675,7 @@ function handleStructureOutsideClick(event) {
     }
 }
 
-function applyAIStructure(type) {
+async function applyAIStructure(type) {
     hideStructureDropdown();
     
     const textarea = document.getElementById('flashcardNotesTextarea');
@@ -17539,16 +17690,62 @@ function applyAIStructure(type) {
     // Show AI generating animation
     showEnhancedAIAnimation(type);
     
-    // Apply structure after 2 seconds
-    setTimeout(() => {
-        const structuredText = applyStructureToText(textarea.value, type);
+    // Apply AI structure
+    let structuredText = '';
+    
+    try {
+        switch(type) {
+            case 'summary':
+                const summary = await summarizeText(textarea.value);
+                if (summary) {
+                    structuredText = `# ${flashcard.subject} Summary\n\n${summary}\n\n## Original Notes\n${textarea.value}`;
+                }
+                break;
+                
+            case 'qa':
+                const questions = await generateQuestions(textarea.value);
+                if (questions) {
+                    structuredText = `# ${flashcard.subject} Study Questions\n\n${questions}\n\n## Source Notes\n${textarea.value}`;
+                }
+                break;
+                
+            case 'bullet':
+                const keyPhrases = await extractKeyPhrases(textarea.value);
+                if (keyPhrases && keyPhrases.length > 0) {
+                    structuredText = `# ${flashcard.subject} Key Points\n\n`;
+                    keyPhrases.forEach(phrase => {
+                        if (phrase.word) {
+                            structuredText += `• ${phrase.word}\n`;
+                        }
+                    });
+                    structuredText += `\n## Full Notes\n${textarea.value}`;
+                }
+                break;
+                
+            case 'outline':
+                // Use local formatting for outline
+                structuredText = applyStructureToText(textarea.value, 'outline');
+                break;
+        }
+        
+        if (structuredText) {
+            textarea.value = structuredText;
+            autoSaveNotes();
+            hideEnhancedAIAnimation();
+            showAlert('AI structured your notes!', 'success');
+        } else {
+            throw new Error('AI processing failed');
+        }
+        
+    } catch (error) {
+        console.error('AI structure error:', error);
+        // Fallback to local formatting
+        structuredText = applyStructureToText(textarea.value, type);
         textarea.value = structuredText;
-        
-        hideEnhancedAIAnimation();
         autoSaveNotes();
-        
-        showAlert('Notes structured successfully!', 'success');
-    }, 2000);
+        hideEnhancedAIAnimation();
+        showAlert('Notes structured (using offline mode)', 'info');
+    }
 }
 
 function applyStructureToText(text, type) {
