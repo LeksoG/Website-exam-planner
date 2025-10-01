@@ -9657,6 +9657,7 @@ body {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
 
 
     <script>
@@ -9822,7 +9823,6 @@ let aiChatHistory = [];
 let aiGeneratedQuestions = [];
 
 let configLoaded = false;
-let GEMINI_API_KEY = null;
 
 // ADD THE STRIPE CONFIGURATION HERE:
 // ===== STRIPE PAYMENT CONFIGURATION =====
@@ -15550,176 +15550,6 @@ function triggerHaptic(element) {
     }, 300);
 }
 
-async function analyzeImageWithGemini(imageData, subject) {
-    if (!GEMINI_API_KEY) throw new Error('Gemini API key not available');
-
-    try {
-        let base64Image = imageData;
-        if (imageData.startsWith('data:')) {
-            base64Image = imageData.split(',')[1];
-        }
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision-latest:generateContent?key=${GEMINI_API_KEY}`;
-
-        const requestBody = {
-            input: [
-                {
-                    text_segments: [
-                        {
-                            text: `Analyze this ${subject} study material image. Provide:
-1. A detailed explanation of what's shown
-2. Key concepts to remember
-3. Study questions based on the content
-4. Memory tips for better retention
-
-Focus on GCSE level understanding for ${subject}.`
-                        }
-                    ],
-                    image: {
-                        mime_type: "image/jpeg",
-                        data: base64Image
-                    }
-                }
-            ],
-            candidate_count: 1,
-            temperature: 0.4,
-            max_output_tokens: 2048
-        };
-
-        console.log('Making request to:', apiUrl);
-
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            console.error('API Response Status:', response.status);
-            console.error('API Response Text:', await response.text());
-            throw new Error(`API request failed: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Gemini API Response:', data);
-
-        const analysisText = data.candidates?.[0]?.content?.[0]?.text;
-        if (!analysisText) throw new Error('Invalid response format from Gemini API');
-
-        return parseGeminiResponse(analysisText, subject);
-
-    } catch (error) {
-        console.error('Image Analysis Error:', error);
-        throw error;
-    }
-}
-
-
-// Helper function to parse Gemini's response into structured data
-function parseGeminiResponse(text, subject) {
-    const analysis = {
-        topic: `${subject} Study Material`,
-        detailedExplanation: '',
-        keyConcepts: [],
-        studyQuestions: [],
-        memoryTips: []
-    };
-    
-    try {
-        // Split the response into sections
-        const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        
-        let currentSection = 'explanation';
-        let currentContent = [];
-        
-        for (const line of lines) {
-            // Check for section headers
-            if (line.toLowerCase().includes('key concept') || line.toLowerCase().includes('concepts:')) {
-                if (currentSection === 'explanation' && currentContent.length > 0) {
-                    analysis.detailedExplanation = currentContent.join(' ');
-                }
-                currentSection = 'concepts';
-                currentContent = [];
-                continue;
-            } else if (line.toLowerCase().includes('study question') || line.toLowerCase().includes('questions:')) {
-                if (currentSection === 'concepts' && currentContent.length > 0) {
-                    analysis.keyConcepts = currentContent;
-                }
-                currentSection = 'questions';
-                currentContent = [];
-                continue;
-            } else if (line.toLowerCase().includes('memory tip') || line.toLowerCase().includes('tips:')) {
-                if (currentSection === 'questions' && currentContent.length > 0) {
-                    analysis.studyQuestions = currentContent;
-                }
-                currentSection = 'tips';
-                currentContent = [];
-                continue;
-            }
-            
-            // Add content to current section
-            if (!line.match(/^\d+\.|^-|^•|^\*/)) {
-                if (currentSection === 'explanation') {
-                    currentContent.push(line);
-                }
-            } else {
-                // This is a list item
-                const cleanLine = line.replace(/^\d+\.|^-|^•|^\*/, '').trim();
-                if (cleanLine) {
-                    currentContent.push(cleanLine);
-                }
-            }
-        }
-        
-        // Handle the last section
-        if (currentSection === 'explanation' && currentContent.length > 0) {
-            analysis.detailedExplanation = currentContent.join(' ');
-        } else if (currentSection === 'concepts' && currentContent.length > 0) {
-            analysis.keyConcepts = currentContent;
-        } else if (currentSection === 'questions' && currentContent.length > 0) {
-            analysis.studyQuestions = currentContent;
-        } else if (currentSection === 'tips' && currentContent.length > 0) {
-            analysis.memoryTips = currentContent;
-        }
-        
-        // If we couldn't parse sections, use the whole text as explanation
-        if (!analysis.detailedExplanation && !analysis.keyConcepts.length && !analysis.studyQuestions.length) {
-            analysis.detailedExplanation = text;
-        }
-        
-        // Extract topic from the explanation if possible
-        const firstSentence = analysis.detailedExplanation.split('.')[0];
-        if (firstSentence && firstSentence.length < 100) {
-            analysis.topic = firstSentence;
-        }
-        
-    } catch (parseError) {
-        console.warn('Failed to parse Gemini response, using raw text:', parseError);
-        analysis.detailedExplanation = text;
-    }
-    
-    return analysis;
-}
-
-// Alternative function to try different models if one fails
-async function analyzeImageWithGeminiWithFallback(imageData, subject) {
-    // Use models that are actually available for v1beta API with image support
-    const models = ['gemini-pro-vision'];
-    
-    for (const model of models) {
-        try {
-            console.log(`Trying model: ${model}`);
-            return await analyzeImageWithGeminiModel(imageData, subject, model);
-        } catch (error) {
-            console.warn(`Model ${model} failed:`, error.message);
-            if (model === models[models.length - 1]) {
-                // If this was the last model, throw the error
-                throw error;
-            }
-        }
-    }
-}
-
 
 // Missing fallback functions that your code needs
 function createBasicFlashcardFromImage(file, subject) {
@@ -15769,43 +15599,6 @@ function createBasicFlashcardsFromImages(subjects) {
     }
     
     return basicFlashcards;
-}
-
-// Test function to verify API access
-async function testGeminiAPI() {
-    if (!GEMINI_API_KEY) {
-        console.error('GEMINI_API_KEY not found');
-        return false;
-    }
-    
-    try {
-        const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
-        
-        const response = await fetch(testUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ 
-                    parts: [{ text: "Hello, can you respond with just 'API working'?" }] 
-                }]
-            })
-        });
-        
-        console.log('Test API Status:', response.status);
-        const result = await response.json();
-        console.log('Test API Response:', result);
-        
-        if (response.ok && result.candidates && result.candidates[0]) {
-            console.log('✅ Gemini API is working!');
-            return true;
-        } else {
-            console.error('❌ Gemini API test failed');
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Gemini API test error:', error);
-        return false;
-    }
 }
 
 
@@ -16170,6 +15963,147 @@ function updateSidebarStats() {
 let flashcards = JSON.parse(localStorage.getItem('gcseFlashcards') || '[]');
 let currentMainTab = 'schedule';
 
+// Pre-built question banks for common GCSE subjects
+const questionTemplates = {
+    'Mathematics': [
+        'Explain the concept of _____ and how it\'s used',
+        'What is the formula for calculating _____?',
+        'Solve a problem involving _____',
+        'What are the key properties of _____?'
+    ],
+    'Biology': [
+        'Describe the structure and function of _____',
+        'Explain the process of _____',
+        'What are the differences between _____ and _____?',
+        'How does _____ affect _____?'
+    ],
+    'Chemistry': [
+        'Write the equation for the reaction of _____',
+        'Explain what happens when _____ reacts with _____',
+        'What are the properties of _____?',
+        'Describe how to test for _____'
+    ],
+    'Physics': [
+        'Define _____ and give an example',
+        'Calculate the _____ when _____',
+        'Explain the relationship between _____ and _____',
+        'What factors affect _____?'
+    ],
+    'English Literature': [
+        'Analyze the theme of _____ in _____',
+        'How does the writer present _____?',
+        'Compare the characters of _____ and _____',
+        'What is the significance of _____?'
+    ]
+};
+
+// Add this button to the flashcard interface
+function addQuestionTemplatesButton() {
+    return `
+        <button onclick="showQuestionTemplates()" style="
+            padding: 10px 16px;
+            background: var(--accent-green, #10b981);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        ">
+            📝 Add Question Templates
+        </button>
+    `;
+}
+
+function showQuestionTemplates() {
+    const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
+    if (!flashcard) return;
+    
+    const templates = questionTemplates[flashcard.subject] || questionTemplates['Mathematics'];
+    const textarea = document.getElementById('flashcardNotesTextarea');
+    
+    if (textarea) {
+        let questionsSection = '\n\n## Practice Questions:\n';
+        templates.forEach((template, i) => {
+            questionsSection += `${i + 1}. ${template}\n`;
+        });
+        
+        textarea.value += questionsSection;
+        autoSaveNotes();
+        showAlert('Question templates added! Fill in the blanks with your topic.', 'success');
+    }
+}
+
+// Add this to the flashcard interface when viewing images
+function addImageAnnotationTools(flashcardId) {
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (!flashcard || !flashcard.imageData) return '';
+    
+    return `
+        <div style="margin-top: 16px;">
+            <h4 style="margin-bottom: 8px; color: var(--text-primary);">Image Tools:</h4>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="addImageHighlight('${flashcardId}')" style="
+                    padding: 8px 12px;
+                    background: var(--accent-blue);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                ">
+                    ✏️ Add Highlight
+                </button>
+                <button onclick="addImageNote('${flashcardId}')" style="
+                    padding: 8px 12px;
+                    background: var(--accent-green, #10b981);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                ">
+                    📝 Add Note
+                </button>
+                <button onclick="extractTextFromImage('${flashcardId}')" style="
+                    padding: 8px 12px;
+                    background: var(--accent-orange, #f59e0b);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                ">
+                    📄 Extract Text (OCR)
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function extractTextFromImage(flashcardId) {
+    const flashcard = flashcards.find(f => f.id == flashcardId);
+    if (!flashcard) return;
+    
+    showAlert('Extracting text from image...', 'info');
+    
+    try {
+        const { data: { text } } = await Tesseract.recognize(
+            flashcard.imageData,
+            'eng'
+        );
+        
+        const textarea = document.getElementById('flashcardNotesTextarea');
+        if (textarea) {
+            textarea.value += `\n\n## Extracted Text:\n${text}\n`;
+            autoSaveNotes();
+            showAlert('Text extracted successfully!', 'success');
+        }
+    } catch (error) {
+        showAlert('Failed to extract text. Please try again.', 'error');
+    }
+}
+
 function createAutoFlashcardForSchedule(scheduleId, subjects) {
     // Create one flashcard for the entire schedule
     const scheduleName = subjects.join(', ');
@@ -16349,103 +16283,154 @@ function toBase64(file) {
 
 async function processUploadedImagesForFlashcards(subjects) {
     if (!uploadedFiles || uploadedFiles.length === 0) {
-        console.log('No uploaded files to process');
         return [];
-    }
-    
-    console.log('Ensuring configuration is loaded...');
-    await ensureConfigLoaded();
-    
-    if (!OPENAI_API_KEY) {
-        console.warn('OpenAI API key still not available after config load. Skipping AI analysis.');
-        showAlert('AI analysis unavailable. Please configure your OpenAI API key.', 'error');
-        
-        // REMOVE THIS LINE - Don't create fallback flashcards
-        // return createBasicFlashcardsFromImages(subjects);
-        return []; // Return empty array instead
     }
     
     const processedFlashcards = [];
     
-    try {
-        for (let i = 0; i < uploadedFiles.length; i++) {
-            const file = uploadedFiles[i];
-            
-            if (!file.type || !file.type.startsWith('image/')) {
-                console.log('Skipping non-image file:', file.name);
-                continue;
+    for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i];
+        
+        if (!file.type || !file.type.startsWith('image/')) {
+            continue;
+        }
+        
+        // Determine subject
+        let subject = subjects[0];
+        for (const subj of subjects) {
+            if (file.name.toLowerCase().includes(subj.toLowerCase())) {
+                subject = subj;
+                break;
             }
-            
-            console.log(`Processing image ${i + 1}/${uploadedFiles.length}: ${file.name}`);
-            
-            let subject = subjects[0];
-            
-            for (const subj of subjects) {
-                if (file.name.toLowerCase().includes(subj.toLowerCase())) {
-                    subject = subj;
-                    break;
+        }
+        
+        // Use OCR to extract text from image
+        showAlert(`Extracting text from ${file.name}...`, 'info');
+        
+        try {
+            const { data: { text } } = await Tesseract.recognize(
+                file.data,
+                'eng',
+                {
+                    logger: m => console.log(m)
                 }
-            }
+            );
             
-            try {
-                console.log(`Analyzing ${file.name} with OpenAI API for ${subject}...`);
-                const analysis = await analyzeImageWithOpenAI(file.data, subject);
-                
-                const flashcard = {
-                    id: Date.now() + Math.random() + i,
-                    subject: subject,
-                    topic: analysis.topic || `${subject} Study Material`,
-                    notes: formatAnalysisForNotes(analysis),
-                    imageData: file.data,
-                    keyConcepts: analysis.keyConcepts || [],
-                    studyQuestions: analysis.studyQuestions || [],
-                    memoryTips: analysis.memoryTips || [],
-                    created: new Date().toISOString(),
-                    source: 'ai_analyzed_image',
-                    originalFileName: file.name
-                };
-                
-                processedFlashcards.push(flashcard);
-                console.log(`✅ Created AI flashcard: ${flashcard.topic}`);
-                
-            } catch (analysisError) {
-                console.warn(`Failed to analyze ${file.name} with AI:`, analysisError);
-                // REMOVE THIS - Don't create fallback for individual failures
-                // const fallbackFlashcard = createBasicFlashcardFromImage(file, subject);
-                // processedFlashcards.push(fallbackFlashcard);
-                
-                // Instead, show error and skip this file
-                showAlert(`Failed to analyze ${file.name}. Skipping this file.`, 'error');
-            }
+            const flashcard = {
+                id: Date.now() + Math.random() + i,
+                subject: subject,
+                topic: extractTopicFromFilename(file.name) || `${subject} Study Material`,
+                notes: formatExtractedText(text, subject),
+                imageData: file.data,
+                keyConcepts: extractKeyConceptsSimple(text),
+                studyQuestions: generateBasicQuestions(text, subject),
+                created: new Date().toISOString(),
+                source: 'ocr_extracted',
+                originalFileName: file.name
+            };
             
-            if (i < uploadedFiles.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
+            processedFlashcards.push(flashcard);
+            
+        } catch (error) {
+            console.warn(`Failed to process ${file.name}:`, error);
+            // Create basic flashcard without OCR
+            const basicFlashcard = createInteractiveFlashcard(file, subject);
+            processedFlashcards.push(basicFlashcard);
         }
-        
-        if (processedFlashcards.length > 0) {
-            flashcards.push(...processedFlashcards);
-            localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
-            
-            console.log(`Successfully created ${processedFlashcards.length} flashcards from uploaded images`);
-            
-            if (typeof updateSidebarStats === 'function') {
-                updateSidebarStats();
-            }
-            
-            const aiCount = processedFlashcards.filter(f => f.source === 'ai_analyzed_image').length;
-            showAlert(`Created ${aiCount} AI-analyzed flashcard${aiCount !== 1 ? 's' : ''}`, 'success');
-        } else {
-            showAlert('No flashcards were created. Check that OpenAI API is configured correctly.', 'error');
-        }
-        
-        return processedFlashcards;
-        
-    } catch (error) {
-        console.error('Error processing uploaded images for flashcards:', error);
-        showAlert('Failed to process images. Check console for details.', 'error');
-        return [];
     }
+    
+    if (processedFlashcards.length > 0) {
+        flashcards.push(...processedFlashcards);
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        updateSidebarStats();
+        showAlert(`Created ${processedFlashcards.length} flashcard${processedFlashcards.length !== 1 ? 's' : ''}`, 'success');
+    }
+    
+    return processedFlashcards;
+}
+
+// Format extracted text nicely
+function formatExtractedText(text, subject) {
+    if (!text || text.trim().length === 0) {
+        return `# ${subject} Notes\n\n*Add your notes here about this study material*\n\n## Key Points:\n- \n\n## Questions:\n- `;
+    }
+    
+    let formatted = `# ${subject} Study Material\n\n## Extracted Text:\n${text}\n\n`;
+    formatted += `## Your Notes:\n*Add your own notes and explanations here*\n\n`;
+    formatted += `## Key Points to Remember:\n- \n\n`;
+    formatted += `## Practice Questions:\n1. \n`;
+    
+    return formatted;
+}
+
+// Simple keyword extraction (no AI needed)
+function extractKeyConceptsSimple(text) {
+    if (!text) return [];
+    
+    // Remove common words
+    const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being']);
+    
+    // Extract capitalized words and phrases (likely important terms)
+    const words = text.split(/\s+/);
+    const concepts = [];
+    
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i].replace(/[^\w\s]/g, '');
+        
+        // Look for capitalized words (but not at start of sentences)
+        if (word.length > 3 && word[0] === word[0].toUpperCase() && i > 0) {
+            if (!commonWords.has(word.toLowerCase())) {
+                concepts.push(word);
+            }
+        }
+    }
+    
+    return [...new Set(concepts)].slice(0, 10); // Return unique concepts
+}
+
+// Generate basic questions from text
+function generateBasicQuestions(text, subject) {
+    if (!text) return [];
+    
+    const questions = [];
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20);
+    
+    // Create fill-in-the-blank questions
+    for (let i = 0; i < Math.min(3, sentences.length); i++) {
+        const sentence = sentences[i].trim();
+        const words = sentence.split(' ');
+        
+        if (words.length > 5) {
+            // Replace a key word with blank
+            const keyWordIndex = Math.floor(words.length / 2);
+            const keyWord = words[keyWordIndex];
+            words[keyWordIndex] = '_____';
+            
+            questions.push({
+                type: 'fill_blank',
+                question: words.join(' '),
+                answer: keyWord
+            });
+        }
+    }
+    
+    return questions;
+}
+
+// Create interactive flashcard with annotation tools
+function createInteractiveFlashcard(file, subject) {
+    return {
+        id: Date.now() + Math.random(),
+        subject: subject,
+        topic: extractTopicFromFilename(file.name) || `${subject} Study Material`,
+        notes: `# ${subject} - ${file.name}\n\n## Instructions:\n- Click the image to view it fullscreen\n- Add your own notes below\n- Use the Structure button to organize your notes\n\n## Your Notes:\n`,
+        imageData: file.data,
+        keyConcepts: [],
+        studyQuestions: [],
+        created: new Date().toISOString(),
+        source: 'manual_annotation',
+        originalFileName: file.name
+    };
 }
 
 
