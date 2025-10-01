@@ -16085,7 +16085,14 @@ async function extractTextFromImage(flashcardId) {
     const flashcard = flashcards.find(f => f.id == flashcardId);
     if (!flashcard) return;
     
-    showAlert('Extracting text from image...', 'info');
+    // REMOVE THIS LINE:
+    // showAlert('Extracting text from image...', 'info');
+    
+    // Show loading in the button instead
+    const btn = event.target;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '⏳ Extracting...';
+    btn.disabled = true;
     
     try {
         const { data: { text } } = await Tesseract.recognize(
@@ -16093,13 +16100,29 @@ async function extractTextFromImage(flashcardId) {
             'eng'
         );
         
+        // Save to flashcard notes
+        flashcard.notes += `\n\n## Extracted Text:\n${text}\n\n## Your Notes:\n`;
+        localStorage.setItem('gcseFlashcards', JSON.stringify(flashcards));
+        
+        // Update textarea if open
         const textarea = document.getElementById('flashcardNotesTextarea');
         if (textarea) {
-            textarea.value += `\n\n## Extracted Text:\n${text}\n`;
+            textarea.value = flashcard.notes;
             autoSaveNotes();
-            showAlert('Text extracted successfully!', 'success');
         }
+        
+        btn.innerHTML = '✓ Extracted!';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }, 2000);
+        
     } catch (error) {
+        btn.innerHTML = '✗ Failed';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }, 2000);
         showAlert('Failed to extract text. Please try again.', 'error');
     }
 }
@@ -16303,9 +16326,7 @@ async function processUploadedImagesForFlashcards(subjects) {
                 break;
             }
         }
-        
-        // Use OCR to extract text from image
-        showAlert(`Extracting text from ${file.name}...`, 'info');
+
         
         try {
             const { data: { text } } = await Tesseract.recognize(
@@ -17503,24 +17524,135 @@ function handleStructureOutsideClick(event) {
     }
 }
 
-// Enhanced AI Structure functionality
 function applyAIStructure(type) {
     hideStructureDropdown();
     
     const textarea = document.getElementById('flashcardNotesTextarea');
     if (!textarea || !textarea.value.trim()) {
-        showAlert('Please add some notes first before applying AI structure', 'error');
+        showAlert('Please add some notes first before applying structure', 'error');
         return;
     }
     
     const flashcard = flashcards.find(f => f.id == window.currentFlashcardId);
     if (!flashcard) return;
     
-    // Show enhanced wave animation with structure type
+    // Show AI generating animation
     showEnhancedAIAnimation(type);
     
-    // Call Gemini API to restructure content
-    callGeminiForStructure(textarea.value, type, flashcard.subject);
+    // Apply structure after 2 seconds
+    setTimeout(() => {
+        const structuredText = applyStructureToText(textarea.value, type);
+        textarea.value = structuredText;
+        
+        hideEnhancedAIAnimation();
+        autoSaveNotes();
+        
+        showAlert('Notes structured successfully!', 'success');
+    }, 2000);
+}
+
+function applyStructureToText(text, type) {
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    switch(type) {
+        case 'bullet':
+            return formatAsBullets(lines);
+        case 'outline':
+            return formatAsOutline(lines);
+        case 'qa':
+            return formatAsQA(lines);
+        case 'summary':
+            return formatAsSummary(lines);
+        default:
+            return text;
+    }
+}
+
+function formatAsBullets(lines) {
+    let result = '# Study Notes\n\n';
+    let currentSection = '';
+    
+    lines.forEach(line => {
+        if (line.startsWith('#')) {
+            currentSection = line;
+            result += '\n' + line + '\n';
+        } else if (line.trim().length > 0) {
+            if (!line.startsWith('•') && !line.startsWith('-')) {
+                result += '• ' + line.trim() + '\n';
+            } else {
+                result += line + '\n';
+            }
+        }
+    });
+    
+    return result;
+}
+
+function formatAsOutline(lines) {
+    let result = '# Study Notes Outline\n\n';
+    let sectionCount = 0;
+    let subCount = 0;
+    
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('#')) {
+            sectionCount++;
+            subCount = 0;
+            result += `\n${romanNumeral(sectionCount)}. ${trimmed.replace(/^#+\s*/, '')}\n`;
+        } else if (trimmed.length > 0) {
+            subCount++;
+            result += `   ${String.fromCharCode(64 + subCount)}. ${trimmed}\n`;
+        }
+    });
+    
+    return result;
+}
+
+function formatAsQA(lines) {
+    let result = '# Study Questions & Answers\n\n';
+    let questionCount = 0;
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.length > 20) {
+            questionCount++;
+            // Create Q&A pairs
+            result += `**Q${questionCount}:** ${line}?\n`;
+            result += `**A${questionCount}:** *(Add your answer here)*\n\n`;
+        }
+    }
+    
+    return result;
+}
+
+function formatAsSummary(lines) {
+    let result = '# Summary Notes\n\n## Overview\n';
+    
+    const mainPoints = lines.filter(line => !line.startsWith('#') && line.length > 15);
+    
+    result += mainPoints.slice(0, 3).join(' ') + '\n\n';
+    result += '## Key Points\n';
+    
+    mainPoints.slice(3).forEach(point => {
+        result += `- ${point}\n`;
+    });
+    
+    return result;
+}
+
+function romanNumeral(num) {
+    const values = [10, 9, 5, 4, 1];
+    const symbols = ['X', 'IX', 'V', 'IV', 'I'];
+    let result = '';
+    
+    for (let i = 0; i < values.length; i++) {
+        while (num >= values[i]) {
+            result += symbols[i];
+            num -= values[i];
+        }
+    }
+    
+    return result;
 }
 
 function showEnhancedAIAnimation(structureType) {
