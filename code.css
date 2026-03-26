@@ -1,0 +1,52 @@
+/* styles.css - Updated with yellow theme */
+:root {
+  --primary-color: #FFD700; /* Gold/Yellow */
+  --primary-hover: #FFC107;
+  --secondary-color: #FFF8DC;
+  --text-on-primary: #333;
+  --button-text: #333;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+button, .button, .btn {
+  background-color: var(--primary-color);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+button:hover, .button:hover, .btn:hover {
+  background-color: var(--primary-hover);
+}
+
+input[type="submit"], input[type="button"] {
+  background-color: var(--primary-color);
+  color: var(--button-text);
+}
+
+a.button, a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.header, .footer {
+  background-color: var(--secondary-color);
+  padding: 1rem;
+}
+
+.highlight {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  padding: 2px 5px;
+}
